@@ -9,7 +9,7 @@ Interface web do sistema de gestão da Doceterapia, desenvolvida em React com Vi
 - **React** 18 — biblioteca de interface
 - **TypeScript** — tipagem estática
 - **Vite** — bundler e servidor de desenvolvimento
-- **Tailwind CSS** v4 — estilização utilitária
+- **CSS** — estilização convencional
 - **React Router** v7 — roteamento
 - **Lucide React** — ícones
 
@@ -63,8 +63,7 @@ src/
 └── styles/
     ├── index.css    # Entrada de estilos
     ├── fonts.css    # Importação de fontes
-    ├── tailwind.css # Configuração do Tailwind
-    └── theme.css    # Tokens de design (cores, tipografia)
+    └── theme.css    # Tokens de design e estilos da aplicação
 ```
 
 ---
