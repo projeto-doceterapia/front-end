@@ -2,7 +2,11 @@ import { useState } from "react";
 import { Eye, EyeOff, Lock, Mail, Cake } from "lucide-react";
 import logoImage from "../../assets/logo.png";
 
-export default function Login() {
+type LoginProps = {
+  onLogin: () => void;
+};
+
+export default function Login({ onLogin }: LoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -19,6 +23,7 @@ export default function Login() {
     setLoading(true);
     await new Promise((r) => setTimeout(r, 900));
     setLoading(false);
+    onLogin();
   };
 
   return (
