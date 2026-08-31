@@ -1,26 +1,31 @@
 .dashboard {
-  max-width: 960px;
+  min-height: 100vh;
+  max-width: 1280px;
   margin: auto;
-  padding: 14px 10px 26px;
+  padding: 28px;
   color: #56372b;
+  font-size: 12px;
 }
 
-h1, h2, p {
+.dashboard h1, .dashboard h2, .dashboard p {
   margin: 0;
 }
 
-h1 {
-  font-size: 15px;
+.dashboard h1 {
+  font-size: 20px;
 }
 
-header {
+.dashboard > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   margin-bottom: 20px;
 }
 
-header p, .titulo p {
+.dashboard > header p, .titulo p {
   margin-top: 3px;
   color: #9a92ad;
-  font-size: 8px;
+  font-size: 11px;
 }
 
 .resumos, .estoque, .pedidos {
@@ -41,8 +46,8 @@ header p, .titulo p {
 }
 
 .card {
-  min-height: 91px;
-  padding: 12px;
+  min-height: 112px;
+  padding: 16px;
 }
 
 .icone {
@@ -59,19 +64,19 @@ header p, .titulo p {
 .card p {
   margin-top: 7px;
   color: #786b80;
-  font-size: 8px;
+  font-size: 11px;
 }
 
 .card strong {
   display: block;
   margin: 3px 0;
-  font-size: 21px;
+  font-size: 24px;
 }
 
 .card small {
   display: block;
   color: #9a92a3;
-  font-size: 7px;
+  font-size: 10px;
 }
 
 .rosa strong {
@@ -103,20 +108,20 @@ header p, .titulo p {
 
 .titulo {
   display: flex;
-  min-height: 34px;
-  padding: 0 12px;
+  min-height: 44px;
+  padding: 0 16px;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid #eee2da;
 }
 
 .titulo h2 {
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .titulo a {
   color: #e77e87;
-  font-size: 8px;
+  font-size: 10px;
 }
 
 .estoque {
@@ -335,7 +340,7 @@ em {
   text-align: center;
 }
 
-svg {
+.linhas svg {
   width: 100%;
   height: 140px;
   background: repeating-linear-gradient(to bottom, transparent 0 31px, #f1e5e3 32px);
@@ -356,6 +361,256 @@ polyline {
 
 .custo {
   stroke: #cb752f;
+}
+
+/* Ajustes de leitura exclusivos da tela de Visão Geral */
+.dashboard .outline-button {
+  min-height: 38px;
+  padding: 0 14px;
+  font-size: 12px;
+}
+
+.dashboard .icone {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+}
+
+.dashboard .estoque {
+  padding: 16px;
+}
+
+.dashboard .item-estoque {
+  padding: 14px;
+  font-size: 12px;
+}
+
+.dashboard .item-estoque > span {
+  margin-right: 10px;
+  padding: 7px;
+}
+
+.dashboard .item-estoque em {
+  font-size: 10px;
+}
+
+.dashboard .item-estoque p {
+  padding-top: 10px;
+  font-size: 11px;
+}
+
+.dashboard .item-estoque p small {
+  font-size: 10px;
+}
+
+.dashboard .progresso,
+.dashboard .progresso i {
+  height: 7px;
+}
+
+.dashboard .pedidos {
+  padding: 16px;
+}
+
+.dashboard .pedido {
+  padding: 14px;
+}
+
+.dashboard .pedido p {
+  font-size: 11px;
+}
+
+.dashboard .pedido strong {
+  font-size: 22px;
+}
+
+.dashboard .pedido small,
+.dashboard .filtros,
+.dashboard .coluna small {
+  font-size: 10px;
+}
+
+.dashboard .filtros b,
+.dashboard .filtros span {
+  padding: 6px 10px;
+}
+
+.dashboard .barras {
+  height: 220px;
+  padding: 18px 55px 30px;
+}
+
+.dashboard .coluna {
+  height: 190px;
+}
+
+.dashboard .pizza-conteudo {
+  min-height: 200px;
+}
+
+.dashboard .pizza {
+  width: 132px;
+  height: 132px;
+}
+
+.dashboard .legenda {
+  font-size: 12px;
+}
+
+.dashboard .legenda i {
+  width: 10px;
+  height: 10px;
+}
+
+.dashboard .linhas {
+  padding: 14px 20px 18px;
+  font-size: 11px;
+}
+
+.dashboard .linhas svg {
+  height: 190px;
+}
+
+/* Gráficos da Visão Geral */
+.dashboard .grafico-pedidos .barras {
+  height: 250px;
+  padding: 24px 70px 34px;
+  background: repeating-linear-gradient(to top, #f8eeee 0 1px, transparent 1px 42px);
+  border-bottom: 1px solid #ecd7c8;
+}
+
+.dashboard .grafico-pedidos .coluna {
+  height: 205px;
+  gap: 5px;
+}
+
+.dashboard .grafico-pedidos .coluna i {
+  width: 28px;
+  border-radius: 6px 6px 0 0;
+  box-shadow: 0 3px 5px #db898f33;
+}
+
+.dashboard .valor-barra {
+  color: #6e4c42;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.dashboard .grafico-produtos .pizza-conteudo {
+  min-height: 240px;
+  gap: 72px;
+  justify-content: center;
+}
+
+.dashboard .grafico-produtos .pizza {
+  display: grid;
+  width: 150px;
+  height: 150px;
+  place-items: center;
+  background: conic-gradient(#dc8990 0 34%, #643d2d 34% 55%, #f1ab76 55% 73%, #f6eeeb 73% 100%);
+}
+
+.dashboard .grafico-produtos .pizza::after {
+  inset: 37px;
+  z-index: 1;
+}
+
+.dashboard .pizza span {
+  z-index: 2;
+  color: #5b3528;
+  font-size: 19px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.dashboard .pizza span small {
+  display: block;
+  margin-top: 2px;
+  color: #8c9aac;
+  font-size: 9px;
+  font-weight: 400;
+}
+
+.dashboard .grafico-produtos .legenda {
+  width: 320px;
+}
+
+.dashboard .grafico-produtos .legenda p {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1e5e3;
+}
+
+.dashboard .grafico-produtos .legenda p:last-child {
+  border-bottom: 0;
+}
+
+.dashboard .grafico-produtos .legenda p span {
+  display: flex;
+  align-items: center;
+}
+
+.dashboard .grafico-produtos .legenda strong {
+  float: none;
+}
+
+.dashboard .grafico-faturamento .linhas {
+  padding: 20px 28px 18px;
+}
+
+.dashboard .grafico-faturamento .linhas svg {
+  height: 210px;
+  background: repeating-linear-gradient(to bottom, transparent 0 41px, #f1e5e3 42px);
+}
+
+.dashboard .grafico-faturamento polyline {
+  stroke-width: 3;
+}
+
+.dashboard .grafico-faturamento .ponto {
+  fill: #fff;
+  stroke-width: 3;
+}
+
+.dashboard .meses-grafico {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 4% 0;
+  color: #8994a5;
+  font-size: 10px;
+}
+
+.dashboard .legenda-linhas {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 14px;
+  color: #718096;
+  font-size: 11px;
+}
+
+.dashboard .legenda-linhas span::before {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  content: '';
+}
+
+.dashboard .legenda-linhas .faturamento {
+  color: #dc8990;
+}
+
+.dashboard .legenda-linhas .custo {
+  color: #cb752f;
+}
+
+.dashboard .legenda-linhas .lucro {
+  color: #27845d;
 }
 
 @media (max-width: 700px) {
