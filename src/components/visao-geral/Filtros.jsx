@@ -1,4 +1,4 @@
-function Filtros() {
+export default function Filtros() {
   return (
     <div className="filtros">
       <span>Últimos 3 meses</span>
@@ -7,5 +7,3 @@ function Filtros() {
     </div>
   )
 }
-
-export default Filtros
