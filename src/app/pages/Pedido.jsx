@@ -33,7 +33,7 @@ export default function Pedido({ onBack }) {
 
   return (
     <main className="order-page">
-      <CabecalhoPedido />
+      <CabecalhoPedido etapa={etapa} />
       <EtapasPedido etapa={etapa} />
 
       {etapa === 2 ? (

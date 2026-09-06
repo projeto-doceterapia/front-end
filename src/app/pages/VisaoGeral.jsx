@@ -5,7 +5,7 @@ import GraficoPedidos from '../../components/visao-geral/GraficoPedidos'
 import PedidosAndamento from '../../components/visao-geral/PedidosAndamento'
 import ProdutosMaisPedidos from '../../components/visao-geral/ProdutosMaisPedidos'
 
-export default function VisaoGeral({ aoAbrirAgenda }) {
+export default function VisaoGeral() {
   return (
     <main className="dashboard">
       <header className="dashboard-heading">
@@ -14,7 +14,6 @@ export default function VisaoGeral({ aoAbrirAgenda }) {
           <p>Acompanhe os principais dados da confeitaria</p>
         </div>
 
-        <button className="outline-button" onClick={aoAbrirAgenda}>Ir para agenda</button>
       </header>
 
       <section className="resumos">
