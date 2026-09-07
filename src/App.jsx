@@ -4,6 +4,7 @@ import Login from './app/pages/Login.tsx'
 import Agenda from './app/pages/Agenda'
 import Pedido from './app/pages/Pedido'
 import VisaoGeral from './app/pages/VisaoGeral'
+import Sidebar from './components/Sidebar'
 
 function App() {
   const [usuarioAutenticado, setUsuarioAutenticado] = useState(false)
@@ -13,15 +14,34 @@ function App() {
     return <Login onLogin={() => setUsuarioAutenticado(true)} />
   }
 
-  if (tela === 'agenda') {
-    return <Agenda onNewOrder={() => setTela('pedido')} onOpenOverview={() => setTela('visao-geral')} />
+  function navegar(id) {
+    setTela(id === 'pedidos' ? 'pedido' : id)
   }
 
-  if (tela === 'pedido') {
-    return <Pedido onBack={() => setTela('agenda')} />
+  function renderizarTela() {
+    if (tela === 'agenda') {
+      return <Agenda onNewOrder={() => setTela('pedido')} />
+    }
+
+    if (tela === 'pedido') {
+      return <Pedido onBack={() => setTela('agenda')} />
+    }
+
+    if (tela === 'visao-geral') {
+      return <VisaoGeral />
+    }
+
+    return <Agenda onNewOrder={() => setTela('pedido')} />
   }
 
-  return <VisaoGeral aoAbrirAgenda={() => setTela('agenda')} />
+  const telaAtiva = tela === 'pedido' ? 'pedidos' : tela
+
+  return (
+    <div className="app-shell">
+      <Sidebar telaAtual={telaAtiva} aoNavegar={navegar} />
+      <div className="app-content">{renderizarTela()}</div>
+    </div>
+  )
 }
 
 export default App

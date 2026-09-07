@@ -1,6 +1,6 @@
 import { Plus } from 'lucide-react'
 
-export default function CabecalhoAgenda({ aoCriarPedido, aoAbrirVisaoGeral }) {
+export default function CabecalhoAgenda({ aoCriarPedido }) {
   return (
     <div className="agenda-heading">
       <div>
@@ -9,7 +9,6 @@ export default function CabecalhoAgenda({ aoCriarPedido, aoAbrirVisaoGeral }) {
       </div>
 
       <div className="agenda-actions">
-        <button className="outline-button" onClick={aoAbrirVisaoGeral}>Visão geral</button>
         <button className="primary-button" onClick={aoCriarPedido}>
           <Plus size={16} />
           Novo Pedido
