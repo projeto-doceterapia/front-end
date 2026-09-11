@@ -101,6 +101,16 @@
   color: #f24a5a;
 }
 
+.marrom {
+  border-color: #ebd8c8;
+}
+
+.marrom .icone,
+.marrom strong {
+  background: #f6ede6;
+  color: #704633;
+}
+
 .painel {
   margin-top: 10px;
   overflow: hidden;
@@ -232,14 +242,16 @@ em {
   font-size: 7px;
 }
 
-.filtros b, .filtros span {
+.filtros button, .filtros b, .filtros span {
   padding: 4px 7px;
+  border: 0;
   border-radius: 10px;
   background: #f4f5f7;
+  color: #8090a2;
   font-weight: 400;
 }
 
-.filtros b {
+.filtros button.active, .filtros b {
   background: #dc8990;
   color: #fff;
 }
@@ -430,6 +442,7 @@ polyline {
   font-size: 10px;
 }
 
+.dashboard .filtros button,
 .dashboard .filtros b,
 .dashboard .filtros span {
   padding: 6px 10px;

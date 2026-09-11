@@ -230,7 +230,8 @@ button {
 }
 
 .calendar-day.full {
-    background: #f9e7e8;
+    background: #f5c9ce;
+    box-shadow: inset 4px 0 0 #d85c68;
 }
 
 .calendar-day.selected {
@@ -270,6 +271,10 @@ button {
 
 .warning .day-order {
     color: #f28b00;
+}
+
+.full .day-order {
+    color: #c84252;
 }
 
 .day-order small {
@@ -728,6 +733,53 @@ button {
     max-width: 1280px;
 }
 
+.order-data {
+    max-width: 960px;
+    margin-inline: auto;
+}
+
+.order-data-body {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    padding: 24px;
+}
+
+.order-data-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    color: #66748a;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.order-data-field input,
+.order-data-field select {
+    width: 100%;
+    min-height: 42px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    outline: 0;
+    background: #fdf9f7;
+    color: var(--ink);
+}
+
+.order-data-field input:focus,
+.order-data-field select:focus {
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px #db898f24;
+}
+
+.order-data-field.full-width {
+    grid-column: 1 / -1;
+}
+
+.order-data + .order-actions {
+    max-width: 960px;
+}
+
 .payment-body,
 .summary-body {
     padding: 12px 17px 28px;
@@ -853,6 +905,244 @@ button {
     color: var(--ink);
 }
 
+.agenda-layout {
+    grid-template-columns: minmax(0, 1fr) 330px;
+}
+
+.calendar-actions button:first-child,
+.calendar-actions button:last-child {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    place-items: center;
+}
+
+.calendar-day {
+    width: 100%;
+    border: 0;
+    border-right: 1px solid #f2ece9;
+    border-bottom: 1px solid #f2ece9;
+    background: #fff;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    appearance: none;
+}
+
+.calendar-day:not(.empty) {
+    cursor: pointer;
+}
+
+.calendar-day:not(.empty):hover {
+    background: #fff7f5;
+}
+
+.calendar-day.empty {
+    background: #fcfaf9;
+}
+
+.calendar-day.selected {
+    outline: 0;
+    outline-offset: 0;
+    background: #fff7f5;
+    box-shadow: inset 0 0 0 2px #e9a5aa;
+}
+
+.calendar-day.selected .day-number {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--rose);
+    color: #fff;
+    font-weight: 700;
+}
+
+.calendar-day.free:hover,
+.calendar-day.free.selected {
+    background: #edfcf5;
+}
+
+.calendar-day.warning:hover,
+.calendar-day.warning.selected {
+    background: #fffbe9;
+}
+
+.calendar-day.full:hover,
+.calendar-day.full.selected {
+    background: #f5c9ce;
+}
+
+.calendar-day.full.selected {
+    box-shadow: inset 4px 0 0 #c84252, inset 0 0 0 2px #b33d4d;
+}
+
+.selected-orders-count {
+    display: grid;
+    width: 26px;
+    height: 26px;
+    place-items: center;
+    border-radius: 50%;
+    background: #f9dce0;
+    color: #d87883;
+    font-weight: 700;
+}
+
+.empty-orders {
+    margin: 0;
+    padding: 22px 14px;
+    color: #8997aa;
+    text-align: center;
+}
+
+.client-type-toggle {
+    display: flex;
+    gap: 8px;
+    padding-bottom: 2px;
+    border-bottom: 1px solid #f1e4de;
+}
+
+.client-type-toggle button {
+    padding: 7px 12px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #fff;
+    color: #77869b;
+    font-size: 11px;
+}
+
+.client-type-toggle button.active {
+    border-color: var(--rose);
+    background: #f9dfe0;
+    color: #9c4d55;
+    font-weight: 700;
+}
+
+.farol-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(66, 36, 29, 0.42);
+}
+
+.farol-modal {
+    width: min(100%, 520px);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #fffdfb;
+    box-shadow: 0 20px 48px rgba(65, 35, 28, 0.25);
+}
+
+.farol-modal > header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 22px 16px;
+    border-bottom: 1px solid var(--line);
+}
+
+.farol-modal h2 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 1.05rem;
+}
+
+.farol-modal header p {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 0.83rem;
+}
+
+.farol-modal > header button {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+.farol-modal > header button:hover {
+    background: #f5ece7;
+    color: var(--ink);
+}
+
+.farol-fields {
+    display: grid;
+    gap: 14px;
+    padding: 20px 22px;
+}
+
+.farol-fields label {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    column-gap: 10px;
+    color: var(--ink);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.farol-fields input {
+    grid-column: 2;
+    width: 100%;
+    height: 38px;
+    margin-top: 7px;
+    padding: 0 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink);
+    font: inherit;
+    font-weight: 500;
+    outline: none;
+}
+
+.farol-fields input:focus {
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px rgba(217, 135, 143, 0.16);
+}
+
+.farol-fields small {
+    grid-column: 2;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 400;
+}
+
+.farol-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.farol-dot.green { background: #58bb87; }
+.farol-dot.yellow { background: #e7ad43; }
+.farol-dot.red { background: #df7e84; }
+
+.farol-modal .form-error {
+    margin: -4px 22px 16px;
+}
+
+.farol-modal footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 22px;
+    border-top: 1px solid var(--line);
+    background: #fff;
+}
+
 @media (max-width:800px) {
 
     .agenda-page,
@@ -862,7 +1152,8 @@ button {
 
     .agenda-layout,
     .items-content,
-    .payment-content {
+    .payment-content,
+    .order-data-body {
         grid-template-columns: 1fr;
     }
 
