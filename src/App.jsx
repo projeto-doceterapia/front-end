@@ -1,13 +1,13 @@
 import './App.css'
 import { useState } from 'react'
-import Login from './app/pages/Login.tsx'
+import Login from './app/pages/Login.jsx'
 import Agenda from './app/pages/Agenda'
 import Pedido from './app/pages/Pedido'
 import VisaoGeral from './app/pages/VisaoGeral'
 import Sidebar from './components/Sidebar'
 
 function App() {
-  const [usuarioAutenticado, setUsuarioAutenticado] = useState(false)
+  const [usuarioAutenticado, setUsuarioAutenticado] = useState(true)
   const [tela, setTela] = useState('agenda')
 
   if (!usuarioAutenticado) {

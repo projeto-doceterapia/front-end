@@ -1,38 +1,28 @@
-const pedidos = [
-  ['Seg', '20/05', 4],
-  ['Ter', '21/05', 7],
-  ['Qua', '22/05', 5],
-  ['Qui', '23/05', 9],
-  ['Sex', '24/05', 12],
-  ['Sáb', '25/05', 15],
-  ['Dom', '26/05', 6],
-]
+import { useState } from 'react'
 
-export default function GraficoPedidos() {
+export default function GraficoPedidos({ pedidos }) {
+  const [periodo, setPeriodo] = useState('7')
+  const dias = criarDias(periodo)
+  const dados = dias.map((data) => ({ data, total: pedidos.filter((pedido) => pedido.dataEntrega === dataISO(data)).length }))
+  const maior = Math.max(...dados.map((dia) => dia.total), 1)
+
   return (
     <section className="painel grafico-pedidos">
-      <div className="titulo">
-        <div>
-          <h2>Pedidos por dia</h2>
-          <p>Últimos 7 dias</p>
-        </div>
-
-        <div className="filtros">
-          <b>7 dias</b>
-          <span>14 dias</span>
-          <span>Este mês</span>
-        </div>
-      </div>
-
+      <div className="titulo"><div><h2>Pedidos por dia</h2><p>{periodo === 'mes' ? 'Este mes' : `Ultimos ${periodo} dias`}</p></div><div className="filtros">{[['7', '7 dias'], ['14', '14 dias'], ['mes', 'Este mes']].map(([valor, texto]) => <button type="button" className={periodo === valor ? 'active' : ''} onClick={() => setPeriodo(valor)} key={valor}>{texto}</button>)}</div></div>
       <div className="barras">
-        {pedidos.map((pedido) => (
-          <div className="coluna" key={pedido[0]}>
-            <span className="valor-barra">{pedido[2]}</span>
-            <i style={{ height: `${pedido[2] * 10}px` }}></i>
-            <small>{pedido[0]}<br />{pedido[1]}</small>
-          </div>
-        ))}
+        {dados.map((dia) => <div className="coluna" key={dataISO(dia.data)}><span className="valor-barra">{dia.total}</span><i style={{ height: `${Math.max(6, (dia.total / maior) * 180)}px` }} /><small>{dia.data.toLocaleDateString('pt-BR', { weekday: 'short' })}<br />{dia.data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</small></div>)}
       </div>
     </section>
   )
 }
+
+function criarDias(periodo) {
+  const hoje = new Date()
+  if (periodo === 'mes') {
+    const total = hoje.getDate()
+    return Array.from({ length: total }, (_, indice) => new Date(hoje.getFullYear(), hoje.getMonth(), indice + 1))
+  }
+  return Array.from({ length: Number(periodo) }, (_, indice) => { const data = new Date(hoje); data.setDate(hoje.getDate() - Number(periodo) + 1 + indice); return data })
+}
+
+function dataISO(data) { return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}-${String(data.getDate()).padStart(2, '0')}` }

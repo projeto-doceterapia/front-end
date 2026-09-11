@@ -1,39 +1,23 @@
 import { Check } from 'lucide-react'
 
-export default function ResumoPedido({ itens, total, dinheiro }) {
+export default function ResumoPedido({ itens, total, dinheiro, cliente, dados, aoConfirmar, salvando }) {
   return (
     <section className="summary-panel order-panel">
-      <header>
-        <span className="panel-icon">$</span>
-        <h2>Resumo do pedido</h2>
-      </header>
-
+      <header><span className="panel-icon">$</span><h2>Resumo do pedido</h2></header>
       <div className="summary-body">
-        <small>Cliente</small>
-        <p>Confeitaria Doce Mel</p>
-        <small>Entrega</small>
-        <p>Retirada</p>
-        <small>Data</small>
-        <p>11/11/3000</p>
-
-        <hr />
-        <small>Itens</small>
-        {itens.map((item, indice) => (
-          <p className="summary-item" key={`${item[0]}${indice}`}>
-            {item[0]} × 1 <b>{dinheiro(item[2])}</b>
-          </p>
-        ))}
-
-        <hr />
-        <p className="summary-total">Valor total <b>{dinheiro(total)}</b></p>
-        <p className="summary-line">Custo estimado <span>R$ 51,00</span></p>
-        <p className="summary-line profit">Margem prevista (70%) <span>{dinheiro(total - 51)}</span></p>
-
-        <button className="primary-button confirm">
-          <Check size={16} />
-          Confirmar pedido
-        </button>
+        <small>Cliente</small><p>{cliente?.nome || 'Nao selecionado'}</p>
+        <small>Entrega</small><p>{dados.formaEntrega === 'ENTREGA' ? dados.enderecoEntrega : 'Retirada'}</p>
+        <small>Data</small><p>{formatarData(dados.dataEntrega)}</p>
+        <hr /><small>Itens</small>
+        {itens.map((item) => <p className="summary-item" key={item.produto.idProduto}>{item.produto.nome} x {item.quantidade}<b>{dinheiro(Number(item.produto.precoAtual) * item.quantidade)}</b></p>)}
+        <hr /><p className="summary-total">Valor total <b>{dinheiro(total)}</b></p>
+        <button className="primary-button confirm" onClick={aoConfirmar} disabled={salvando}><Check size={16} />{salvando ? 'Salvando...' : 'Salvar orcamento'}</button>
       </div>
     </section>
   )
+}
+
+function formatarData(data) {
+  if (!data) return 'Data nao informada'
+  return new Date(`${data}T00:00:00`).toLocaleDateString('pt-BR')
 }

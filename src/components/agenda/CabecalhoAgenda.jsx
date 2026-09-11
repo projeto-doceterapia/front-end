@@ -1,6 +1,6 @@
-import { Plus } from 'lucide-react'
+import { Database, Plus } from 'lucide-react'
 
-export default function CabecalhoAgenda({ aoCriarPedido }) {
+export default function CabecalhoAgenda({ aoCriarPedido, aoCarregarDadosTeste, carregandoDados }) {
   return (
     <div className="agenda-heading">
       <div>
@@ -9,6 +9,10 @@ export default function CabecalhoAgenda({ aoCriarPedido }) {
       </div>
 
       <div className="agenda-actions">
+        <button className="outline-button" onClick={aoCarregarDadosTeste} disabled={carregandoDados}>
+          <Database size={16} />
+          {carregandoDados ? 'Carregando...' : 'Dados de teste'}
+        </button>
         <button className="primary-button" onClick={aoCriarPedido}>
           <Plus size={16} />
           Novo Pedido

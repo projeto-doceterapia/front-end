@@ -1,19 +1,16 @@
 import { useState } from "react";
 import { Eye, EyeOff, Lock, Mail, Cake } from "lucide-react";
 import logoImage from "../../assets/logo.png";
+import api from "../../services/api";
 
-type LoginProps = {
-  onLogin: () => void;
-};
-
-export default function Login({ onLogin }: LoginProps) {
+export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     if (!email.trim() || !password.trim()) {
@@ -21,9 +18,18 @@ export default function Login({ onLogin }: LoginProps) {
       return;
     }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 900));
-    setLoading(false);
-    onLogin();
+    try {
+      const resposta = await api.post("/usuarios/login", {
+        email,
+        senha: password,
+      });
+
+      setLoading(false);
+      onLogin(resposta.data);
+    } catch (erro) {
+      setLoading(false);
+      setError("E-mail ou senha inválidos. Tente novamente.");
+    }
   };
 
   return (
