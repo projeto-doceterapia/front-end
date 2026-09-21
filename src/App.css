@@ -587,6 +587,17 @@ polyline {
   stroke-width: 3;
 }
 
+.dashboard .grafico-faturamento .eixo-y line {
+  stroke: #f1e5e3;
+  stroke-width: 1;
+}
+
+.dashboard .grafico-faturamento .eixo-y text {
+  fill: #8593a3;
+  font-size: 9px;
+  font-weight: 600;
+}
+
 .dashboard .meses-grafico {
   display: flex;
   justify-content: space-between;

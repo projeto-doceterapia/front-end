@@ -19,7 +19,7 @@ export default function ListaPedidos({ pedidos, pagamentos, itens, produtos, dat
 
 function Pedido({ pedido, pagamento, itens, produtos }) {
   const itensPedido = itens.filter((item) => item.fkPedido === pedido.idPedido)
-  const nomesProdutos = itensPedido.map((item) => produtos.find((produto) => produto.idProduto === item.fkProduto)?.nome).filter(Boolean)
+  const nomesProdutos = listarProdutos(itensPedido, produtos)
   const classe = pedido.statusPedido === 'AGUARDANDO_ENTREGA' ? 'delivery' : pedido.statusPedido === 'AGUARDANDO_SINAL' ? 'signal' : 'payment'
   const total = totalPedido(pedido, pagamento ? [pagamento] : [], itens)
 
@@ -33,6 +33,20 @@ function Pedido({ pedido, pagamento, itens, produtos }) {
       <div className="order-total"><span>Total</span><strong>{dinheiro(total)}</strong><span className={classe}>{pagamento?.statusPagamento ? textoStatus(pagamento.statusPagamento) : textoStatus(pedido.statusPedido)}</span></div>
     </article>
   )
+}
+
+function listarProdutos(itensPedido, produtos) {
+  const contagem = new Map()
+
+  itensPedido.forEach((item) => {
+    const produto = produtos.find((registro) => registro.idProduto === item.fkProduto)
+    if (!produto) return
+
+    const nome = produto.nome
+    contagem.set(nome, (contagem.get(nome) || 0) + Number(item.quantidade || 1))
+  })
+
+  return Array.from(contagem.entries()).map(([nome, quantidade]) => quantidade > 1 ? `${quantidade}x ${nome}` : nome)
 }
 
 function totalPedido(pedido, pagamentos, itens) {

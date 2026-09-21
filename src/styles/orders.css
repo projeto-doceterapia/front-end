@@ -221,6 +221,10 @@ button {
     color: #fff;
 }
 
+.calendar-day.neutral {
+    background: #f1f4f7;
+}
+
 .calendar-day.free {
     background: #edfcf5;
 }
@@ -263,6 +267,10 @@ button {
     height: 7px;
     border-radius: 50%;
     background: currentColor;
+}
+
+.neutral .day-order {
+    color: #7a8193;
 }
 
 .free .day-order {
