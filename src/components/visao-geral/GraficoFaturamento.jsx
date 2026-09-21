@@ -8,7 +8,7 @@ export default function GraficoFaturamento({ itens, pedidos }) {
 
   return (
     <section className="painel grafico-faturamento">
-      <div className="titulo"><div><h2>Faturamento mensal x custo x lucro</h2><p>Dados dos pedidos cadastrados</p></div><div className="filtros">{[[3, 'Ultimos 3 meses'], [6, 'Ultimos 6 meses'], [12, 'Este ano']].map(([valor, texto]) => <button type="button" className={periodo === valor ? 'active' : ''} onClick={() => setPeriodo(valor)} key={valor}>{texto}</button>)}</div></div>
+      <div className="titulo"><div><h2>Faturamento mensal x custo x lucro</h2><p>Dados dos pedidos cadastrados</p></div><div className="filtros">{[[3, 'Últimos 3 meses'], [6, 'Últimos 6 meses'], [12, 'Este ano']].map(([valor, texto]) => <button type="button" className={periodo === valor ? 'active' : ''} onClick={() => setPeriodo(valor)} key={valor}>{texto}</button>)}</div></div>
       <div className="linhas">
         <svg viewBox="0 0 1000 200" preserveAspectRatio="none">
           <polyline className="faturamento" points={pontos(dados.map((item) => item.faturamento), maior)} />

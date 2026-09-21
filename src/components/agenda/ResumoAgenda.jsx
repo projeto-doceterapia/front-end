@@ -9,7 +9,7 @@ export default function ResumoAgenda({ pedidos, aoConfigurarFarol }) {
       <i />
       <strong className="orange">{quantidade('AGUARDANDO_SINAL')} <span>Aguardando sinal</span></strong>
       <i />
-      <strong className="blue">{quantidade('EM_PRODUCAO')} <span>Em producao</span></strong>
+      <strong className="blue">{quantidade('EM_PRODUCAO')} <span>Em produção</span></strong>
       <i />
       <strong className="purple">{quantidade('AGUARDANDO_ENTREGA')} <span>Aguardando entrega</span></strong>
 

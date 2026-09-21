@@ -8,7 +8,7 @@ export default function GraficoPedidos({ pedidos }) {
 
   return (
     <section className="painel grafico-pedidos">
-      <div className="titulo"><div><h2>Pedidos por dia</h2><p>{periodo === 'mes' ? 'Este mes' : `Ultimos ${periodo} dias`}</p></div><div className="filtros">{[['7', '7 dias'], ['14', '14 dias'], ['mes', 'Este mes']].map(([valor, texto]) => <button type="button" className={periodo === valor ? 'active' : ''} onClick={() => setPeriodo(valor)} key={valor}>{texto}</button>)}</div></div>
+      <div className="titulo"><div><h2>Pedidos por dia</h2><p>{periodo === 'mes' ? 'Este mês' : `Últimos ${periodo} dias`}</p></div><div className="filtros">{[['7', '7 dias'], ['14', '14 dias'], ['mes', 'Este mês']].map(([valor, texto]) => <button type="button" className={periodo === valor ? 'active' : ''} onClick={() => setPeriodo(valor)} key={valor}>{texto}</button>)}</div></div>
       <div className="barras">
         {dados.map((dia) => <div className="coluna" key={dataISO(dia.data)}><span className="valor-barra">{dia.total}</span><i style={{ height: `${Math.max(6, (dia.total / maior) * 180)}px` }} /><small>{dia.data.toLocaleDateString('pt-BR', { weekday: 'short' })}<br />{dia.data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</small></div>)}
       </div>

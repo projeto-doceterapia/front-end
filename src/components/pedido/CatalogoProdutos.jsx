@@ -13,7 +13,7 @@ export default function CatalogoProdutos({ produtos, aoAdicionar, dinheiro }) {
 
   return (
     <section className="product-catalog order-panel">
-      <header><span className="panel-icon"><Package size={17} /></span><h2>Catalogo de produtos</h2></header>
+      <header><span className="panel-icon"><Package size={17} /></span><h2>Catálogo de produtos</h2></header>
       <div className="catalog-body">
         <label className="search"><Search size={15} /><input value={busca} onChange={(evento) => setBusca(evento.target.value)} placeholder="Buscar produto..." /></label>
         <div className="categories">

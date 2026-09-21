@@ -33,7 +33,7 @@ export default function Pedido({ onBack }) {
         setProdutos(respostas[0].data || [])
         setClientes(respostas[1].data || [])
       } catch (erro) {
-        setErro('Nao foi possivel carregar clientes e produtos.')
+        setErro('Não foi possível carregar clientes e produtos.')
         console.error(erro)
       }
     }
@@ -86,7 +86,7 @@ export default function Pedido({ onBack }) {
         : !novoCliente.nome.trim() || !novoCliente.telefone.trim() || !novoCliente.endereco.trim()
 
       if (clienteInvalido || !dados.dataEntrega || (dados.formaEntrega === 'ENTREGA' && !dados.enderecoEntrega.trim())) {
-        setErro('Preencha os dados do cliente, a data e o endereco quando a entrega for no local.')
+        setErro('Preencha os dados do cliente, a data e o endereço quando a entrega for no local.')
         return
       }
     }
@@ -147,7 +147,7 @@ export default function Pedido({ onBack }) {
 
       onBack()
     } catch (erro) {
-      setErro('Nao foi possivel salvar o orcamento. Confira os dados e tente novamente.')
+      setErro('Não foi possível salvar o orçamento. Confira os dados e tente novamente.')
       console.error(erro)
     } finally {
       setSalvando(false)
@@ -176,8 +176,8 @@ export default function Pedido({ onBack }) {
             </label> : <>
               <label className="order-data-field">Nome completo<input name="nome" value={novoCliente.nome} onChange={alterarNovoCliente} placeholder="Nome do cliente" /></label>
               <label className="order-data-field">Telefone<input name="telefone" value={novoCliente.telefone} onChange={alterarNovoCliente} placeholder="(11) 99999-9999" /></label>
-              <label className="order-data-field">Tipo de pessoa<select name="tipoPessoa" value={novoCliente.tipoPessoa} onChange={alterarNovoCliente}><option value="FISICA">Pessoa fisica</option><option value="JURIDICA">Pessoa juridica</option></select></label>
-              <label className="order-data-field full-width">Endereco<input name="endereco" value={novoCliente.endereco} onChange={alterarNovoCliente} placeholder="Rua, numero, bairro e cidade" /></label>
+              <label className="order-data-field">Tipo de pessoa<select name="tipoPessoa" value={novoCliente.tipoPessoa} onChange={alterarNovoCliente}><option value="FISICA">Pessoa física</option><option value="JURIDICA">Pessoa jurídica</option></select></label>
+              <label className="order-data-field full-width">Endereço<input name="endereco" value={novoCliente.endereco} onChange={alterarNovoCliente} placeholder="Rua, número, bairro e cidade" /></label>
             </>}
             <label className="order-data-field">Data de entrega
               <input name="dataEntrega" type="date" value={dados.dataEntrega} onChange={alterarDados} />
@@ -188,7 +188,7 @@ export default function Pedido({ onBack }) {
                 <option value="ENTREGA">Entrega</option>
               </select>
             </label>
-            {dados.formaEntrega === 'ENTREGA' && <label className="order-data-field full-width">Endereco de entrega
+            {dados.formaEntrega === 'ENTREGA' && <label className="order-data-field full-width">Endereço de entrega
               <input name="enderecoEntrega" value={dados.enderecoEntrega} onChange={alterarDados} />
             </label>}
           </div>

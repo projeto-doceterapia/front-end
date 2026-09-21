@@ -12,11 +12,11 @@ export default function ConfiguracaoFarol({ dados, aoAlterar, aoSalvar, aoFechar
         <div className="farol-fields">
           <label><span className="farol-dot green" /> Limite verde
             <input name="limiteVerde" type="number" min="0" value={dados.limiteVerde} onChange={aoAlterar} placeholder="Ex.: 1" />
-            <small>Quantidade maxima para um dia tranquilo.</small>
+            <small>Quantidade máxima para um dia tranquilo.</small>
           </label>
           <label><span className="farol-dot yellow" /> Limite amarelo
             <input name="limiteAmarelo" type="number" min="0" value={dados.limiteAmarelo} onChange={aoAlterar} placeholder="Ex.: 3" />
-            <small>A partir desta quantidade, o dia entra em atencao.</small>
+            <small>A partir desta quantidade, o dia entra em atenção.</small>
           </label>
           <label><span className="farol-dot red" /> Limite vermelho
             <input name="limiteVermelho" type="number" min="0" value={dados.limiteVermelho} onChange={aoAlterar} placeholder="Ex.: 5" />
@@ -25,7 +25,7 @@ export default function ConfiguracaoFarol({ dados, aoAlterar, aoSalvar, aoFechar
         </div>
 
         {erro && <p className="form-error">{erro}</p>}
-        <footer><button type="button" className="outline-button" onClick={aoFechar}>Cancelar</button><button className="primary-button" disabled={salvando}>{salvando ? 'Salvando...' : 'Salvar configuracao'}</button></footer>
+        <footer><button type="button" className="outline-button" onClick={aoFechar}>Cancelar</button><button className="primary-button" disabled={salvando}>{salvando ? 'Salvando...' : 'Salvar configuração'}</button></footer>
       </form>
     </div>
   )
