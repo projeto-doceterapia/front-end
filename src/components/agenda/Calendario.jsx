@@ -18,7 +18,7 @@ export default function Calendario({ pedidos, farol, mesExibido, dataSelecionada
   }
 
   function classeFarol(quantidade) {
-    if (!farol || !quantidade) return ''
+    if (!farol || !farol.limiteAmarelo || !farol.limiteVermelho || !quantidade) return ' neutral'
     if (quantidade >= farol.limiteVermelho) return ' full'
     if (quantidade >= farol.limiteAmarelo) return ' warning'
     return ' free'
