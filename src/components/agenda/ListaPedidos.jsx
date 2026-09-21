@@ -43,4 +43,12 @@ function totalPedido(pedido, pagamentos, itens) {
 
 function dinheiro(valor) { return `R$ ${Number(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` }
 function formatarData(data) { return data ? new Date(`${data}T12:00:00`).toLocaleDateString('pt-BR') : 'Data não informada' }
-function textoStatus(status) { return (status || '').replaceAll('_', ' ').toLowerCase().replace(/(^|\s)\S/g, (letra) => letra.toUpperCase()) }
+function textoStatus(status) {
+  const valor = (status || '').replaceAll('_', ' ').trim()
+  if (!valor) return ''
+
+  return valor
+    .toLowerCase()
+    .replace(/(^|\s)\S/g, (letra) => letra.toUpperCase())
+    .replace(/Orcamento\b/gi, 'Orçamento')
+}
