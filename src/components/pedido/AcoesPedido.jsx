@@ -1,5 +1,5 @@
 export default function AcoesPedido({ etapa, aoVoltar, aoAvancar }) {
-  const proximoTexto = etapa === 1 ? 'Proximo - Itens' : 'Proximo - Pagamento'
+  const proximoTexto = etapa === 1 ? 'Próximo - Itens' : 'Próximo - Pagamento'
 
   return (
     <footer className="order-actions">

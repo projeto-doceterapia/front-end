@@ -44,7 +44,7 @@ export default function Agenda({ onNewOrder }) {
         setFarol(null)
       }
     } catch (erro) {
-      console.error('Nao foi possivel carregar a agenda:', erro)
+      console.error('Não foi possível carregar a agenda:', erro)
     }
   }
 
@@ -61,7 +61,7 @@ export default function Agenda({ onNewOrder }) {
       await buscarDados()
       setMensagem('Dados de teste carregados. Agora crie um pedido pela tela.')
     } catch (erro) {
-      setMensagem('Nao foi possivel carregar os dados. Verifique se o backend esta em execucao.')
+      setMensagem('Não foi possível carregar os dados. Verifique se o backend está em execução.')
       console.error(erro)
     } finally {
       setCarregandoDados(false)
@@ -103,7 +103,7 @@ export default function Agenda({ onNewOrder }) {
     }
 
     if (Object.values(dadosFarol).some((valor) => valor === '') || configuracao.limiteVerde >= configuracao.limiteAmarelo || configuracao.limiteAmarelo >= configuracao.limiteVermelho) {
-      setErroFarol('Use limites crescentes: verde menor que amarelo, e amarelo menor que vermelho.')
+      setErroFarol('Use limites crescentes: verde menor que amarelo e amarelo menor que vermelho.')
       return
     }
 
@@ -116,7 +116,7 @@ export default function Agenda({ onNewOrder }) {
       setFarol(resposta.data)
       setMostrarFarol(false)
     } catch (erro) {
-      setErroFarol('Nao foi possivel salvar a configuracao. Tente novamente.')
+      setErroFarol('Não foi possível salvar a configuração. Tente novamente.')
       console.error(erro)
     } finally {
       setSalvandoFarol(false)

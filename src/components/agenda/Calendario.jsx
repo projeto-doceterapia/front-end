@@ -58,7 +58,7 @@ export default function Calendario({ pedidos, farol, mesExibido, dataSelecionada
 
       <footer className="calendar-footer">
         {farol
-          ? <>Farol: <span className="legend-free" /> ate {farol.limiteAmarelo - 1} pedidos <span className="legend-warning" /> ate {farol.limiteVermelho - 1} pedidos <span className="legend-full" /> {farol.limiteVermelho}+ pedidos</>
+          ? <>Farol: <span className="legend-free" /> até {farol.limiteAmarelo - 1} pedidos <span className="legend-warning" /> até {farol.limiteVermelho - 1} pedidos <span className="legend-full" /> {farol.limiteVermelho}+ pedidos</>
           : 'Clique em um dia para visualizar os pedidos. Configure o farol quando estiver pronto.'}
       </footer>
     </div>

@@ -42,5 +42,5 @@ function totalPedido(pedido, pagamentos, itens) {
 }
 
 function dinheiro(valor) { return `R$ ${Number(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` }
-function formatarData(data) { return data ? new Date(`${data}T12:00:00`).toLocaleDateString('pt-BR') : 'data nao informada' }
+function formatarData(data) { return data ? new Date(`${data}T12:00:00`).toLocaleDateString('pt-BR') : 'Data não informada' }
 function textoStatus(status) { return (status || '').replaceAll('_', ' ').toLowerCase().replace(/(^|\s)\S/g, (letra) => letra.toUpperCase()) }

@@ -13,11 +13,11 @@ export default function ProdutosMaisPedidos({ produtos, itens, pedidos }) {
 
   return (
     <section className="painel grafico-produtos">
-      <div className="titulo"><div><h2>3 produtos mais pedidos</h2><p>Este mes</p></div></div>
+      <div className="titulo"><div><h2>3 produtos mais pedidos</h2><p>Este mês</p></div></div>
       <div className="pizza-conteudo"><div className="pizza" style={{ background: faixas.length ? `conic-gradient(${faixas.join(', ')})` : '#f6eeeb' }}><span>{total}<small>itens</small></span></div>
         <div className="legenda">
           {produtosComQuantidade.map((produto, indice) => <p key={produto.idProduto}><span><i style={{ background: cores[indice] }} />{produto.nome}</span><strong>{((produto.quantidade / total) * 100).toFixed(0)}%</strong></p>)}
-          {!produtosComQuantidade.length && <p>Nenhum item registrado neste mes.</p>}
+          {!produtosComQuantidade.length && <p>Nenhum item registrado neste mês.</p>}
         </div>
       </div>
     </section>
