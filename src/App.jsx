@@ -4,6 +4,8 @@ import Login from './app/pages/Login.jsx'
 import Agenda from './app/pages/Agenda'
 import Pedido from './app/pages/Pedido'
 import VisaoGeral from './app/pages/VisaoGeral'
+import Produtos from './app/pages/Produtos'
+import Clientes from './app/pages/Clientes'
 import Sidebar from './components/Sidebar'
 
 function App() {
@@ -30,6 +32,9 @@ function App() {
     if (tela === 'visao-geral') {
       return <VisaoGeral />
     }
+
+    if (tela === 'produtos') return <Produtos />
+    if (tela === 'clientes') return <Clientes />
 
     return <Agenda onNewOrder={() => setTela('pedido')} />
   }

@@ -1,132 +1,160 @@
-* { box-sizing: border-box; } 
-body { margin: 0; 
-    min-width: 320px; 
-    background: #fbf7f5; 
-    font-family: Arial, Helvetica, sans-serif; 
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #fbf7f5;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .app-shell {
-    display: flex;
-    min-height: 100vh;
-    background: #fbf7f5;
+  display: flex;
+  min-height: 100vh;
+  background: #fbf7f5;
 }
 
 .app-content {
-    min-width: 0;
-    flex: 1;
+  min-width: 0;
+  flex: 1;
 }
 
 .sidebar {
-    width: 293px;
-    flex: 0 0 293px;
-    min-height: 100vh;
-    background: #5b3528;
-    color: #e7dcd8;
+  width: 235px;
+  flex: 0 0 235px;
+  min-height: 100vh;
+  background: #5b3528;
+  color: #e7dcd8;
 }
 
 .sidebar-brand {
-    display: flex;
-    height: 94px;
-    align-items: center;
-    gap: 14px;
-    padding: 0 21px;
-    border-bottom: 1px solid #795347;
+  display: flex;
+  height: 69px;
+  align-items: center;
+  gap: 9px;
+  padding: 0 15px;
+  border-bottom: 1px solid #795347;
 }
 
 .sidebar-brand img {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    object-fit: cover;
-    background: #fff;
+  width: 37px;
+  height: 37px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
 }
 
 .sidebar-brand strong,
 .sidebar-brand span {
-    display: block;
+  display: block;
 }
 
 .sidebar-brand strong {
-    color: #fff;
-    font-size: 18px;
+  color: #fff;
+  font-size: 15px;
 }
 
 .sidebar-brand span {
-    margin-top: 1px;
-    color: #d6c2bb;
-    font-size: 14px;
+  margin-top: 1px;
+  color: #d6c2bb;
+  font-size: 12px;
 }
 
 .sidebar-nav {
-    display: grid;
-    gap: 7px;
-    padding: 27px 11px;
+  display: grid;
+  gap: 2px;
+  padding: 17px 11px;
 }
 
 .sidebar-item {
-    display: flex;
-    width: 100%;
-    min-height: 50px;
-    align-items: center;
-    gap: 17px;
-    padding: 0 16px;
-    border: 0;
-    border-radius: 16px;
-    background: transparent;
-    color: #d8cbc7;
-    font-size: 18px;
-    font-weight: 600;
-    text-align: left;
+  display: flex;
+  width: 100%;
+  min-height: 40px;
+  align-items: center;
+  gap: 14px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: #d8cbc7;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
 }
 
 .sidebar-item:hover,
 .sidebar-item.active {
-    background: #db898f;
-    color: #fff;
+  background: #db898f;
+  color: #fff;
 }
 
 .sidebar-chevron {
-    margin-left: auto;
+  margin-left: auto;
+}
+
+.sidebar-submenu {
+  display: grid;
+  gap: 4px;
+  margin: 3px 0 5px 8px;
+  padding: 4px 0 4px 12px;
+  border-left: 1px solid #765247;
+}
+.sidebar-submenu button {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #d8cbc7;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+}
+.sidebar-submenu button:hover {
+  color: #fff;
 }
 
 .section-placeholder {
-    display: grid;
-    min-height: 100vh;
-    place-content: center;
-    justify-items: center;
-    gap: 10px;
-    color: #5b3528;
-    text-align: center;
+  display: grid;
+  min-height: 100vh;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  color: #5b3528;
+  text-align: center;
 }
 
 .section-placeholder h1,
 .section-placeholder p {
-    margin: 0;
+  margin: 0;
 }
 
 .section-placeholder p {
-    color: #8c9aac;
+  color: #8c9aac;
 }
 
 @media (max-width: 760px) {
-    .sidebar {
-        width: 76px;
-        flex-basis: 76px;
-    }
+  .sidebar {
+    width: 76px;
+    flex-basis: 76px;
+  }
 
-    .sidebar-brand {
-        justify-content: center;
-        padding: 0;
-    }
+  .sidebar-brand {
+    justify-content: center;
+    padding: 0;
+  }
 
-    .sidebar-brand div,
-    .sidebar-item span,
-    .sidebar-chevron {
-        display: none;
-    }
+  .sidebar-brand div,
+  .sidebar-item span,
+  .sidebar-chevron {
+    display: none;
+  }
 
-    .sidebar-item {
-        justify-content: center;
-        padding: 0;
-    }
+  .sidebar-item {
+    justify-content: center;
+    padding: 0;
+  }
 }
