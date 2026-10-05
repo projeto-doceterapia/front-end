@@ -8,6 +8,7 @@ import Produtos from './app/pages/Produtos'
 import Clientes from './app/pages/Clientes'
 import Producao from './app/pages/Producao'
 import HistoricoPedidos from './app/pages/HistoricoPedidos'
+import AppTopbar from './components/AppTopbar'
 import Sidebar from './components/Sidebar'
 
 function App() {
@@ -58,7 +59,10 @@ function App() {
   return (
     <div className="app-shell">
       <Sidebar telaAtual={tela} aoNavegar={navegar} />
-      <div className="app-content">{renderizarTela()}</div>
+      <div className="app-content">
+        <AppTopbar aoNavegar={setTela} />
+        {renderizarTela()}
+      </div>
     </div>
   )
 }

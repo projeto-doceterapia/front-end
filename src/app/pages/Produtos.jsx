@@ -218,21 +218,6 @@ export default function Produtos() {
 export function PageTop({ titulo, subtitulo, acao, aoClicar }) {
   return (
     <>
-      <header className="app-topbar">
-        <span>Hoje, domingo, 4 de outubro</span>
-        <div>
-          <span>♧</span>
-          <span>
-            Aa <sup>P</sup>
-          </span>
-          <b>D</b>
-          <span>
-            Davecaproni10
-            <br />
-            <small>Gestora</small>
-          </span>
-        </div>
-      </header>
       <div className="catalog-heading">
         <div>
           <h1>{titulo}</h1>

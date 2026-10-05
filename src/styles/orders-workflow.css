@@ -7,6 +7,44 @@
   color: #fff;
 }
 
+.app-topbar { position: relative; z-index: 20; }
+.app-topbar .topbar-actions { display: flex; align-items: center; gap: 13px; }
+.topbar-icon-button,
+.font-size-controls button,
+.notification-popover header button { display: grid; place-items: center; border: 0; background: transparent; color: #8c9aac; }
+.topbar-icon-button { position: relative; width: 32px; height: 34px; padding: 0; }
+.topbar-icon-button:hover,
+.font-size-controls button:hover:not(:disabled) { color: #db898f; }
+.notification-wrap { position: relative; }
+.notification-count { position: absolute; top: -3px; right: -3px; display: grid; min-width: 18px; height: 18px; padding: 0 4px; place-items: center; border-radius: 10px; background: #db898f; color: #fff; font-size: 10px; font-weight: 700; }
+.font-size-controls { display: flex; align-items: center; gap: 5px; min-height: 32px; padding: 0 9px; border-right: 1px solid #ecd7c8; border-left: 1px solid #ecd7c8; color: #657187; white-space: nowrap; }
+.font-size-controls span { font-size: 12px; }
+.font-size-controls span small { margin-left: 3px; color: #9aa3b1; font-size: 9px; }
+.font-size-controls button { width: 22px; height: 24px; padding: 0; }
+.font-size-controls button:disabled { cursor: not-allowed; opacity: .4; }
+.topbar-user { display: flex; align-items: center; gap: 9px; color: #475264; font-size: 12px; line-height: 1.25; }
+.topbar-user b { width: 34px; height: 34px; font-size: 13px; }
+.topbar-user span { white-space: nowrap; }
+.topbar-user small { display: block; margin-top: 1px; font-size: 11px; }
+.notification-popover { position: absolute; top: calc(100% + 11px); right: -10px; z-index: 50; width: min(360px, calc(100vw - 32px)); overflow: hidden; border: 1px solid #ecd7c8; border-radius: 12px; background: #fff; box-shadow: 0 12px 32px #3d29221f; color: #5b3528; }
+.notification-popover > header { display: flex; min-height: 54px; align-items: center; justify-content: space-between; padding: 0 14px; border-bottom: 1px solid #f0e5df; }
+.notification-popover > header div { display: grid; gap: 2px; }
+.notification-popover > header strong { font-size: 13px; }
+.notification-popover > header span { color: #8c9aac; font-size: 10px; }
+.notification-popover header button { width: 30px; height: 30px; border-radius: 7px; }
+.notification-popover header button:hover:not(:disabled) { background: #f8eeee; color: #db898f; }
+.notification-popover header button:disabled { cursor: default; opacity: .4; }
+.notification-list { max-height: 330px; overflow-y: auto; }
+.notification-item { display: flex; width: 100%; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 0; border-bottom: 1px solid #f5efec; background: #fff; color: #5b3528; text-align: left; }
+.notification-item:hover { background: #fcf8f6; }
+.notification-item > span:last-child { display: grid; gap: 4px; }
+.notification-item strong { font-size: 11px; }
+.notification-item small { color: #8c9aac; font-size: 10px; }
+.notification-item.is-read strong { font-weight: 500; }
+.notification-dot { width: 8px; height: 8px; flex: 0 0 8px; margin-top: 3px; border-radius: 50%; background: #db898f; }
+.notification-item.is-read .notification-dot { background: #d8dde3; }
+.notification-empty { margin: 0; padding: 22px 14px; color: #8c9aac; font-size: 11px; text-align: center; }
+
 .orders-page {
   min-height: 100vh;
   padding-bottom: 30px;
@@ -263,6 +301,16 @@
 }
 
 @media (max-width: 650px) {
+  .app-topbar { padding-inline: 12px; }
+  .app-topbar > div { display: flex; }
+  .app-topbar .topbar-actions { gap: 7px; }
+  .topbar-date { max-width: 40%; overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+  .font-size-controls { gap: 2px; padding-inline: 5px; }
+  .font-size-controls span small { display: none; }
+  .topbar-user { gap: 0; }
+  .topbar-user span { display: none; }
+  .topbar-user b { width: 30px; height: 30px; }
+  .notification-popover { right: -42px; }
   .orders-page .catalog-heading,
   .orders-summary,
   .production-filters,
