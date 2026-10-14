@@ -39,6 +39,7 @@ jobs:
             type=sha,prefix=sha-,format=short,enable={{is_default_branch}}
             type=semver,pattern={{version}}
 
+      # A newly published GHCR package is private. After the first publish, set its visibility to public once under Package settings; GITHUB_TOKEN cannot change it.
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
