@@ -21,6 +21,8 @@ const itens = [
 ]
 
 export default function Sidebar({ telaAtual, aoNavegar }) {
+  const pedidosAtivos = ['pedido', 'producao', 'historico-pedidos'].includes(telaAtual)
+
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
@@ -34,10 +36,10 @@ export default function Sidebar({ telaAtual, aoNavegar }) {
         {itens.map(({ id, label, icone: Icone, expandido }) => (
           <div className="sidebar-item-group" key={id}>
             <button
-              className={`sidebar-item ${telaAtual === id ? 'active' : ''}`}
+              className={`sidebar-item ${telaAtual === id || (id === 'pedidos' && pedidosAtivos) ? 'active' : ''}`}
               type="button"
               onClick={() => aoNavegar(id)}
-              aria-current={telaAtual === id ? 'page' : undefined}
+              aria-current={telaAtual === id || (id === 'pedidos' && pedidosAtivos) ? 'page' : undefined}
             >
               <Icone size={19} strokeWidth={1.8} />
               <span>{label}</span>
@@ -47,13 +49,13 @@ export default function Sidebar({ telaAtual, aoNavegar }) {
             </button>
             {expandido && (
               <div className="sidebar-submenu">
-                <button type="button" onClick={() => aoNavegar('pedidos')}>
+                <button type="button" className={telaAtual === 'pedido' ? 'active' : ''} onClick={() => aoNavegar('registrar-pedido')}>
                   <ClipboardList size={15} /> Registrar Pedido
                 </button>
-                <button type="button">
+                <button type="button" className={telaAtual === 'producao' ? 'active' : ''} onClick={() => aoNavegar('producao')}>
                   <CookingPot size={15} /> Produção
                 </button>
-                <button type="button">
+                <button type="button" className={telaAtual === 'historico-pedidos' ? 'active' : ''} onClick={() => aoNavegar('historico-pedidos')}>
                   <PackageCheck size={15} /> Histórico
                 </button>
               </div>
