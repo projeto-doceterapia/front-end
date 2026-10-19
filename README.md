@@ -1,16 +1,31 @@
-# React + Vite
+# Doceterapia — Front-end
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React 19 SPA (Vite) for managing orders, production, supplies (estoque) and
+notifications. HTTP goes through the axios instance in `src/services/api.js`
+(cookie-based auth). Navigation is state-based in `App.jsx`; there is no router.
 
-Currently, two official plugins are available:
+## Scripts
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Task | Command |
+|---|---|
+| Install | `npm ci` |
+| Dev server | `npm run dev` (http://localhost:5173) |
+| Build | `npm run build` |
+| Lint | `npm run lint` (oxlint) |
+| Preview build | `npm run preview` |
+| Tests | `npm test` (Vitest + Testing Library, jsdom) |
 
-## React Compiler
+API base URL comes from `VITE_API_URL` (default `http://localhost:8080`).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Notifications
 
-## Expanding the Oxlint configuration
+The topbar shows unread notifications loaded from `/notificacoes/nao-lidas` and
+updates live over a Server-Sent Events stream (`/notificacoes/stream`). The
+stream uses `EventSource` instead of axios — an approved exception kept in
+`src/services/notificacoes.js`.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Tests
+
+Vitest runs with jsdom and `@testing-library/react`. The global setup is
+`src/test/setup.js`; test files live next to the code they cover
+(`*.test.jsx` / `*.test.js`).
