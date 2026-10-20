@@ -1,0 +1,79 @@
+# Rendered by the nginx entrypoint (envsubst) at container start.
+# Two variables are substituted: ${API_UPSTREAM} (the full upstream URL)
+# and ${NGINX_LOCAL_RESOLVERS} (exported by the base image's
+# 15-local-resolvers.envsh when NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1).
+# Every other $var is an nginx runtime variable and is left untouched by
+# the NGINX_ENVSUBST_FILTER pin.
+
+server {
+    listen       8080;
+    listen       [::]:8080;
+    server_name  _;
+
+    root   /usr/share/nginx/html;
+    index  index.html;
+
+    # Resolve the upstream host at request time, not at config load, so the
+    # container starts even when the back-end host does not resolve yet.
+    resolver ${NGINX_LOCAL_RESOLVERS} valid=10s ipv6=off;
+
+    gzip            on;
+    gzip_comp_level 5;
+    gzip_min_length 256;
+    gzip_proxied    any;
+    gzip_vary       on;
+    gzip_types
+        application/javascript
+        application/json
+        application/xml
+        image/svg+xml
+        text/css
+        text/plain;
+
+    # Long cache for content-hashed build assets.
+    location /assets/ {
+        expires    1y;
+        add_header Cache-Control "public, immutable";
+        try_files  $uri =404;
+    }
+
+    # Back-end routes are unversioned (/insumos, /notificacoes), so the
+    # /api prefix is stripped before forwarding. A variable in proxy_pass
+    # forces runtime DNS resolution but disables nginx's automatic URI
+    # replacement, so the rewritten URI is forwarded explicitly.
+
+    # Server-Sent Events: no buffering and a long read timeout so the
+    # stream is delivered as events arrive.
+    location = /api/notificacoes/stream {
+        set                   $upstream ${API_UPSTREAM};
+        rewrite               ^/api(/.*)$ $1 break;
+        proxy_pass            $upstream;
+        proxy_http_version    1.1;
+        proxy_set_header      Host              $host;
+        proxy_set_header      X-Real-IP         $remote_addr;
+        proxy_set_header      X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header      X-Forwarded-Proto $scheme;
+        proxy_set_header      Connection        "";
+        proxy_buffering       off;
+        proxy_cache           off;
+        proxy_read_timeout    3600s;
+        proxy_send_timeout    3600s;
+    }
+
+    # REST API reverse proxy.
+    location /api/ {
+        set                   $upstream ${API_UPSTREAM};
+        rewrite               ^/api(/.*)$ $1 break;
+        proxy_pass            $upstream;
+        proxy_http_version    1.1;
+        proxy_set_header      Host              $host;
+        proxy_set_header      X-Real-IP         $remote_addr;
+        proxy_set_header      X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header      X-Forwarded-Proto $scheme;
+    }
+
+    # SPA fallback: unknown routes serve the app shell.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
