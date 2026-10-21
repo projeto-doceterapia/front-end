@@ -4,6 +4,7 @@ import './index.css'
 import './styles/index.css'
 import './styles/orders.css'
 import './styles/orders-workflow.css'
+import './styles/notificacoes.css'
 import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(

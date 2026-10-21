@@ -92,7 +92,7 @@ function App() {
     <div className="app-shell">
       <Sidebar telaAtual={tela} aoNavegar={navegar} />
       <div className="app-content">
-        <AppTopbar aoNavegar={setTela} />
+        <AppTopbar />
         {renderizarTela()}
       </div>
     </div>
