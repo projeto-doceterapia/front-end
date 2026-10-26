@@ -1,31 +1,31 @@
 # Doceterapia — Front-end
 
-React 19 SPA (Vite) for managing orders, production, supplies (estoque) and
-notifications. HTTP goes through the axios instance in `src/services/api.js`
-(cookie-based auth). Navigation is state-based in `App.jsx`; there is no router.
+SPA em React 19 (Vite) para gerenciar pedidos, produção, insumos (estoque) e
+notificações. As requisições HTTP passam pela instância axios em `src/services/api.js`
+(autenticação baseada em cookie). A navegação é baseada em estado no `App.jsx`; não há router.
 
 ## Scripts
 
-| Task | Command |
+| Tarefa | Comando |
 |---|---|
-| Install | `npm ci` |
-| Dev server | `npm run dev` (http://localhost:5173) |
+| Instalar | `npm ci` |
+| Servidor de desenvolvimento | `npm run dev` (http://localhost:5173) |
 | Build | `npm run build` |
 | Lint | `npm run lint` (oxlint) |
-| Preview build | `npm run preview` |
-| Tests | `npm test` (Vitest + Testing Library, jsdom) |
+| Preview do build | `npm run preview` |
+| Testes | `npm test` (Vitest + Testing Library, jsdom) |
 
-API base URL comes from `VITE_API_URL` (default `http://localhost:8080`).
+A URL base da API vem de `VITE_API_URL` (padrão `http://localhost:8080`).
 
-## Notifications
+## Notificações
 
-The topbar shows unread notifications loaded from `/notificacoes/nao-lidas` and
-updates live over a Server-Sent Events stream (`/notificacoes/stream`). The
-stream uses `EventSource` instead of axios — an approved exception kept in
+A topbar exibe as notificações não lidas carregadas de `/notificacoes/nao-lidas` e
+atualiza em tempo real por um fluxo de Server-Sent Events (`/notificacoes/stream`). O
+fluxo usa `EventSource` em vez de axios — uma exceção aprovada mantida em
 `src/services/notificacoes.js`.
 
-## Tests
+## Testes
 
-Vitest runs with jsdom and `@testing-library/react`. The global setup is
-`src/test/setup.js`; test files live next to the code they cover
+O Vitest roda com jsdom e `@testing-library/react`. A configuração global fica em
+`src/test/setup.js`; os arquivos de teste ficam ao lado do código que cobrem
 (`*.test.jsx` / `*.test.js`).
