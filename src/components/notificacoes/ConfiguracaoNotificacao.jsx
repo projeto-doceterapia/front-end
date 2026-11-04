@@ -21,6 +21,9 @@ const INTERRUPTORES = [
 // Long enough to read the confirmation before the window closes.
 const ESPERA_FECHAR_MS = 1500
 
+const TEXTO_TESTE_PENDENTE = 'Notificação de teste criada. Ela aparece no sino e chega ao WhatsApp em instantes.'
+const TEXTO_TESTE_SO_SINO = 'Notificação de teste criada só no sino. Salve com o assistente e os avisos automáticos ligados para testar o WhatsApp.'
+
 const ALERTAS = [
   { campo: 'resumoInicioDiaAtivo', rotulo: 'Resumo de início do dia' },
   { campo: 'resumoFimDiaAtivo', rotulo: 'Resumo de fim do dia' },
@@ -28,12 +31,20 @@ const ALERTAS = [
   { campo: 'diaLotadoAtivo', rotulo: 'Alerta de dia lotado' },
 ]
 
+function rotuloBotaoTeste(enviando, segundos) {
+  if (enviando) return 'Enviando...'
+  if (segundos > 0) return `Aguarde ${segundos} s para testar de novo`
+  return 'Enviar notificação de teste'
+}
+
 export default function ConfiguracaoNotificacao({ aoFechar }) {
   const [dados, setDados] = useState(null)
   const [carregando, setCarregando] = useState(true)
   const [erroCarregar, setErroCarregar] = useState('')
   const [salvando, setSalvando] = useState(false)
   const [salvo, setSalvo] = useState(false)
+  const [enviandoTeste, setEnviandoTeste] = useState(false)
+  const [segundosRestantes, setSegundosRestantes] = useState(0)
   const avisos = useAvisoLocal()
 
   useEffect(() => {
@@ -51,6 +62,12 @@ export default function ConfiguracaoNotificacao({ aoFechar }) {
     return () => clearTimeout(temporizador)
   }, [salvo, aoFechar])
 
+  useEffect(() => {
+    if (segundosRestantes <= 0) return undefined
+    const temporizador = setTimeout(() => setSegundosRestantes((atuais) => atuais - 1), 1000)
+    return () => clearTimeout(temporizador)
+  }, [segundosRestantes])
+
   function alterarCampo(evento) {
     const { name, value, type, checked } = evento.target
     setDados((atuais) => ({ ...atuais, [name]: type === 'checkbox' ? checked : value }))
@@ -66,6 +83,20 @@ export default function ConfiguracaoNotificacao({ aoFechar }) {
           : [...selecionados, dia],
       }
     })
+  }
+
+  async function enviarTeste() {
+    setEnviandoTeste(true)
+    avisos.limpar()
+    try {
+      const resposta = await api.post('/notificacoes/teste')
+      avisos.sucesso(resposta.data?.statusEnvio === 'NAO_ENVIAR' ? TEXTO_TESTE_SO_SINO : TEXTO_TESTE_PENDENTE)
+    } catch (erroRequisicao) {
+      setSegundosRestantes(erroRequisicao.response?.data?.segundosRestantes || 0)
+      avisos.erro(erroRequisicao.response?.data?.message || 'Não foi possível enviar a notificação de teste. Tente novamente.')
+    } finally {
+      setEnviandoTeste(false)
+    }
   }
 
   async function salvar(evento) {
@@ -184,6 +215,23 @@ export default function ConfiguracaoNotificacao({ aoFechar }) {
                 </label>
               ))}
             </fieldset>
+
+            <div className="config-notificacao-teste">
+              <button
+                type="button"
+                className="outline-button"
+                onClick={enviarTeste}
+                disabled={avisosPausados || enviandoTeste || segundosRestantes > 0}
+                aria-describedby={avisosPausados ? 'ajuda-teste-notificacao' : undefined}
+              >
+                {rotuloBotaoTeste(enviandoTeste, segundosRestantes)}
+              </button>
+              {avisosPausados && (
+                <small id="ajuda-teste-notificacao" className="config-notificacao-ajuda">
+                  Ligue o assistente e os avisos automáticos para testar o WhatsApp.
+                </small>
+              )}
+            </div>
 
             {avisos.aviso?.tipo === 'erro' && <p className="form-error" role="alert">{avisos.aviso.texto}</p>}
             {avisos.aviso?.tipo === 'sucesso' && <p className="config-notificacao-sucesso" role="status">{avisos.aviso.texto}</p>}

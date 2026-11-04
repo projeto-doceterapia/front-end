@@ -53,6 +53,13 @@ fieldset.config-notificacao-grupo legend {
   font-weight: var(--font-weight-medium);
 }
 
+.config-notificacao-teste {
+  display: grid;
+  justify-items: start;
+  gap: 0.25rem;
+  margin: 0 1.375rem 1rem;
+}
+
 .config-notificacao-horario {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 10rem);

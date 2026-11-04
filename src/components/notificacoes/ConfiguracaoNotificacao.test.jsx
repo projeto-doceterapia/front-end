@@ -7,6 +7,7 @@ vi.mock('../../services/api', () => ({
   default: {
     get: vi.fn(),
     put: vi.fn(),
+    post: vi.fn(),
   },
 }))
 
@@ -26,6 +27,76 @@ const CONFIG = {
 }
 
 const ROTULOS_ALERTAS = ['Resumo de início do dia', 'Resumo de fim do dia', 'Alerta de estoque baixo', 'Alerta de dia lotado']
+
+describe('botão de notificação de teste', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  async function abrir(config = CONFIG) {
+    api.get.mockResolvedValueOnce({ data: config })
+    render(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
+    await screen.findByDisplayValue('17:30')
+    return screen.getByRole('button', { name: 'Enviar notificação de teste' })
+  }
+
+  it('envia o teste e informa o resultado sem fechar a janela', async () => {
+    api.post.mockResolvedValueOnce({ data: { idNotificacao: 57, statusEnvio: 'PENDENTE' } })
+    const botao = await abrir()
+
+    fireEvent.click(botao)
+
+    expect(await screen.findByRole('status')).toHaveTextContent('chega ao WhatsApp em instantes')
+    expect(api.post).toHaveBeenCalledWith('/notificacoes/teste')
+    expect(api.put).not.toHaveBeenCalled()
+  })
+
+  it('avisa quando o teste ficou só no sino', async () => {
+    api.post.mockResolvedValueOnce({ data: { idNotificacao: 57, statusEnvio: 'NAO_ENVIAR' } })
+    fireEvent.click(await abrir())
+
+    expect(await screen.findByRole('status')).toHaveTextContent('criada só no sino')
+  })
+
+  it('desabilita o botão enquanto envia', async () => {
+    let concluir
+    api.post.mockReturnValueOnce(new Promise((resolve) => { concluir = resolve }))
+    fireEvent.click(await abrir())
+
+    const enviando = await screen.findByRole('button', { name: 'Enviando...' })
+    expect(enviando).toBeDisabled()
+
+    concluir({ data: { statusEnvio: 'PENDENTE' } })
+    expect(await screen.findByRole('button', { name: 'Enviar notificação de teste' })).toBeEnabled()
+  })
+
+  it('desabilita o botão pelos segundos recebidos no 429 e libera ao terminar', async () => {
+    api.post.mockRejectedValueOnce({
+      response: { status: 429, data: { message: 'Aguarde para enviar outra notificação de teste.', segundosRestantes: 1 } },
+    })
+    fireEvent.click(await abrir())
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Aguarde para enviar outra notificação de teste.')
+    expect(screen.getByRole('button', { name: 'Aguarde 1 s para testar de novo' })).toBeDisabled()
+    expect(await screen.findByRole('button', { name: 'Enviar notificação de teste' }, { timeout: 2500 })).toBeEnabled()
+  })
+
+  it('mostra erro genérico quando o teste falha sem resposta', async () => {
+    api.post.mockRejectedValueOnce(new Error('offline'))
+    const botao = await abrir()
+    fireEvent.click(botao)
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Não foi possível enviar a notificação de teste.')
+    expect(botao).toBeEnabled()
+  })
+
+  it('desabilita o botão com um interruptor desligado e explica o motivo', async () => {
+    const botao = await abrir({ ...CONFIG, assistenteAtivo: false })
+
+    expect(botao).toBeDisabled()
+    expect(botao).toHaveAccessibleDescription('Ligue o assistente e os avisos automáticos para testar o WhatsApp.')
+  })
+})
 
 describe('ConfiguracaoNotificacao', () => {
   beforeEach(() => {
