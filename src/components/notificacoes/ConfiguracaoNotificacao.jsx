@@ -76,7 +76,7 @@ export default function ConfiguracaoNotificacao({ aoFechar }) {
   }
 
   return (
-    <div className="farol-overlay" role="dialog" aria-modal="true" aria-labelledby="titulo-config-notificacao">
+    <div className="farol-overlay config-notificacao-overlay" role="dialog" aria-modal="true" aria-labelledby="titulo-config-notificacao">
       <form className="farol-modal" onSubmit={salvar}>
         <header>
           <div>
@@ -86,31 +86,31 @@ export default function ConfiguracaoNotificacao({ aoFechar }) {
           <button type="button" onClick={aoFechar} aria-label="Fechar"><X size={18} /></button>
         </header>
 
-        {carregando && <p className="farol-fields" role="status">Carregando configurações...</p>}
+        {carregando && <p className="config-notificacao-grupo" role="status">Carregando configurações...</p>}
         {!carregando && erroCarregar && <p className="form-error" role="alert">{erroCarregar}</p>}
 
         {!carregando && !erroCarregar && dados && (
           <>
-            <div className="farol-fields">
-              <label>Início do expediente
+            <div className="config-notificacao-grupo">
+              <label className="config-notificacao-horario">Início do expediente
                 <input name="inicioExpediente" type="time" value={dados.inicioExpediente} onChange={alterarCampo} />
               </label>
-              <label>Fim do expediente
+              <label className="config-notificacao-horario">Fim do expediente
                 <input name="fimExpediente" type="time" value={dados.fimExpediente} onChange={alterarCampo} />
               </label>
-              <label>Horário do resumo de início
+              <label className="config-notificacao-horario">Horário do resumo de início
                 <input name="horarioResumoInicio" type="time" value={dados.horarioResumoInicio} onChange={alterarCampo} />
               </label>
-              <label>Horário do resumo de fim
+              <label className="config-notificacao-horario">Horário do resumo de fim
                 <input name="horarioResumoFim" type="time" value={dados.horarioResumoFim} onChange={alterarCampo} />
               </label>
-              <label>Dias de antecedência
+              <label className="config-notificacao-horario">Dias de antecedência
                 <input name="diasAntecedencia" type="number" min="1" max="14" value={dados.diasAntecedencia} onChange={alterarCampo} />
                 <small>Pedidos considerados no resumo de fim do dia (1 a 14).</small>
               </label>
             </div>
 
-            <fieldset className="farol-fields">
+            <fieldset className="config-notificacao-grupo">
               <legend>Dias de expediente</legend>
               {DIAS.map((dia) => (
                 <label key={dia.valor} className="config-notificacao-check">
@@ -124,7 +124,7 @@ export default function ConfiguracaoNotificacao({ aoFechar }) {
               ))}
             </fieldset>
 
-            <fieldset className="farol-fields">
+            <fieldset className="config-notificacao-grupo">
               <legend>Alertas ativos</legend>
               {ALERTAS.map((alerta) => (
                 <label key={alerta.campo} className="config-notificacao-check">
