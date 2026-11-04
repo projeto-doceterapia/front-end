@@ -1,9 +1,22 @@
 # Rendered by the nginx entrypoint (envsubst) at container start.
-# Two variables are substituted: ${API_UPSTREAM} (the full upstream URL)
+# Two variables are substituted: ${API_UPSTREAM_HOST} (the upstream host:port)
 # and ${NGINX_LOCAL_RESOLVERS} (exported by the base image's
 # 15-local-resolvers.envsh when NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1).
 # Every other $var is an nginx runtime variable and is left untouched by
 # the NGINX_ENVSUBST_FILTER pin.
+
+# Reuses connections to the back-end instead of opening one per request.
+# `resolve` looks the host up at runtime, so the container starts even when
+# the back-end host does not resolve yet.
+upstream api_backend {
+    zone api_backend 64k;
+    resolver ${NGINX_LOCAL_RESOLVERS} valid=10s ipv6=off;
+    server ${API_UPSTREAM_HOST} resolve;
+    keepalive 16;
+    # Shorter than the back-end idle timeout, so nginx closes an idle connection
+    # first and never sends a request on one the back-end is closing.
+    keepalive_timeout 30s;
+}
 
 server {
     listen       8080;
@@ -12,10 +25,6 @@ server {
 
     root   /usr/share/nginx/html;
     index  index.html;
-
-    # Resolve the upstream host at request time, not at config load, so the
-    # container starts even when the back-end host does not resolve yet.
-    resolver ${NGINX_LOCAL_RESOLVERS} valid=10s ipv6=off;
 
     gzip            on;
     gzip_comp_level 5;
@@ -38,16 +47,13 @@ server {
     }
 
     # Back-end routes are unversioned (/insumos, /notificacoes), so the
-    # /api prefix is stripped before forwarding. A variable in proxy_pass
-    # forces runtime DNS resolution but disables nginx's automatic URI
-    # replacement, so the rewritten URI is forwarded explicitly.
+    # /api prefix is stripped before forwarding.
 
     # Server-Sent Events: no buffering and a long read timeout so the
     # stream is delivered as events arrive.
     location = /api/notificacoes/stream {
-        set                   $upstream ${API_UPSTREAM};
         rewrite               ^/api(/.*)$ $1 break;
-        proxy_pass            $upstream;
+        proxy_pass            http://api_backend;
         proxy_http_version    1.1;
         proxy_set_header      Host              $host;
         proxy_set_header      X-Real-IP         $remote_addr;
@@ -62,14 +68,14 @@ server {
 
     # REST API reverse proxy.
     location /api/ {
-        set                   $upstream ${API_UPSTREAM};
         rewrite               ^/api(/.*)$ $1 break;
-        proxy_pass            $upstream;
+        proxy_pass            http://api_backend;
         proxy_http_version    1.1;
         proxy_set_header      Host              $host;
         proxy_set_header      X-Real-IP         $remote_addr;
         proxy_set_header      X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header      X-Forwarded-Proto $scheme;
+        proxy_set_header      Connection        "";
     }
 
     # SPA fallback: unknown routes serve the app shell.
