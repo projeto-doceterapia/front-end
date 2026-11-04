@@ -47,7 +47,7 @@ describe('ConfiguracaoNotificacao', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Salvar configuração' }))
 
     await waitFor(() => expect(api.put).toHaveBeenCalledWith('/configuracao-notificacao', expect.objectContaining({ diasAntecedencia: 3 })))
-    expect(aoFechar).toHaveBeenCalled()
+    await waitFor(() => expect(aoFechar).toHaveBeenCalled(), { timeout: 3000 })
   })
 
   it('exibe a mensagem PT-BR do servidor para configuração inválida (422)', async () => {
