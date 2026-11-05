@@ -6,9 +6,12 @@ import './styles/orders.css'
 import './styles/orders-workflow.css'
 import './styles/notificacoes.css'
 import App from './App.jsx'
+import ToastProvider from './components/feedback/ToastProvider.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <ToastProvider>
+      <App />
+    </ToastProvider>
   </StrictMode>,
 )
