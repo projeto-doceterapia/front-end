@@ -67,6 +67,12 @@ function entrarComCredenciais() {
   fireEvent.click(screen.getByRole('button', { name: 'Entrar no sistema' }))
 }
 
+// The focus moves in an effect, which may run after the login screen is already in the document.
+async function focoNoEmail() {
+  const campo = await screen.findByLabelText('E-mail')
+  await waitFor(() => expect(campo).toHaveFocus())
+}
+
 describe('App - sessão', () => {
   beforeEach(() => {
     FakeEventSource.instancias = []
@@ -89,7 +95,7 @@ describe('App - sessão', () => {
   ])('mostra o login sem aviso quando a checagem termina em %s', async (_caso, resposta) => {
     abrirApp({ [ME]: resposta })
 
-    expect(await screen.findByLabelText('E-mail')).toHaveFocus()
+    await focoNoEmail()
     expect(screen.getByRole('alert')).toBeEmptyDOMElement()
   })
 
@@ -130,7 +136,7 @@ describe('App - sessão', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Sair' }))
 
-    expect(await screen.findByLabelText('E-mail')).toHaveFocus()
+    await focoNoEmail()
     expect(falsa.chamadasDe(LOGOUT)).toHaveLength(1)
     expect(fonte.fechada).toBe(true)
   })
@@ -174,7 +180,7 @@ describe('App - sessão', () => {
       await api.get('/insumos').catch(() => {})
     })
 
-    expect(screen.getByLabelText('E-mail')).toHaveFocus()
+    await focoNoEmail()
     expect(screen.getAllByText('Sua sessão expirou. Entre novamente.')).toHaveLength(1)
     expect(fonte.fechada).toBe(true)
   })

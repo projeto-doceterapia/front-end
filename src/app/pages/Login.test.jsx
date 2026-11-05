@@ -120,6 +120,6 @@ describe('Login', () => {
   it('abre com o foco no campo de e-mail', async () => {
     await abrirLogin({})
 
-    expect(screen.getByLabelText('E-mail')).toHaveFocus()
+    await waitFor(() => expect(screen.getByLabelText('E-mail')).toHaveFocus())
   })
 })
