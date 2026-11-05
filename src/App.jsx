@@ -1,5 +1,5 @@
 import './App.css'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Login from './app/pages/Login.jsx'
 import Agenda from './app/pages/Agenda'
 import Pedido from './app/pages/Pedido'
@@ -11,44 +11,23 @@ import Producao from './app/pages/Producao'
 import HistoricoPedidos from './app/pages/HistoricoPedidos'
 import AppTopbar from './components/AppTopbar'
 import Sidebar from './components/Sidebar'
-import api from './services/api'
+import useSessao from './components/sessao/useSessao'
 
 function App() {
-  const [usuarioAutenticado, setUsuarioAutenticado] = useState(false)
-  const [verificandoSessao, setVerificandoSessao] = useState(true)
+  const { usuario, carregando } = useSessao()
   const [tela, setTela] = useState('agenda')
   const [origemPedido, setOrigemPedido] = useState('agenda')
 
-  useEffect(() => {
-    let ativo = true
-    const interceptor = api.interceptors.response.use(
-      (resposta) => resposta,
-      (erro) => {
-        if (ativo && erro.response?.status === 401 && erro.config?.url !== '/usuarios/login') {
-          setUsuarioAutenticado(false)
-          setTela('agenda')
-        }
-        return Promise.reject(erro)
-      },
-    )
+  if (!usuario && tela !== 'agenda') {
+    setTela('agenda')
+  }
 
-    api.get('/usuarios/me')
-      .then(() => { if (ativo) setUsuarioAutenticado(true) })
-      .catch(() => { if (ativo) setUsuarioAutenticado(false) })
-      .finally(() => { if (ativo) setVerificandoSessao(false) })
-
-    return () => {
-      ativo = false
-      api.interceptors.response.eject(interceptor)
-    }
-  }, [])
-
-  if (verificandoSessao) {
+  if (carregando) {
     return <main className="login-page" role="status">Verificando sessão...</main>
   }
 
-  if (!usuarioAutenticado) {
-    return <Login onLogin={() => setUsuarioAutenticado(true)} />
+  if (!usuario) {
+    return <Login />
   }
 
   function navegar(id) {

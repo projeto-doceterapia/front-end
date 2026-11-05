@@ -1,14 +1,34 @@
-import { useState } from "react";
-import { Eye, EyeOff, Lock, Mail, Cake } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import logoImage from "../../assets/logo.png";
-import api from "../../services/api";
+import useToast from "../../components/feedback/useToast";
+import useSessao from "../../components/sessao/useSessao";
+import { ehFalhaAoBuscarUsuario } from "../../services/sessao";
 
-export default function Login({ onLogin }) {
+function mensagemDeErro(erro) {
+  if (ehFalhaAoBuscarUsuario(erro)) {
+    return "Não foi possível iniciar a sessão. Tente novamente.";
+  }
+  const status = erro.response?.status;
+  if (status >= 400 && status < 500) {
+    return "E-mail ou senha inválidos. Tente novamente.";
+  }
+  return "Não foi possível entrar agora. Tente novamente em instantes.";
+}
+
+export default function Login() {
+  const { entrar } = useSessao();
+  const toast = useToast();
+  const campoEmail = useRef(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    campoEmail.current.focus();
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -19,16 +39,10 @@ export default function Login({ onLogin }) {
     }
     setLoading(true);
     try {
-      const resposta = await api.post("/usuarios/login", {
-        email,
-        senha: password,
-      });
-
-      setLoading(false);
-      onLogin(resposta.data);
+      await entrar(email, password);
     } catch (erro) {
       setLoading(false);
-      setError("E-mail ou senha inválidos. Tente novamente.");
+      toast.erro(mensagemDeErro(erro));
     }
   };
 
@@ -74,6 +88,7 @@ export default function Login({ onLogin }) {
                   <Mail className="field-icon" aria-hidden="true" />
                   <input
                     id="email"
+                    ref={campoEmail}
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -131,14 +146,6 @@ export default function Login({ onLogin }) {
                 )}
               </button>
             </form>
-
-            <div className="login-note">
-              <Cake aria-hidden="true" />
-              <p>
-                Este é um protótipo demonstrativo. Use qualquer e-mail e senha
-                para acessar.
-              </p>
-            </div>
           </div>
         </section>
 
