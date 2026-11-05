@@ -1,7 +1,8 @@
 /* Inset on both sides instead of a width in vw: viewport units are multiplied by the zoom below and would overflow. */
 .toast-region {
   position: fixed;
-  inset: 1rem;
+  inset: 0;
+  padding: 1rem;
   z-index: 70;
   display: flex;
   flex-direction: column;
