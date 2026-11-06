@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 # ---- Builder: compile the Vite SPA with the same-origin API base ----
-FROM node:22.21.0-alpine3.21 AS builder
+FROM node:26.13.0-alpine3.24 AS builder
 
 WORKDIR /app
 
