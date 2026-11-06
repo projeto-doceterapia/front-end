@@ -1,0 +1,184 @@
+/* Inset on both sides instead of a width in vw: viewport units are multiplied by the zoom below and would overflow. */
+.toast-region {
+  position: fixed;
+  inset: 0;
+  padding: 1rem;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  overflow-y: auto;
+  pointer-events: none;
+  /* The region lives outside .app-shell, so it has to follow the accessible font scale on its own. */
+  zoom: var(--app-zoom, 1);
+}
+
+.toast-region > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 24rem;
+}
+
+.toast-region > div:first-child {
+  margin-top: auto;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 0.75rem 0.75rem 1rem;
+  border-radius: var(--radius);
+  box-shadow: 0 0.25rem 0.75rem color-mix(in srgb, var(--foreground) 30%, transparent);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  pointer-events: auto;
+  animation: toast-entrada 160ms ease-out;
+}
+
+.toast p {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.toast-sucesso {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.toast-erro {
+  background: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+.toast-fechar {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--radius) / 2);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* The inset line keeps the focus visible where --ring has little contrast against the toast background. */
+.toast-fechar:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+  box-shadow: inset 0 0 0 2px currentColor;
+}
+
+@keyframes toast-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
+}
+
+/* No zoom here: the overlay renders inside .app-shell and already inherits the scale. */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: color-mix(in srgb, var(--foreground) 50%, transparent);
+}
+
+.confirm-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: min(28rem, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--foreground);
+  animation: toast-entrada 160ms ease-out;
+}
+
+.confirm-dialog:focus {
+  outline: none;
+}
+
+.confirm-dialog h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+
+.confirm-mensagem {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.confirm-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.confirm-botao {
+  padding: 0.5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.confirm-botao:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.confirm-botao:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.confirm-cancelar {
+  border-color: var(--border);
+  background: var(--card);
+  color: var(--foreground);
+}
+
+.confirm-padrao {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.confirm-perigo {
+  background: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confirm-dialog {
+    animation: none;
+  }
+}
