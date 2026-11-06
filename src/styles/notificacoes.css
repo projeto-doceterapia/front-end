@@ -1,7 +1,7 @@
 .notification-popover-actions { display: flex; align-items: center; gap: 4px; }
 .notification-empty.notification-error { color: var(--destructive); }
 
-.config-notificacao-overlay {
+.farol-overlay.config-notificacao-overlay {
   place-items: start center;
   overflow-y: auto;
 }
