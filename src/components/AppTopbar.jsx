@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Bell, CheckCheck, Minus, Plus, Settings } from 'lucide-react'
+import { Bell, CheckCheck, LogOut, Minus, Plus, Settings } from 'lucide-react'
 import {
   assinarStream,
   listarNaoLidas,
   marcarComoLida,
 } from '../services/notificacoes'
 import ConfiguracaoNotificacao from './notificacoes/ConfiguracaoNotificacao'
+import useSessao from './sessao/useSessao'
 
 const CHAVE_FONTE = 'doceterapia-font-scale'
+const ROTULOS_PERFIL = { DONA: 'Dona', FUNCIONARIA: 'Funcionária' }
 
 function dataHoje() {
   return new Intl.DateTimeFormat('pt-BR', {
@@ -24,6 +26,8 @@ function formatarData(data) {
 }
 
 export default function AppTopbar() {
+  const { usuario, perfil, sair } = useSessao()
+  const [saindo, setSaindo] = useState(false)
   const [notificacoes, setNotificacoes] = useState([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
@@ -100,6 +104,14 @@ export default function AppTopbar() {
     })
   }
 
+  async function encerrarSessao() {
+    setSaindo(true)
+    await sair()
+    setSaindo(false)
+  }
+
+  const rotuloPerfil = ROTULOS_PERFIL[perfil] ?? perfil
+
   return (
     <header className="app-topbar">
       <span className="topbar-date">Hoje, {dataHoje()}</span>
@@ -172,10 +184,14 @@ export default function AppTopbar() {
           <span>Aa <small>{Math.round(escalaFonte * 100)}%</small></span>
           <button type="button" onClick={() => alterarEscala(0.2)} disabled={escalaFonte >= 1.8} aria-label="Aumentar fonte" title="Aumentar fonte"><Plus size={13} /></button>
         </div>
-        <div className="topbar-user" aria-label="Administrador, Gestor">
-          <b>A</b>
-          <span>Administrador<small>Gestor</small></span>
+        <div className="topbar-user" aria-label={`${usuario.nome}, ${rotuloPerfil}`}>
+          <b>{usuario.nome.charAt(0).toUpperCase()}</b>
+          <span title={usuario.nome}>{usuario.nome}<small>{rotuloPerfil}</small></span>
         </div>
+        <button className="topbar-logout" type="button" onClick={encerrarSessao} disabled={saindo} aria-label="Sair" title="Sair">
+          <LogOut size={15} aria-hidden="true" />
+          <span>Sair</span>
+        </button>
       </div>
       {configAberta && <ConfiguracaoNotificacao aoFechar={() => setConfigAberta(false)} />}
     </header>

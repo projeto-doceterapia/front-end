@@ -24,8 +24,12 @@
 .font-size-controls button:disabled { cursor: not-allowed; opacity: .4; }
 .topbar-user { display: flex; align-items: center; gap: 9px; color: #475264; font-size: 12px; line-height: 1.25; }
 .topbar-user b { width: 34px; height: 34px; font-size: 13px; }
-.topbar-user span { white-space: nowrap; }
+.topbar-user span { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .topbar-user small { display: block; margin-top: 1px; font-size: 11px; }
+.topbar-logout { display: inline-flex; align-items: center; gap: 5px; min-height: 32px; padding: 0 9px; border: 1px solid var(--border); border-radius: var(--radius); background: transparent; color: var(--muted-foreground); font: inherit; font-size: 12px; white-space: nowrap; cursor: pointer; }
+.topbar-logout:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+.topbar-logout:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.topbar-logout:disabled { cursor: not-allowed; opacity: .6; }
 .notification-popover { position: absolute; top: calc(100% + 11px); right: -10px; z-index: 50; width: min(360px, calc(100vw - 32px)); overflow: hidden; border: 1px solid #ecd7c8; border-radius: 12px; background: #fff; box-shadow: 0 12px 32px #3d29221f; color: #5b3528; }
 .notification-popover > header { display: flex; min-height: 54px; align-items: center; justify-content: space-between; padding: 0 14px; border-bottom: 1px solid #f0e5df; }
 .notification-popover > header div { display: grid; gap: 2px; }
@@ -310,6 +314,8 @@
   .topbar-user { gap: 0; }
   .topbar-user span { display: none; }
   .topbar-user b { width: 30px; height: 30px; }
+  .topbar-logout { padding-inline: 7px; }
+  .topbar-logout span { display: none; }
   .notification-popover { right: -42px; }
   .orders-page .catalog-heading,
   .orders-summary,

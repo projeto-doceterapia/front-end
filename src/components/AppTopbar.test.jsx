@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react'
 import AppTopbar from './AppTopbar'
 import api from '../services/api'
+import useSessao from './sessao/useSessao'
 
 vi.mock('../services/api', () => ({
   default: {
@@ -11,6 +12,16 @@ vi.mock('../services/api', () => ({
     put: vi.fn(),
   },
 }))
+
+vi.mock('./sessao/useSessao', () => ({ default: vi.fn() }))
+
+const DONA = { id: 1, nome: 'Dona Exemplo', email: 'dona@exemplo.com' }
+const FUNCIONARIA = { id: 2, nome: 'Funcionária Exemplo', email: 'funcionaria@exemplo.com', perfil: 'FUNCIONARIA' }
+
+function simularSessao(usuario = DONA, perfil = 'DONA', sair = vi.fn()) {
+  useSessao.mockReturnValue({ usuario, perfil, ehDona: perfil === 'DONA', carregando: false, sair, entrar: vi.fn() })
+  return sair
+}
 
 // Minimal controllable EventSource double. Tests drive events through the
 // registered listeners, so no real stream is opened.
@@ -58,9 +69,56 @@ function abrirPainel() {
   fireEvent.click(screen.getByRole('button', { name: /notificaç/i }))
 }
 
+describe('AppTopbar - usuário logado', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    FakeEventSource.instances = []
+    vi.stubGlobal('EventSource', FakeEventSource)
+    api.get.mockResolvedValue({ data: [] })
+  })
+
+  it('mostra o usuário logado', async () => {
+    simularSessao()
+    render(<AppTopbar />)
+
+    await waitFor(() => expect(api.get).toHaveBeenCalled())
+    expect(screen.getByLabelText('Dona Exemplo, Dona')).toBeInTheDocument()
+    expect(screen.getByText('D')).toBeInTheDocument()
+    expect(screen.getByText('Dona Exemplo')).toBeInTheDocument()
+    expect(screen.getByText('Dona')).toBeInTheDocument()
+    expect(screen.queryByText(/Administrador/)).not.toBeInTheDocument()
+    await screen.findByRole('button', { name: 'Notificações' })
+  })
+
+  it('mostra o rótulo da FUNCIONARIA', async () => {
+    simularSessao(FUNCIONARIA, 'FUNCIONARIA')
+    render(<AppTopbar />)
+
+    expect(await screen.findByLabelText('Funcionária Exemplo, Funcionária')).toBeInTheDocument()
+    expect(screen.getByText('F')).toBeInTheDocument()
+  })
+
+  it('desabilita Sair enquanto a chamada está em andamento', async () => {
+    let terminar
+    const sair = simularSessao(DONA, 'DONA', vi.fn(() => new Promise((resolve) => { terminar = resolve })))
+    render(<AppTopbar />)
+    const botao = screen.getByRole('button', { name: 'Sair' })
+
+    fireEvent.click(botao)
+    expect(botao).toBeDisabled()
+    fireEvent.click(botao)
+    expect(sair).toHaveBeenCalledTimes(1)
+
+    await act(async () => terminar())
+    expect(botao).toBeEnabled()
+  })
+})
+
 describe('AppTopbar - lista de notificações', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    api.get.mockReset()
+    simularSessao()
     FakeEventSource.instances = []
     vi.stubGlobal('EventSource', FakeEventSource)
   })
@@ -110,6 +168,8 @@ describe('AppTopbar - lista de notificações', () => {
 describe('AppTopbar - stream ao vivo', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    api.get.mockReset()
+    simularSessao()
     FakeEventSource.instances = []
     vi.stubGlobal('EventSource', FakeEventSource)
   })

@@ -7,11 +7,14 @@ import './styles/orders-workflow.css'
 import './styles/notificacoes.css'
 import App from './App.jsx'
 import ToastProvider from './components/feedback/ToastProvider.jsx'
+import SessaoProvider from './components/sessao/SessaoProvider.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ToastProvider>
-      <App />
+      <SessaoProvider>
+        <App />
+      </SessaoProvider>
     </ToastProvider>
   </StrictMode>,
 )
