@@ -1,24 +1,113 @@
 .notification-popover-actions { display: flex; align-items: center; gap: 4px; }
 .notification-empty.notification-error { color: var(--destructive); }
 
-.config-notificacao-check {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
+.config-notificacao-overlay {
+  place-items: start center;
+  overflow-y: auto;
 }
-.config-notificacao-check input { width: auto; }
 
-.farol-modal fieldset.farol-fields {
-  margin: 0;
+.config-notificacao-grupo {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.25rem 1.375rem;
+}
+
+fieldset.config-notificacao-grupo {
+  gap: 0.5rem;
+  margin: 0 1.375rem 1rem;
+  padding: 0.75rem 0.875rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 12px 14px;
 }
-.farol-modal fieldset.farol-fields legend {
-  padding: 0 4px;
-  font-size: 12px;
+
+fieldset.config-notificacao-assistente {
+  margin-top: 1.25rem;
+}
+
+fieldset.config-notificacao-grupo legend {
+  padding: 0 0.25rem;
+  font-size: 0.75rem;
   font-weight: var(--font-weight-medium);
+  color: var(--muted-foreground);
+}
+
+.config-notificacao-interruptor {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.config-notificacao-interruptor small,
+.config-notificacao-ajuda {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+}
+
+.config-notificacao-interruptor small {
+  padding-left: 1.5rem;
+}
+
+.config-notificacao-sucesso {
+  margin: -0.25rem 1.375rem 1rem;
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.config-notificacao-teste {
+  display: grid;
+  justify-items: start;
+  gap: 0.25rem;
+  margin: 0 1.375rem 1rem;
+}
+
+.config-notificacao-horario {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 10rem);
+  align-items: center;
+  column-gap: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.config-notificacao-horario input {
+  width: 100%;
+  height: 2.375rem;
+  padding: 0 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--input-background);
+  color: inherit;
+  font: inherit;
+  font-weight: var(--font-weight-normal);
+}
+
+.config-notificacao-horario input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
+
+.config-notificacao-horario small {
+  grid-column: 1 / -1;
+  margin-top: 0.25rem;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-normal);
+}
+
+.config-notificacao-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.config-notificacao-check input {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+}
+
+.config-notificacao-check input:disabled + span {
   color: var(--muted-foreground);
 }
