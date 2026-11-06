@@ -240,4 +240,44 @@ describe('ConfiguracaoNotificacao', () => {
 
     expect(await within(screen.getByRole('dialog')).findByRole('alert')).toHaveTextContent('Não foi possível carregar as configurações.')
   })
+
+  it('põe o foco na janela ao abrir e fecha com Esc', async () => {
+    const aoFechar = vi.fn()
+    api.get.mockResolvedValueOnce({ data: CONFIG })
+    renderComToast(<ConfiguracaoNotificacao aoFechar={aoFechar} />)
+    await screen.findByDisplayValue('17:30')
+
+    expect(screen.getByRole('dialog').contains(document.activeElement)).toBe(true)
+    fireEvent.keyDown(document.activeElement, { key: 'Escape' })
+
+    expect(aoFechar).toHaveBeenCalledTimes(1)
+  })
+
+  it('não fecha com Esc enquanto salva', async () => {
+    const aoFechar = vi.fn()
+    api.get.mockResolvedValueOnce({ data: CONFIG })
+    api.put.mockReturnValueOnce(new Promise(() => {}))
+    renderComToast(<ConfiguracaoNotificacao aoFechar={aoFechar} />)
+    await screen.findByDisplayValue('17:30')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar configuração' }))
+    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
+
+    expect(aoFechar).not.toHaveBeenCalled()
+  })
+
+  it('prende o Tab dentro da janela nos dois sentidos', async () => {
+    api.get.mockResolvedValueOnce({ data: CONFIG })
+    renderComToast(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
+    await screen.findByDisplayValue('17:30')
+    const fechar = screen.getByRole('button', { name: 'Fechar' })
+    const salvar = screen.getByRole('button', { name: 'Salvar configuração' })
+
+    salvar.focus()
+    fireEvent.keyDown(salvar, { key: 'Tab' })
+    expect(fechar).toHaveFocus()
+
+    fireEvent.keyDown(fechar, { key: 'Tab', shiftKey: true })
+    expect(salvar).toHaveFocus()
+  })
 })

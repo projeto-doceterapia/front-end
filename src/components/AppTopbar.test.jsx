@@ -175,6 +175,22 @@ describe('AppTopbar - acesso por perfil', () => {
     expect(await screen.findByRole('checkbox', { name: 'Assistente ativo' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Enviar notificação de teste' })).toBeInTheDocument()
   })
+
+  it('devolve o foco ao sino ao fechar a configuração', async () => {
+    simularSessao()
+    renderComToast(<AppTopbar />)
+
+    await waitFor(() => expect(api.get).toHaveBeenCalled())
+    abrirPainel()
+    api.get.mockResolvedValueOnce({ data: CONFIGURACAO })
+    fireEvent.click(screen.getByRole('button', { name: 'Configurar notificações' }))
+    await screen.findByRole('checkbox', { name: 'Assistente ativo' })
+
+    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(document.querySelector('.notification-button')).toHaveFocus()
+  })
 })
 
 describe('AppTopbar - lista de notificações', () => {
