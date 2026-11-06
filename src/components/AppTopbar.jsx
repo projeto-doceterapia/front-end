@@ -134,14 +134,16 @@ export default function AppTopbar() {
               <header>
                 <div><strong>Notificações</strong><span>{naoLidas} não lidas</span></div>
                 <div className="notification-popover-actions">
-                  <button
-                    type="button"
-                    onClick={() => { setConfigAberta(true); setNotificacoesAbertas(false) }}
-                    title="Configurar notificações"
-                    aria-label="Configurar notificações"
-                  >
-                    <Settings size={17} />
-                  </button>
+                  {ehDona && (
+                    <button
+                      type="button"
+                      onClick={() => { setConfigAberta(true); setNotificacoesAbertas(false) }}
+                      title="Configurar notificações"
+                      aria-label="Configurar notificações"
+                    >
+                      <Settings size={17} />
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={marcarTodasComoLidas}
@@ -201,7 +203,7 @@ export default function AppTopbar() {
           <span>Sair</span>
         </button>
       </div>
-      {configAberta && <ConfiguracaoNotificacao aoFechar={() => setConfigAberta(false)} />}
+      {ehDona && configAberta && <ConfiguracaoNotificacao aoFechar={() => setConfigAberta(false)} />}
       {ehDona && usuariosAbertos && <GerenciarUsuarios aoFechar={() => setUsuariosAbertos(false)} />}
     </header>
   )

@@ -8,6 +8,7 @@ import {
   TrendingUp,
 } from 'lucide-react'
 import api from '../../services/api'
+import useSessao from '../sessao/useSessao'
 
 const moeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 
@@ -29,6 +30,7 @@ function quantidadeInsumo(insumo) {
 }
 
 export default function ProdutoCard({ produto, aoEditar }) {
+  const { ehDona } = useSessao()
   const [expandido, setExpandido] = useState(false)
   const [insumos, setInsumos] = useState([])
   const [carregando, setCarregando] = useState(true)
@@ -102,14 +104,16 @@ export default function ProdutoCard({ produto, aoEditar }) {
         >
           <ChevronDown size={17} className={expandido ? 'rotated' : ''} />
         </button>
-        <button
-          type="button"
-          className="icon-action"
-          aria-label={`Editar ${produto.nome}`}
-          onClick={aoEditar}
-        >
-          <Pencil size={17} />
-        </button>
+        {ehDona && (
+          <button
+            type="button"
+            className="icon-action"
+            aria-label={`Editar ${produto.nome}`}
+            onClick={aoEditar}
+          >
+            <Pencil size={17} />
+          </button>
+        )}
       </div>
       {expandido && (
         <div id={painelId} className="card-details product-details">
@@ -136,53 +140,55 @@ export default function ProdutoCard({ produto, aoEditar }) {
           {!carregando && !erro && insumos.length === 0 && (
             <p className="detail-description">Nenhum insumo cadastrado.</p>
           )}
-          <section
-            className={`pricing-panel ${lucro < 0 ? 'negative' : ''}`}
-            aria-label="Precificação estimada"
-          >
-            <header>
-              <span>
-                <DollarSign size={14} /> Precificação estimada
-              </span>
-              <span className="margin-badge">
-                {lucro > 0
-                  ? 'Margem positiva'
-                  : lucro < 0
-                    ? 'Margem negativa'
-                    : 'Sem margem'}
-              </span>
-            </header>
-            <div className="pricing-grid">
-              <div>
-                <small>Custo estimado</small>
-                <span>{moeda.format(produto.custoEstimado || 0)}</span>
-              </div>
-              <div>
-                <small>Preço sugerido</small>
-                <span className="suggested-price">
-                  {moeda.format(produto.precoSugerido || 0)}
+          {ehDona && (
+            <section
+              className={`pricing-panel ${lucro < 0 ? 'negative' : ''}`}
+              aria-label="Precificação estimada"
+            >
+              <header>
+                <span>
+                  <DollarSign size={14} /> Precificação estimada
                 </span>
-              </div>
-              <div>
-                <small>Preço atual</small>
-                <span>{moeda.format(preco)}</span>
-              </div>
-              <div>
-                <small>Lucro estimado</small>
-                <span className="profit-value">
-                  {lucro > 0 ? '+' : ''}
-                  {moeda.format(lucro)}
+                <span className="margin-badge">
+                  {lucro > 0
+                    ? 'Margem positiva'
+                    : lucro < 0
+                      ? 'Margem negativa'
+                      : 'Sem margem'}
                 </span>
+              </header>
+              <div className="pricing-grid">
+                <div>
+                  <small>Custo estimado</small>
+                  <span>{moeda.format(produto.custoEstimado || 0)}</span>
+                </div>
+                <div>
+                  <small>Preço sugerido</small>
+                  <span className="suggested-price">
+                    {moeda.format(produto.precoSugerido || 0)}
+                  </span>
+                </div>
+                <div>
+                  <small>Preço atual</small>
+                  <span>{moeda.format(preco)}</span>
+                </div>
+                <div>
+                  <small>Lucro estimado</small>
+                  <span className="profit-value">
+                    {lucro > 0 ? '+' : ''}
+                    {moeda.format(lucro)}
+                  </span>
+                </div>
               </div>
-            </div>
-            <div className="margin-progress">
-              <div className="margin-track">
-                <span style={{ width: `${Math.min(100, Math.max(0, margem))}%` }} />
+              <div className="margin-progress">
+                <div className="margin-track">
+                  <span style={{ width: `${Math.min(100, Math.max(0, margem))}%` }} />
+                </div>
+                <span>{Math.round(margem)}%</span>
+                <TrendingUp size={13} />
               </div>
-              <span>{Math.round(margem)}%</span>
-              <TrendingUp size={13} />
-            </div>
-          </section>
+            </section>
+          )}
         </div>
       )}
     </article>

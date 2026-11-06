@@ -1,6 +1,8 @@
 import { Settings2 } from 'lucide-react'
+import useSessao from '../sessao/useSessao'
 
 export default function ResumoAgenda({ pedidos, aoConfigurarFarol }) {
+  const { ehDona } = useSessao()
   const quantidade = (status) => pedidos.filter((pedido) => pedido.statusPedido === status).length
 
   return (
@@ -13,10 +15,12 @@ export default function ResumoAgenda({ pedidos, aoConfigurarFarol }) {
       <i />
       <strong className="purple">{quantidade('AGUARDANDO_ENTREGA')} <span>Aguardando entrega</span></strong>
 
-      <button className="outline-button" onClick={aoConfigurarFarol}>
-        <Settings2 size={13} />
-        Configurar farol
-      </button>
+      {ehDona && (
+        <button className="outline-button" onClick={aoConfigurarFarol}>
+          <Settings2 size={13} />
+          Configurar farol
+        </button>
+      )}
     </div>
   )
 }

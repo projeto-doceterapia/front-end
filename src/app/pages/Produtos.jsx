@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Plus, Search, X } from 'lucide-react'
 import api from '../../services/api'
 import ProdutoCard from '../../components/produtos/ProdutoCard'
+import useSessao from '../../components/sessao/useSessao'
 
 const produtoInicial = {
   nome: '',
@@ -17,6 +18,7 @@ const produtoInicial = {
 }
 
 export default function Produtos() {
+  const { ehDona } = useSessao()
   const [produtos, setProdutos] = useState([])
   const [categorias, setCategorias] = useState([])
   const [busca, setBusca] = useState('')
@@ -111,7 +113,7 @@ export default function Produtos() {
       <PageTop
         titulo="Produtos"
         subtitulo="Gerencie o catálogo de produtos da confeitaria"
-        acao="Novo Produto"
+        acao={ehDona ? 'Novo Produto' : undefined}
         aoClicar={() => abrir()}
       />
       {erro && !modal && <p className="catalog-error">{erro}</p>}
@@ -223,9 +225,11 @@ export function PageTop({ titulo, subtitulo, acao, aoClicar }) {
           <h1>{titulo}</h1>
           <p>{subtitulo}</p>
         </div>
-        <button className="primary-button" onClick={aoClicar}>
-          <Plus size={18} /> {acao}
-        </button>
+        {acao && (
+          <button className="primary-button" onClick={aoClicar}>
+            <Plus size={18} /> {acao}
+          </button>
+        )}
       </div>
     </>
   )
