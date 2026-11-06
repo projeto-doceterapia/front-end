@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import api from '../../services/api'
 import useToast from '../feedback/useToast'
+import useAvisoLocal from './useAvisoLocal'
 
 const DIAS = [
   { valor: 'MONDAY', rotulo: 'Segunda' },
@@ -17,6 +18,9 @@ const INTERRUPTORES = [
   { campo: 'assistenteAtivo', rotulo: 'Assistente ativo', ajuda: 'Pausa conversa, leitura de notas e avisos.' },
   { campo: 'avisosAutomaticosAtivo', rotulo: 'Avisos automáticos', ajuda: 'Pausa só os avisos no WhatsApp. Eles continuam no sino.' },
 ]
+
+// Long enough to read the confirmation before the window closes.
+const ESPERA_FECHAR_MS = 1500
 
 const TEXTO_TESTE_PENDENTE = 'Notificação de teste criada. Ela aparece no sino e chega ao WhatsApp em instantes.'
 const TEXTO_TESTE_SO_SINO = 'Notificação de teste criada só no sino. Salve com o assistente e os avisos automáticos ligados para testar o WhatsApp.'
@@ -52,6 +56,12 @@ export default function ConfiguracaoNotificacao({ aoFechar }) {
       .finally(() => { if (ativo) setCarregando(false) })
     return () => { ativo = false }
   }, [])
+
+  useEffect(() => {
+    if (!salvo) return undefined
+    const temporizador = setTimeout(aoFechar, ESPERA_FECHAR_MS)
+    return () => clearTimeout(temporizador)
+  }, [salvo, aoFechar])
 
   useEffect(() => {
     if (segundosRestantes <= 0) return undefined
@@ -228,7 +238,7 @@ export default function ConfiguracaoNotificacao({ aoFechar }) {
             {erroModal && <p className="form-error" role="alert">{erroModal}</p>}
             <footer>
               <button type="button" className="outline-button" onClick={aoFechar}>Cancelar</button>
-              <button className="primary-button" disabled={salvando}>{salvando ? 'Salvando...' : 'Salvar configuração'}</button>
+              <button className="primary-button" disabled={salvando || salvo}>{salvando ? 'Salvando...' : 'Salvar configuração'}</button>
             </footer>
           </>
         )}
