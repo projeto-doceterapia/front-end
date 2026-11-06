@@ -16,6 +16,21 @@ vi.mock('../services/api', () => ({
 
 vi.mock('./sessao/useSessao', () => ({ default: vi.fn() }))
 
+const CONFIGURACAO = {
+  inicioExpediente: '08:00',
+  fimExpediente: '18:00',
+  diasExpediente: ['MONDAY'],
+  horarioResumoInicio: '08:00',
+  horarioResumoFim: '17:30',
+  diasAntecedencia: 3,
+  resumoInicioDiaAtivo: true,
+  resumoFimDiaAtivo: true,
+  estoqueBaixoAtivo: true,
+  diaLotadoAtivo: true,
+  avisosAutomaticosAtivo: true,
+  assistenteAtivo: true,
+}
+
 const DONA = { id: 1, nome: 'Dona Exemplo', email: 'dona@exemplo.com' }
 const FUNCIONARIA = { id: 2, nome: 'Funcionária Exemplo', email: 'funcionaria@exemplo.com', perfil: 'FUNCIONARIA' }
 
@@ -134,24 +149,31 @@ describe('AppTopbar - acesso por perfil', () => {
     expect(api.get).toHaveBeenCalledWith('/usuarios')
   })
 
-  it('oculta Usuários e a configuração de notificações para a FUNCIONARIA', async () => {
+  it('oculta Usuários, a engrenagem, a janela dos interruptores e o teste de notificação para a FUNCIONARIA', async () => {
     simularSessao(FUNCIONARIA, 'FUNCIONARIA')
-    render(<AppTopbar />)
+    renderComToast(<AppTopbar />)
 
     await waitFor(() => expect(api.get).toHaveBeenCalled())
     expect(screen.queryByRole('button', { name: 'Usuários' })).not.toBeInTheDocument()
     abrirPainel()
     expect(screen.getByRole('button', { name: 'Marcar todas como lidas' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Configurar notificações' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('dialog', { name: 'Configurar notificações' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: 'Assistente ativo' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Enviar notificação de teste' })).not.toBeInTheDocument()
   })
 
-  it('mostra a configuração de notificações para a DONA', async () => {
+  it('mostra a configuração de notificações, os interruptores e o teste para a DONA', async () => {
     simularSessao()
-    render(<AppTopbar />)
+    renderComToast(<AppTopbar />)
 
     await waitFor(() => expect(api.get).toHaveBeenCalled())
     abrirPainel()
-    expect(screen.getByRole('button', { name: 'Configurar notificações' })).toBeInTheDocument()
+    api.get.mockResolvedValueOnce({ data: CONFIGURACAO })
+    fireEvent.click(screen.getByRole('button', { name: 'Configurar notificações' }))
+
+    expect(await screen.findByRole('checkbox', { name: 'Assistente ativo' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Enviar notificação de teste' })).toBeInTheDocument()
   })
 })
 

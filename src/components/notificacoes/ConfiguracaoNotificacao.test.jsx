@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { screen, waitFor, fireEvent, within } from '@testing-library/react'
 import ConfiguracaoNotificacao from './ConfiguracaoNotificacao'
 import api from '../../services/api'
+import renderComToast from '../../test/renderComToast'
 
 vi.mock('../../services/api', () => ({
   default: {
@@ -35,7 +36,7 @@ describe('botão de notificação de teste', () => {
 
   async function abrir(config = CONFIG) {
     api.get.mockResolvedValueOnce({ data: config })
-    render(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
+    renderComToast(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
     await screen.findByDisplayValue('17:30')
     return screen.getByRole('button', { name: 'Enviar notificação de teste' })
   }
@@ -46,7 +47,7 @@ describe('botão de notificação de teste', () => {
 
     fireEvent.click(botao)
 
-    expect(await screen.findByRole('status')).toHaveTextContent('chega ao WhatsApp em instantes')
+    expect(await screen.findByText(/chega ao WhatsApp em instantes/)).toBeInTheDocument()
     expect(api.post).toHaveBeenCalledWith('/notificacoes/teste')
     expect(api.put).not.toHaveBeenCalled()
   })
@@ -55,7 +56,7 @@ describe('botão de notificação de teste', () => {
     api.post.mockResolvedValueOnce({ data: { idNotificacao: 57, statusEnvio: 'NAO_ENVIAR' } })
     fireEvent.click(await abrir())
 
-    expect(await screen.findByRole('status')).toHaveTextContent('criada só no sino')
+    expect(await screen.findByText(/criada só no sino/)).toBeInTheDocument()
   })
 
   it('desabilita o botão enquanto envia', async () => {
@@ -76,7 +77,7 @@ describe('botão de notificação de teste', () => {
     })
     fireEvent.click(await abrir())
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Aguarde para enviar outra notificação de teste.')
+    expect(await within(screen.getByRole('dialog')).findByRole('alert')).toHaveTextContent('Aguarde para enviar outra notificação de teste.')
     expect(screen.getByRole('button', { name: 'Aguarde 1 s para testar de novo' })).toBeDisabled()
     expect(await screen.findByRole('button', { name: 'Enviar notificação de teste' }, { timeout: 2500 })).toBeEnabled()
   })
@@ -86,7 +87,7 @@ describe('botão de notificação de teste', () => {
     const botao = await abrir()
     fireEvent.click(botao)
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Não foi possível enviar a notificação de teste.')
+    expect(await within(screen.getByRole('dialog')).findByRole('alert')).toHaveTextContent('Não foi possível enviar a notificação de teste.')
     expect(botao).toBeEnabled()
   })
 
@@ -105,61 +106,46 @@ describe('ConfiguracaoNotificacao', () => {
 
   it('carrega as configurações atuais', async () => {
     api.get.mockResolvedValueOnce({ data: CONFIG })
-    render(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
+    renderComToast(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
 
     await waitFor(() => expect(api.get).toHaveBeenCalledWith('/configuracao-notificacao'))
     expect(await screen.findByDisplayValue('17:30')).toBeInTheDocument()
     expect(screen.getByDisplayValue('3')).toBeInTheDocument()
   })
 
-  it('salva as configurações e fecha', async () => {
+  it('salva as configurações, avisa por toast e fecha', async () => {
     api.get.mockResolvedValueOnce({ data: CONFIG })
     api.put.mockResolvedValueOnce({ data: CONFIG })
     const aoFechar = vi.fn()
-    render(<ConfiguracaoNotificacao aoFechar={aoFechar} />)
+    renderComToast(<ConfiguracaoNotificacao aoFechar={aoFechar} />)
 
     await screen.findByDisplayValue('17:30')
     fireEvent.click(screen.getByRole('button', { name: 'Salvar configuração' }))
 
     await waitFor(() => expect(api.put).toHaveBeenCalledWith('/configuracao-notificacao', expect.objectContaining({ diasAntecedencia: 3 })))
-    expect(await screen.findByRole('status')).toHaveTextContent('Configurações salvas.')
-    expect(aoFechar).not.toHaveBeenCalled()
-    await waitFor(() => expect(aoFechar).toHaveBeenCalledTimes(1), { timeout: 3000 })
+    expect(await screen.findByText('Configurações salvas.')).toBeInTheDocument()
+    expect(aoFechar).toHaveBeenCalledTimes(1)
   })
 
   it('mostra erro e mantém a janela aberta ao falhar o salvamento', async () => {
     api.get.mockResolvedValueOnce({ data: CONFIG })
     api.put.mockRejectedValueOnce(new Error('offline'))
     const aoFechar = vi.fn()
-    render(<ConfiguracaoNotificacao aoFechar={aoFechar} />)
+    renderComToast(<ConfiguracaoNotificacao aoFechar={aoFechar} />)
 
     await screen.findByDisplayValue('17:30')
     fireEvent.click(screen.getByRole('button', { name: 'Salvar configuração' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Não foi possível salvar as configurações. Tente novamente.')
+    expect(await within(screen.getByRole('dialog')).findByRole('alert')).toHaveTextContent('Não foi possível salvar as configurações. Tente novamente.')
+    expect(screen.getByRole('region', { name: 'Avisos' })).toHaveTextContent('')
     expect(aoFechar).not.toHaveBeenCalled()
     expect(screen.getByRole('button', { name: 'Salvar configuração' })).toBeEnabled()
-  })
-
-  it('não fecha depois de salvar se a janela já foi cancelada', async () => {
-    api.get.mockResolvedValueOnce({ data: CONFIG })
-    api.put.mockResolvedValueOnce({ data: CONFIG })
-    const aoFechar = vi.fn()
-    const { unmount } = render(<ConfiguracaoNotificacao aoFechar={aoFechar} />)
-
-    await screen.findByDisplayValue('17:30')
-    fireEvent.click(screen.getByRole('button', { name: 'Salvar configuração' }))
-    await screen.findByRole('status')
-    unmount()
-
-    await new Promise((resolve) => { setTimeout(resolve, 1700) })
-    expect(aoFechar).not.toHaveBeenCalled()
   })
 
   it.each(['Avisos automáticos', 'Assistente ativo'])('desabilita os avisos individuais com "%s" desligado e mantém os valores', async (rotulo) => {
     api.get.mockResolvedValueOnce({ data: { ...CONFIG, resumoFimDiaAtivo: false } })
     api.put.mockResolvedValueOnce({ data: CONFIG })
-    render(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
+    renderComToast(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
 
     await screen.findByDisplayValue('17:30')
     ROTULOS_ALERTAS.forEach((nome) => expect(screen.getByRole('checkbox', { name: nome })).toBeEnabled())
@@ -182,7 +168,7 @@ describe('ConfiguracaoNotificacao', () => {
   it('envia os dois interruptores no PUT e descreve cada um', async () => {
     api.get.mockResolvedValueOnce({ data: CONFIG })
     api.put.mockResolvedValueOnce({ data: CONFIG })
-    render(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
+    renderComToast(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
 
     await screen.findByDisplayValue('17:30')
     const assistente = screen.getByRole('checkbox', { name: 'Assistente ativo' })
@@ -200,21 +186,21 @@ describe('ConfiguracaoNotificacao', () => {
 
   it('mostra o estado de carregamento', () => {
     api.get.mockReturnValueOnce(new Promise(() => {}))
-    render(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
+    renderComToast(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
 
-    expect(screen.getByRole('status')).toHaveTextContent('Carregando configurações...')
+    expect(within(screen.getByRole('dialog')).getByRole('status')).toHaveTextContent('Carregando configurações...')
   })
 
   it('mostra o estado vazio quando a API não devolve configuração', async () => {
     api.get.mockResolvedValueOnce({ data: null })
-    render(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
+    renderComToast(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
 
     expect(await screen.findByText('Nenhuma configuração encontrada.')).toHaveAttribute('role', 'status')
   })
 
   it('renderiza os grupos com classes próprias, cada checkbox dentro do seu rótulo', async () => {
     api.get.mockResolvedValueOnce({ data: CONFIG })
-    const { container } = render(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
+    const { container } = renderComToast(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
 
     await screen.findByDisplayValue('17:30')
 
@@ -228,30 +214,30 @@ describe('ConfiguracaoNotificacao', () => {
   it('exibe a mensagem PT-BR do servidor para configuração inválida (422)', async () => {
     api.get.mockResolvedValueOnce({ data: CONFIG })
     api.put.mockRejectedValueOnce({ response: { status: 422, data: { message: 'O fim do expediente deve ser após o início.' } } })
-    render(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
+    renderComToast(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
 
     await screen.findByDisplayValue('17:30')
     fireEvent.click(screen.getByRole('button', { name: 'Salvar configuração' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('O fim do expediente deve ser após o início.')
+    expect(await within(screen.getByRole('dialog')).findByRole('alert')).toHaveTextContent('O fim do expediente deve ser após o início.')
   })
 
   it('bloqueia salvar sem dia de expediente com mensagem PT-BR', async () => {
     api.get.mockResolvedValueOnce({ data: { ...CONFIG, diasExpediente: ['MONDAY'] } })
-    render(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
+    renderComToast(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
 
     await screen.findByDisplayValue('17:30')
     fireEvent.click(screen.getByRole('checkbox', { name: 'Segunda' }))
     fireEvent.click(screen.getByRole('button', { name: 'Salvar configuração' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Selecione ao menos um dia de expediente.')
+    expect(await within(screen.getByRole('dialog')).findByRole('alert')).toHaveTextContent('Selecione ao menos um dia de expediente.')
     expect(api.put).not.toHaveBeenCalled()
   })
 
   it('mostra erro ao falhar o carregamento', async () => {
     api.get.mockRejectedValueOnce(new Error('offline'))
-    render(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
+    renderComToast(<ConfiguracaoNotificacao aoFechar={vi.fn()} />)
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Não foi possível carregar as configurações.')
+    expect(await within(screen.getByRole('dialog')).findByRole('alert')).toHaveTextContent('Não foi possível carregar as configurações.')
   })
 })

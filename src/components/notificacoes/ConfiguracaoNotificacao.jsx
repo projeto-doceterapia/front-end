@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import api from '../../services/api'
-import useAvisoLocal from './useAvisoLocal'
+import useToast from '../feedback/useToast'
 
 const DIAS = [
   { valor: 'MONDAY', rotulo: 'Segunda' },
@@ -17,9 +17,6 @@ const INTERRUPTORES = [
   { campo: 'assistenteAtivo', rotulo: 'Assistente ativo', ajuda: 'Pausa conversa, leitura de notas e avisos.' },
   { campo: 'avisosAutomaticosAtivo', rotulo: 'Avisos automáticos', ajuda: 'Pausa só os avisos no WhatsApp. Eles continuam no sino.' },
 ]
-
-// Long enough to read the confirmation before the window closes.
-const ESPERA_FECHAR_MS = 1500
 
 const TEXTO_TESTE_PENDENTE = 'Notificação de teste criada. Ela aparece no sino e chega ao WhatsApp em instantes.'
 const TEXTO_TESTE_SO_SINO = 'Notificação de teste criada só no sino. Salve com o assistente e os avisos automáticos ligados para testar o WhatsApp.'
@@ -42,10 +39,10 @@ export default function ConfiguracaoNotificacao({ aoFechar }) {
   const [carregando, setCarregando] = useState(true)
   const [erroCarregar, setErroCarregar] = useState('')
   const [salvando, setSalvando] = useState(false)
-  const [salvo, setSalvo] = useState(false)
   const [enviandoTeste, setEnviandoTeste] = useState(false)
   const [segundosRestantes, setSegundosRestantes] = useState(0)
-  const avisos = useAvisoLocal()
+  const [erroModal, setErroModal] = useState('')
+  const toast = useToast()
 
   useEffect(() => {
     let ativo = true
@@ -55,12 +52,6 @@ export default function ConfiguracaoNotificacao({ aoFechar }) {
       .finally(() => { if (ativo) setCarregando(false) })
     return () => { ativo = false }
   }, [])
-
-  useEffect(() => {
-    if (!salvo) return undefined
-    const temporizador = setTimeout(aoFechar, ESPERA_FECHAR_MS)
-    return () => clearTimeout(temporizador)
-  }, [salvo, aoFechar])
 
   useEffect(() => {
     if (segundosRestantes <= 0) return undefined
@@ -87,13 +78,13 @@ export default function ConfiguracaoNotificacao({ aoFechar }) {
 
   async function enviarTeste() {
     setEnviandoTeste(true)
-    avisos.limpar()
+    setErroModal('')
     try {
       const resposta = await api.post('/notificacoes/teste')
-      avisos.sucesso(resposta.data?.statusEnvio === 'NAO_ENVIAR' ? TEXTO_TESTE_SO_SINO : TEXTO_TESTE_PENDENTE)
+      toast.sucesso(resposta.data?.statusEnvio === 'NAO_ENVIAR' ? TEXTO_TESTE_SO_SINO : TEXTO_TESTE_PENDENTE)
     } catch (erroRequisicao) {
       setSegundosRestantes(erroRequisicao.response?.data?.segundosRestantes || 0)
-      avisos.erro(erroRequisicao.response?.data?.message || 'Não foi possível enviar a notificação de teste. Tente novamente.')
+      setErroModal(erroRequisicao.response?.data?.message || 'Não foi possível enviar a notificação de teste. Tente novamente.')
     } finally {
       setEnviandoTeste(false)
     }
@@ -102,22 +93,22 @@ export default function ConfiguracaoNotificacao({ aoFechar }) {
   async function salvar(evento) {
     evento.preventDefault()
     if (!dados.diasExpediente?.length) {
-      avisos.erro('Selecione ao menos um dia de expediente.')
+      setErroModal('Selecione ao menos um dia de expediente.')
       return
     }
 
     setSalvando(true)
-    avisos.limpar()
+    setErroModal('')
     try {
       const resposta = await api.put('/configuracao-notificacao', {
         ...dados,
         diasAntecedencia: Number(dados.diasAntecedencia),
       })
       setDados(resposta.data)
-      avisos.sucesso('Configurações salvas.')
-      setSalvo(true)
+      toast.sucesso('Configurações salvas.')
+      aoFechar()
     } catch (erroRequisicao) {
-      avisos.erro(erroRequisicao.response?.data?.message || 'Não foi possível salvar as configurações. Tente novamente.')
+      setErroModal(erroRequisicao.response?.data?.message || 'Não foi possível salvar as configurações. Tente novamente.')
     } finally {
       setSalvando(false)
     }
@@ -233,11 +224,10 @@ export default function ConfiguracaoNotificacao({ aoFechar }) {
               )}
             </div>
 
-            {avisos.aviso?.tipo === 'erro' && <p className="form-error" role="alert">{avisos.aviso.texto}</p>}
-            {avisos.aviso?.tipo === 'sucesso' && <p className="config-notificacao-sucesso" role="status">{avisos.aviso.texto}</p>}
+            {erroModal && <p className="form-error" role="alert">{erroModal}</p>}
             <footer>
               <button type="button" className="outline-button" onClick={aoFechar}>Cancelar</button>
-              <button className="primary-button" disabled={salvando || salvo}>{salvando ? 'Salvando...' : 'Salvar configuração'}</button>
+              <button className="primary-button" disabled={salvando}>{salvando ? 'Salvando...' : 'Salvar configuração'}</button>
             </footer>
           </>
         )}
