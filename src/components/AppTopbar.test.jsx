@@ -134,12 +134,24 @@ describe('AppTopbar - acesso por perfil', () => {
     expect(api.get).toHaveBeenCalledWith('/usuarios')
   })
 
-  it('oculta Usuários para a FUNCIONARIA', async () => {
+  it('oculta Usuários e a configuração de notificações para a FUNCIONARIA', async () => {
     simularSessao(FUNCIONARIA, 'FUNCIONARIA')
     render(<AppTopbar />)
 
     await waitFor(() => expect(api.get).toHaveBeenCalled())
     expect(screen.queryByRole('button', { name: 'Usuários' })).not.toBeInTheDocument()
+    abrirPainel()
+    expect(screen.getByRole('button', { name: 'Marcar todas como lidas' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Configurar notificações' })).not.toBeInTheDocument()
+  })
+
+  it('mostra a configuração de notificações para a DONA', async () => {
+    simularSessao()
+    render(<AppTopbar />)
+
+    await waitFor(() => expect(api.get).toHaveBeenCalled())
+    abrirPainel()
+    expect(screen.getByRole('button', { name: 'Configurar notificações' })).toBeInTheDocument()
   })
 })
 
