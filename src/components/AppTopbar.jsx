@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Bell, CheckCheck, LogOut, Minus, Plus, Settings, Users } from 'lucide-react'
 import {
   assinarStream,
@@ -35,6 +35,7 @@ export default function AppTopbar() {
   const [notificacoesAbertas, setNotificacoesAbertas] = useState(false)
   const [configAberta, setConfigAberta] = useState(false)
   const [usuariosAbertos, setUsuariosAbertos] = useState(false)
+  const botaoSino = useRef(null)
   const [escalaFonte, setEscalaFonte] = useState(() => {
     const salvo = Number(localStorage.getItem(CHAVE_FONTE))
     return Number.isFinite(salvo) && salvo >= 1 && salvo <= 1.8 ? salvo : 1
@@ -106,6 +107,12 @@ export default function AppTopbar() {
     })
   }
 
+  // The gear lives in the popover, which closes when the window opens, so the bell takes the focus back.
+  function fecharConfiguracao() {
+    setConfigAberta(false)
+    botaoSino.current?.focus()
+  }
+
   async function encerrarSessao() {
     setSaindo(true)
     await sair()
@@ -120,6 +127,7 @@ export default function AppTopbar() {
       <div className="topbar-actions">
         <div className="notification-wrap">
           <button
+            ref={botaoSino}
             className="topbar-icon-button notification-button"
             type="button"
             aria-label={naoLidas ? `${naoLidas} notificações não lidas` : 'Notificações'}
@@ -203,7 +211,7 @@ export default function AppTopbar() {
           <span>Sair</span>
         </button>
       </div>
-      {ehDona && configAberta && <ConfiguracaoNotificacao aoFechar={() => setConfigAberta(false)} />}
+      {ehDona && configAberta && <ConfiguracaoNotificacao aoFechar={fecharConfiguracao} />}
       {ehDona && usuariosAbertos && <GerenciarUsuarios aoFechar={() => setUsuariosAbertos(false)} />}
     </header>
   )

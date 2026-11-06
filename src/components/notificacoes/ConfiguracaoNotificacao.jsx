@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { X } from 'lucide-react'
 import api from '../../services/api'
 import useToast from '../feedback/useToast'
+
+const FOCAVEIS = 'a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
 
 const DIAS = [
   { valor: 'MONDAY', rotulo: 'Segunda' },
@@ -43,6 +45,11 @@ export default function ConfiguracaoNotificacao({ aoFechar }) {
   const [segundosRestantes, setSegundosRestantes] = useState(0)
   const [erroModal, setErroModal] = useState('')
   const toast = useToast()
+  const janela = useRef(null)
+
+  useEffect(() => {
+    janela.current.focus()
+  }, [])
 
   useEffect(() => {
     let ativo = true
@@ -114,11 +121,34 @@ export default function ConfiguracaoNotificacao({ aoFechar }) {
     }
   }
 
+  function prenderFoco(evento) {
+    const focaveis = [...janela.current.querySelectorAll(FOCAVEIS)]
+    const atual = document.activeElement
+    const primeiro = focaveis[0]
+    const ultimo = focaveis[focaveis.length - 1]
+    if (evento.shiftKey && (atual === primeiro || atual === janela.current)) {
+      evento.preventDefault()
+      ultimo.focus()
+    } else if (!evento.shiftKey && atual === ultimo) {
+      evento.preventDefault()
+      primeiro.focus()
+    }
+  }
+
+  function aoTeclar(evento) {
+    if (evento.key === 'Escape') {
+      evento.preventDefault()
+      if (!salvando) aoFechar()
+    } else if (evento.key === 'Tab') {
+      prenderFoco(evento)
+    }
+  }
+
   const avisosPausados = dados?.avisosAutomaticosAtivo === false || dados?.assistenteAtivo === false
 
   return (
-    <div className="farol-overlay config-notificacao-overlay" role="dialog" aria-modal="true" aria-labelledby="titulo-config-notificacao">
-      <form className="farol-modal" onSubmit={salvar}>
+    <div className="farol-overlay config-notificacao-overlay" role="dialog" aria-modal="true" aria-labelledby="titulo-config-notificacao" onKeyDown={aoTeclar}>
+      <form ref={janela} className="farol-modal" tabIndex={-1} onSubmit={salvar}>
         <header>
           <div>
             <h2 id="titulo-config-notificacao">Configurar notificações</h2>
