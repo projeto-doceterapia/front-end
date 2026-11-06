@@ -21,13 +21,13 @@ RUN npm run build
 FROM nginxinc/nginx-unprivileged:1.27.5-alpine AS runtime
 
 # Default upstream for compose; overridable at runtime for standalone use.
-ENV API_UPSTREAM=http://back-end:8080
+ENV API_UPSTREAM_HOST=back-end:8080
 # Expose the host's nameservers to templates as ${NGINX_LOCAL_RESOLVERS}
 # (base image entrypoint 15-local-resolvers.envsh) so the proxy can resolve
-# the upstream at request time instead of at config load.
+# the upstream at runtime instead of at config load.
 ENV NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
 # Substitute only our two variables; leave nginx runtime $vars untouched.
-ENV NGINX_ENVSUBST_FILTER="API_UPSTREAM|NGINX_LOCAL_RESOLVERS"
+ENV NGINX_ENVSUBST_FILTER="API_UPSTREAM_HOST|NGINX_LOCAL_RESOLVERS"
 
 # The base image renders /etc/nginx/templates/*.template into conf.d at start.
 COPY docker/default.conf.template /etc/nginx/templates/default.conf.template
