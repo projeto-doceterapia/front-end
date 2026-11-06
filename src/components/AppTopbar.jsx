@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Bell, CheckCheck, LogOut, Minus, Plus, Settings } from 'lucide-react'
+import { Bell, CheckCheck, LogOut, Minus, Plus, Settings, Users } from 'lucide-react'
 import {
   assinarStream,
   listarNaoLidas,
   marcarComoLida,
 } from '../services/notificacoes'
 import ConfiguracaoNotificacao from './notificacoes/ConfiguracaoNotificacao'
+import GerenciarUsuarios from './usuarios/GerenciarUsuarios'
+import { ROTULOS_PERFIL } from './usuarios/perfis'
 import useSessao from './sessao/useSessao'
 
 const CHAVE_FONTE = 'doceterapia-font-scale'
-const ROTULOS_PERFIL = { DONA: 'Dona', FUNCIONARIA: 'Funcionária' }
 
 function dataHoje() {
   return new Intl.DateTimeFormat('pt-BR', {
@@ -26,13 +27,14 @@ function formatarData(data) {
 }
 
 export default function AppTopbar() {
-  const { usuario, perfil, sair } = useSessao()
+  const { usuario, perfil, ehDona, sair } = useSessao()
   const [saindo, setSaindo] = useState(false)
   const [notificacoes, setNotificacoes] = useState([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
   const [notificacoesAbertas, setNotificacoesAbertas] = useState(false)
   const [configAberta, setConfigAberta] = useState(false)
+  const [usuariosAbertos, setUsuariosAbertos] = useState(false)
   const [escalaFonte, setEscalaFonte] = useState(() => {
     const salvo = Number(localStorage.getItem(CHAVE_FONTE))
     return Number.isFinite(salvo) && salvo >= 1 && salvo <= 1.8 ? salvo : 1
@@ -188,12 +190,19 @@ export default function AppTopbar() {
           <b>{usuario.nome.charAt(0).toUpperCase()}</b>
           <span title={usuario.nome}>{usuario.nome}<small>{rotuloPerfil}</small></span>
         </div>
+        {ehDona && (
+          <button className="topbar-logout" type="button" onClick={() => setUsuariosAbertos(true)} aria-label="Usuários" title="Usuários">
+            <Users size={15} aria-hidden="true" />
+            <span>Usuários</span>
+          </button>
+        )}
         <button className="topbar-logout" type="button" onClick={encerrarSessao} disabled={saindo} aria-label="Sair" title="Sair">
           <LogOut size={15} aria-hidden="true" />
           <span>Sair</span>
         </button>
       </div>
       {configAberta && <ConfiguracaoNotificacao aoFechar={() => setConfigAberta(false)} />}
+      {ehDona && usuariosAbertos && <GerenciarUsuarios aoFechar={() => setUsuariosAbertos(false)} />}
     </header>
   )
 }
