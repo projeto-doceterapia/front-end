@@ -3,6 +3,7 @@ import { render, screen, waitFor, fireEvent, act } from '@testing-library/react'
 import AppTopbar from './AppTopbar'
 import api from '../services/api'
 import useSessao from './sessao/useSessao'
+import renderComToast from '../test/renderComToast'
 
 vi.mock('../services/api', () => ({
   default: {
@@ -111,6 +112,46 @@ describe('AppTopbar - usuário logado', () => {
 
     await act(async () => terminar())
     expect(botao).toBeEnabled()
+  })
+})
+
+describe('AppTopbar - acesso por perfil', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    FakeEventSource.instances = []
+    vi.stubGlobal('EventSource', FakeEventSource)
+    api.get.mockReset()
+    api.get.mockResolvedValue({ data: [] })
+  })
+
+  it('mostra Usuários só para a DONA e abre o diálogo', async () => {
+    simularSessao()
+    renderComToast(<AppTopbar />)
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Usuários' }))
+
+    expect(await screen.findByRole('dialog', { name: 'Usuários' })).toBeInTheDocument()
+    expect(api.get).toHaveBeenCalledWith('/usuarios')
+  })
+
+  it('oculta Usuários e a configuração de notificações para a FUNCIONARIA', async () => {
+    simularSessao(FUNCIONARIA, 'FUNCIONARIA')
+    render(<AppTopbar />)
+
+    await waitFor(() => expect(api.get).toHaveBeenCalled())
+    expect(screen.queryByRole('button', { name: 'Usuários' })).not.toBeInTheDocument()
+    abrirPainel()
+    expect(screen.getByRole('button', { name: 'Marcar todas como lidas' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Configurar notificações' })).not.toBeInTheDocument()
+  })
+
+  it('mostra a configuração de notificações para a DONA', async () => {
+    simularSessao()
+    render(<AppTopbar />)
+
+    await waitFor(() => expect(api.get).toHaveBeenCalled())
+    abrirPainel()
+    expect(screen.getByRole('button', { name: 'Configurar notificações' })).toBeInTheDocument()
   })
 })
 

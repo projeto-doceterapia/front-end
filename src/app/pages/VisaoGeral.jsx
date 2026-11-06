@@ -5,9 +5,11 @@ import GraficoFaturamento from '../../components/visao-geral/GraficoFaturamento'
 import GraficoPedidos from '../../components/visao-geral/GraficoPedidos'
 import PedidosAndamento from '../../components/visao-geral/PedidosAndamento'
 import ProdutosMaisPedidos from '../../components/visao-geral/ProdutosMaisPedidos'
+import useSessao from '../../components/sessao/useSessao'
 import api from '../../services/api'
 
 export default function VisaoGeral() {
+  const { ehDona } = useSessao()
   const [dados, setDados] = useState({ pedidos: [], insumos: [], produtos: [], itens: [], farol: null })
 
   async function buscarDados() {
@@ -43,16 +45,20 @@ export default function VisaoGeral() {
     <main className="dashboard">
       <header className="dashboard-heading"><div><h1>Visão Geral</h1><p>Acompanhe o desempenho e tome decisões com clareza</p></div></header>
       <section className="resumos">
-        <CardResumo cor="rosa" icone="$" titulo="Lucro" valor={dinheiro(lucro)} detalhe="vendas menos custos cadastrados" />
-        <CardResumo cor="marrom" icone="▣" titulo="Custo total" valor={dinheiro(custoTotal)} detalhe="soma dos custos dos pedidos" />
-        <CardResumo cor="verde" icone="↗" titulo="Margem de lucro" valor={`${margem.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`} detalhe="percentual médio dos pedidos" />
+        {ehDona && (
+          <>
+            <CardResumo cor="rosa" icone="$" titulo="Lucro" valor={dinheiro(lucro)} detalhe="vendas menos custos cadastrados" />
+            <CardResumo cor="marrom" icone="▣" titulo="Custo total" valor={dinheiro(custoTotal)} detalhe="soma dos custos dos pedidos" />
+            <CardResumo cor="verde" icone="↗" titulo="Margem de lucro" valor={`${margem.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`} detalhe="percentual médio dos pedidos" />
+          </>
+        )}
         <CardResumo cor="vermelho" icone="□" titulo="Dias lotados" valor={diasLotados} detalhe={dados.farol ? 'dias marcados em vermelho' : 'configure o farol para calcular'} />
       </section>
       <EstoqueAtencao insumos={estoqueBaixo} />
       <PedidosAndamento pedidos={dados.pedidos} />
       <GraficoPedidos pedidos={dados.pedidos} />
       <ProdutosMaisPedidos produtos={dados.produtos} itens={dados.itens} pedidos={dados.pedidos} />
-      <GraficoFaturamento itens={dados.itens} pedidos={dados.pedidos} />
+      {ehDona && <GraficoFaturamento itens={dados.itens} pedidos={dados.pedidos} />}
     </main>
   )
 }

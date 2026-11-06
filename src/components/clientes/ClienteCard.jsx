@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ChevronDown, MapPin, Pencil, Phone } from 'lucide-react'
+import useSessao from '../sessao/useSessao'
 
 const classificacoes = {
   PADRAO: '',
@@ -15,6 +16,7 @@ function formatarData(data) {
 }
 
 export default function ClienteCard({ cliente, pedidos, itens, produtos, aoEditar }) {
+  const { ehDona } = useSessao()
   const [expandido, setExpandido] = useState(false)
   const ordenados = [...pedidos].sort(
     (a, b) => dataPedido(b).localeCompare(dataPedido(a)) || b.idPedido - a.idPedido
@@ -65,7 +67,7 @@ export default function ClienteCard({ cliente, pedidos, itens, produtos, aoEdita
         </div>
         <div className="client-metric client-spent">
           <small>Gasto total</small>
-          <b>{moeda.format(gasto)}</b>
+          <b>{ehDona ? moeda.format(gasto) : '—'}</b>
         </div>
         <div className="client-metric">
           <small>Último pedido</small>

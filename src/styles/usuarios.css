@@ -1,0 +1,76 @@
+.usuarios-modal {
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+.usuarios-modal:focus {
+  outline: none;
+}
+
+.usuarios-lista {
+  padding: 16px 22px 0;
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+
+.usuarios-lista p {
+  margin: 0;
+}
+
+.usuarios-lista ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.usuarios-lista li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.usuarios-lista li > span:first-child {
+  display: grid;
+  min-width: 0;
+}
+
+.usuarios-lista li strong {
+  color: var(--foreground);
+  overflow-wrap: anywhere;
+}
+
+.usuarios-perfil {
+  flex-shrink: 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.usuarios-form select {
+  grid-column: 2;
+  width: 100%;
+  height: 38px;
+  margin-top: 7px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--foreground);
+  font: inherit;
+}
+
+.usuarios-form label small {
+  grid-column: 2;
+  margin-top: 4px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.farol-modal .usuarios-erro {
+  margin-top: 0;
+}
