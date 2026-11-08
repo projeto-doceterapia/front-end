@@ -1,51 +1,32 @@
-import { useState } from 'react'
-
-export default function GraficoFaturamento({ itens, pedidos }) {
-  const [periodo, setPeriodo] = useState(6)
-  const meses = criarMeses(periodo)
-  const dados = meses.map((mes) => calcularMes(mes, itens, pedidos))
-  const maior = Math.max(...dados.flatMap((item) => [item.faturamento, item.custo, item.lucro]), 1)
+export default function GraficoFaturamento({ faturamentoPorMes }) {
+  const maior = Math.max(...faturamentoPorMes.map((item) => Number(item.total)), 1)
   const eixosY = Array.from({ length: 5 }, (_, indice) => maior * (4 - indice) / 4)
 
   return (
     <section className="painel grafico-faturamento">
-      <div className="titulo"><div><h2>Faturamento mensal x custo x lucro</h2><p>Dados dos pedidos cadastrados</p></div><div className="filtros">{[[3, 'Últimos 3 meses'], [6, 'Últimos 6 meses'], [12, 'Este ano']].map(([valor, texto]) => <button type="button" className={periodo === valor ? 'active' : ''} onClick={() => setPeriodo(valor)} key={valor}>{texto}</button>)}</div></div>
+      <div className="titulo"><div><h2>Faturamento mensal</h2><p>Últimos 6 meses até o fim do período, pela data de entrega</p></div></div>
       <div className="linhas">
         <svg viewBox="0 0 1000 200" preserveAspectRatio="none">
           <g className="eixo-y">
             {eixosY.map((valor) => <g key={valor}><line x1="36" x2="980" y1={posicaoY(valor, maior)} y2={posicaoY(valor, maior)} /><text x="18" y={posicaoY(valor, maior) + 4}>{formatarDinheiro(valor)}</text></g>)}
           </g>
-          <polyline className="faturamento" points={pontos(dados.map((item) => item.faturamento), maior)} />
-          <polyline className="custo" points={pontos(dados.map((item) => item.custo), maior)} />
-          <polyline className="lucro" points={pontos(dados.map((item) => item.lucro), maior)} />
-          {dados.map((item, indice) => <circle className="ponto faturamento" cx={posicaoX(indice, dados.length)} cy={posicaoY(item.faturamento, maior)} r="4" key={`f-${indice}`} title={`Faturamento: ${formatarDinheiro(item.faturamento)}`} />)}
-          {dados.map((item, indice) => <circle className="ponto custo" cx={posicaoX(indice, dados.length)} cy={posicaoY(item.custo, maior)} r="4" key={`c-${indice}`} title={`Custo: ${formatarDinheiro(item.custo)}`} />)}
-          {dados.map((item, indice) => <circle className="ponto lucro" cx={posicaoX(indice, dados.length)} cy={posicaoY(item.lucro, maior)} r="4" key={`l-${indice}`} title={`Lucro: ${formatarDinheiro(item.lucro)}`} />)}
+          <polyline className="faturamento" points={faturamentoPorMes.map((item, indice) => `${posicaoX(indice, faturamentoPorMes.length)},${posicaoY(Number(item.total), maior)}`).join(' ')} />
+          {faturamentoPorMes.map((item, indice) => <circle className="ponto faturamento" cx={posicaoX(indice, faturamentoPorMes.length)} cy={posicaoY(Number(item.total), maior)} r="4" key={item.mes}><title>{`Faturamento: ${formatarDinheiro(item.total)}`}</title></circle>)}
         </svg>
-        <div className="meses-grafico">{dados.map((item) => <span key={item.chave}>{item.rotulo}</span>)}</div>
-        <div className="legenda-linhas"><span className="faturamento">Faturamento</span><span className="custo">Custo</span><span className="lucro">Lucro</span></div>
+        <div className="meses-grafico">{faturamentoPorMes.map((item) => <span key={item.mes}>{rotuloMes(item.mes)}</span>)}</div>
+        <div className="legenda-linhas"><span className="faturamento">Faturamento</span></div>
       </div>
     </section>
   )
 }
 
-function criarMeses(periodo) {
-  const hoje = new Date()
-  return Array.from({ length: periodo }, (_, indice) => new Date(hoje.getFullYear(), hoje.getMonth() - periodo + 1 + indice, 1))
-}
-
-function calcularMes(data, itens, pedidos) {
-  const chave = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`
-  const ids = pedidos.filter((pedido) => (pedido.dataCriacao || pedido.dataEntrega || '').startsWith(chave)).map((pedido) => pedido.idPedido)
-  const itensMes = itens.filter((item) => ids.includes(item.fkPedido))
-  const faturamento = itensMes.reduce((soma, item) => soma + Number(item.valorTotal || 0), 0)
-  const custo = itensMes.reduce((soma, item) => soma + Number(item.custoEstimadoItem || 0), 0)
-  return { chave, rotulo: data.toLocaleDateString('pt-BR', { month: 'short' }), faturamento, custo, lucro: faturamento - custo }
+function rotuloMes(mes) {
+  const [ano, numero] = mes.split('-').map(Number)
+  return new Date(ano, numero - 1, 1).toLocaleDateString('pt-BR', { month: 'short' })
 }
 
 function posicaoX(indice, total) { return total === 1 ? 500 : 40 + indice * (920 / (total - 1)) }
 function posicaoY(valor, maior) { return 180 - (valor / maior) * 150 }
-function pontos(valores, maior) { return valores.map((valor, indice) => `${posicaoX(indice, valores.length)},${posicaoY(valor, maior)}`).join(' ') }
 function formatarDinheiro(valor) {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',

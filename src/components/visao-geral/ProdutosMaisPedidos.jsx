@@ -1,23 +1,21 @@
-const cores = ['#dc8990', '#643d2d', '#f1ab76']
+const cores = ['#dc8990', '#643d2d', '#f1ab76', '#8aa6a3', '#c9b8d6']
 
-export default function ProdutosMaisPedidos({ produtos, itens, pedidos }) {
-  const mesAtual = new Date()
-  const pedidosDoMes = pedidos.filter((pedido) => pedido.dataEntrega?.startsWith(`${mesAtual.getFullYear()}-${String(mesAtual.getMonth() + 1).padStart(2, '0')}`)).map((pedido) => pedido.idPedido)
-  const produtosComQuantidade = produtos.map((produto) => ({
-    ...produto,
-    quantidade: itens.filter((item) => item.fkProduto === produto.idProduto && pedidosDoMes.includes(item.fkPedido)).reduce((soma, item) => soma + Number(item.quantidade || 0), 0),
-  })).filter((produto) => produto.quantidade > 0).sort((a, b) => b.quantidade - a.quantidade).slice(0, 3)
-  const total = produtosComQuantidade.reduce((soma, produto) => soma + produto.quantidade, 0)
-  let acumulado = 0
-  const faixas = produtosComQuantidade.map((produto, indice) => { const inicio = acumulado; acumulado += produto.quantidade / (total || 1) * 100; return `${cores[indice]} ${inicio}% ${acumulado}%` })
+export default function ProdutosMaisPedidos({ produtos }) {
+  const total = produtos.reduce((soma, produto) => soma + Number(produto.quantidade), 0)
+  const faixas = produtos.reduce((lista, produto, indice) => {
+    const inicio = lista.length ? lista[lista.length - 1].fim : 0
+    const fim = inicio + (Number(produto.quantidade) / (total || 1)) * 100
+    return [...lista, { cor: cores[indice], inicio, fim }]
+  }, [])
+  const gradiente = faixas.map(({ cor, inicio, fim }) => `${cor} ${inicio}% ${fim}%`).join(', ')
 
   return (
     <section className="painel grafico-produtos">
-      <div className="titulo"><div><h2>3 produtos mais pedidos</h2><p>Este mês</p></div></div>
-      <div className="pizza-conteudo"><div className="pizza" style={{ background: faixas.length ? `conic-gradient(${faixas.join(', ')})` : '#f6eeeb' }}><span>{total}<small>itens</small></span></div>
+      <div className="titulo"><div><h2>5 produtos mais vendidos</h2><p>No período selecionado</p></div></div>
+      <div className="pizza-conteudo"><div className="pizza" style={{ background: gradiente ? `conic-gradient(${gradiente})` : '#f6eeeb' }}><span>{total}<small>itens</small></span></div>
         <div className="legenda">
-          {produtosComQuantidade.map((produto, indice) => <p key={produto.idProduto}><span><i style={{ background: cores[indice] }} />{produto.nome}</span><strong>{((produto.quantidade / total) * 100).toFixed(0)}%</strong></p>)}
-          {!produtosComQuantidade.length && <p>Nenhum item registrado neste mês.</p>}
+          {produtos.map((produto, indice) => <p key={produto.produtoId}><span><i style={{ background: cores[indice] }} />{produto.nome}</span><strong>{((Number(produto.quantidade) / total) * 100).toFixed(0)}%</strong></p>)}
+          {!produtos.length && <p>Nenhum item vendido neste período.</p>}
         </div>
       </div>
     </section>
