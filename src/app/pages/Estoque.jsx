@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { CircleCheck, Package, Pencil, Plus, Search, Trash2, TrendingDown, TriangleAlert } from 'lucide-react'
 import api from '../../services/api'
 import ModalEstoque from '../../components/estoque/ModalEstoque'
+import MovimentacoesEstoque from '../../components/estoque/MovimentacoesEstoque'
 import { mensagemErro, nivelEstoque, numeroDecimal, unidades } from '../../components/estoque/estoqueUtils'
 import '../../styles/estoque.css'
 
@@ -177,6 +178,7 @@ export default function Estoque() {
         {erro && <div className="stock-empty" role="alert"><p>{erro}</p><button className="stock-secondary" onClick={carregar}>Tentar novamente</button></div>}
         {!carregando && !erro && !visiveis.length && <p className="stock-empty">{insumos.length ? 'Nenhum insumo encontrado para os filtros selecionados.' : 'Nenhum insumo cadastrado. Adicione seu primeiro insumo.'}</p>}
       </section>
+      {!carregando && !erro && <MovimentacoesEstoque insumos={insumos} />}
       {modal && <ModalEstoque titulo={modal === 'categoria' ? 'Nova Categoria' : edicao ? 'Editar Insumo' : 'Novo Insumo'} aoFechar={fechar} ocupado={ocupado}>
         <form className="stock-form" onSubmit={modal === 'categoria' ? salvarCategoria : salvar}>
           <fieldset disabled={ocupado}>
