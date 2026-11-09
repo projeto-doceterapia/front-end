@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { ChevronDown, MapPin, Pencil, Phone } from 'lucide-react'
+import { ChevronDown, MapPin, Pencil, Phone, UserCheck, UserX } from 'lucide-react'
 import api from '../../services/api'
+import useSessao from '../sessao/useSessao'
 
 const classificacoes = {
   PADRAO: '',
@@ -31,7 +32,9 @@ async function buscarHistorico(idCliente) {
   return { pedidos, itens: respostas.flatMap((resposta) => resposta.data || []) }
 }
 
-export default function ClienteCard({ cliente, produtos, aoEditar }) {
+export default function ClienteCard({ cliente, produtos, aoEditar, onInativar, onReativar }) {
+  const { ehDona } = useSessao()
+  const inativo = cliente.status === 'INATIVO'
   const [expandido, setExpandido] = useState(false)
   const [historico, setHistorico] = useState({ estado: 'ocioso', pedidos: [], itens: [] })
   const painelId = `cliente-pedidos-${cliente.idCliente}`
@@ -76,6 +79,7 @@ export default function ClienteCard({ cliente, produtos, aoEditar }) {
         <div className="client-data">
           <strong>{cliente.nome}</strong>
           <div>
+            {inativo && <span className="client-tag client-inactive">Inativo</span>}
             {cliente.tipoPessoa === 'JURIDICA' && (
               <span className="category-tag">Empresa</span>
             )}
@@ -122,6 +126,26 @@ export default function ClienteCard({ cliente, produtos, aoEditar }) {
         >
           <Pencil size={17} />
         </button>
+        {ehDona && !inativo && (
+          <button
+            type="button"
+            className="icon-action"
+            onClick={onInativar}
+            aria-label={`Inativar ${cliente.nome}`}
+          >
+            <UserX size={17} />
+          </button>
+        )}
+        {ehDona && inativo && (
+          <button
+            type="button"
+            className="icon-action"
+            onClick={onReativar}
+            aria-label={`Reativar ${cliente.nome}`}
+          >
+            <UserCheck size={17} />
+          </button>
+        )}
       </div>
       {expandido && (
         <section

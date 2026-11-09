@@ -6,7 +6,9 @@ import ClienteCard from '../../components/clientes/ClienteCard'
 import CampoCep from '../../components/endereco/CampoCep'
 import { montarEndereco } from '../../components/endereco/enderecoUtils'
 import { mensagemErro } from '../../components/estoque/estoqueUtils'
+import ConfirmDialog from '../../components/feedback/ConfirmDialog'
 import useToast from '../../components/feedback/useToast'
+import useSessao from '../../components/sessao/useSessao'
 
 const ESPERA_BUSCA_MS = 300
 const clienteInicial = {
@@ -35,11 +37,15 @@ function formularioDe(cliente) {
 
 export default function Clientes() {
   const { sucesso, erro: avisarErro } = useToast()
+  const { ehDona } = useSessao()
   const [clientes, setClientes] = useState([])
   const [produtos, setProdutos] = useState([])
   const [busca, setBusca] = useState('')
   const [filtro, setFiltro] = useState('todos')
   const [carregando, setCarregando] = useState(true)
+  const [mostrarInativos, setMostrarInativos] = useState(false)
+  const [alvoInativacao, setAlvoInativacao] = useState(null)
+  const [inativando, setInativando] = useState(false)
   const [modal, setModal] = useState(false)
   const [edicao, setEdicao] = useState(null)
   const [form, setForm] = useState(clienteInicial)
@@ -48,13 +54,16 @@ export default function Clientes() {
   const requisicaoAtual = useRef(0)
   const campoEndereco = useRef(null)
 
-  const carregarClientes = useCallback(async (termo) => {
+  const carregarClientes = useCallback(async (termo, incluirInativos) => {
     const requisicao = ++requisicaoAtual.current
     setCarregando(true)
     setErro('')
     try {
+      const params = {}
+      if (termo) params.busca = termo
+      if (incluirInativos) params.incluirInativos = true
       const resposta = await api.get('/clientes/resumo', {
-        params: termo ? { busca: termo } : undefined,
+        params: Object.keys(params).length ? params : undefined,
       })
       if (requisicao === requisicaoAtual.current) setClientes(resposta.data || [])
     } catch {
@@ -78,11 +87,11 @@ export default function Clientes() {
     if (termoBusca.length === 1) return undefined
 
     const espera = setTimeout(
-      () => carregarClientes(termoBusca),
+      () => carregarClientes(termoBusca, mostrarInativos),
       termoBusca ? ESPERA_BUSCA_MS : 0
     )
     return () => clearTimeout(espera)
-  }, [termoBusca, carregarClientes])
+  }, [termoBusca, mostrarInativos, carregarClientes])
 
   const visiveis = useMemo(
     () =>
@@ -131,7 +140,35 @@ export default function Clientes() {
 
     sucesso('Cliente salvo.')
     setModal(false)
-    carregarClientes(termoBusca.length === 1 ? '' : termoBusca)
+    carregarClientes(termoBusca.length === 1 ? '' : termoBusca, mostrarInativos)
+  }
+
+  function recarregar() {
+    return carregarClientes(termoBusca.length === 1 ? '' : termoBusca, mostrarInativos)
+  }
+
+  async function inativar() {
+    setInativando(true)
+    try {
+      await api.delete(`/clientes/${alvoInativacao.idCliente}`)
+      sucesso('Cliente inativado.')
+      setAlvoInativacao(null)
+      recarregar()
+    } catch (falha) {
+      avisarErro(mensagemErro(falha, 'Não foi possível inativar o cliente.'))
+    } finally {
+      setInativando(false)
+    }
+  }
+
+  async function reativar(cliente) {
+    try {
+      await api.patch(`/clientes/${cliente.idCliente}/reativar`)
+      sucesso('Cliente reativado.')
+      recarregar()
+    } catch (falha) {
+      avisarErro(mensagemErro(falha, 'Não foi possível reativar o cliente.'))
+    }
   }
 
   const altoVolume = clientes.filter(
@@ -194,6 +231,15 @@ export default function Clientes() {
             >
               Alto volume
             </button>
+            {ehDona && (
+              <button
+                aria-pressed={mostrarInativos}
+                className={mostrarInativos ? 'selected' : ''}
+                onClick={() => setMostrarInativos(!mostrarInativos)}
+              >
+                Mostrar inativos
+              </button>
+            )}
           </div>
         </div>
         {carregando && (
@@ -208,6 +254,8 @@ export default function Clientes() {
               cliente={cliente}
               produtos={produtos}
               aoEditar={() => abrir(cliente)}
+              onInativar={() => setAlvoInativacao(cliente)}
+              onReativar={() => reativar(cliente)}
             />
           ))}
         </div>
@@ -215,6 +263,16 @@ export default function Clientes() {
           <p className="empty-catalog">Nenhum cliente encontrado.</p>
         )}
       </section>
+      <ConfirmDialog
+        aberto={Boolean(alvoInativacao)}
+        titulo="Inativar cliente"
+        mensagem={`Inativar ${alvoInativacao?.nome}? O cliente some da lista e do pedido, mas o histórico é mantido.`}
+        textoConfirmar="Inativar"
+        perigoso
+        ocupado={inativando}
+        onConfirm={inativar}
+        onCancel={() => setAlvoInativacao(null)}
+      />
       {modal && (
         <Modal
           titulo={edicao ? 'Editar cliente' : 'Novo cliente'}

@@ -4,10 +4,12 @@ import Clientes from './Clientes'
 import api from '../../services/api'
 import { buscarEndereco } from '../../services/cep'
 import renderComToast from '../../test/renderComToast'
+import useSessao from '../../components/sessao/useSessao'
 
 vi.mock('../../services/api', () => ({
-  default: { get: vi.fn(), post: vi.fn(), put: vi.fn() },
+  default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn(), patch: vi.fn() },
 }))
+vi.mock('../../components/sessao/useSessao', () => ({ default: vi.fn() }))
 vi.mock('../../services/cep', () => ({
   buscarEndereco: vi.fn(),
   ERRO_CEP: {
@@ -64,6 +66,7 @@ function preencherObrigatorios() {
 describe('Clientes', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    useSessao.mockReturnValue({ perfil: 'DONA', ehDona: true })
     responder()
   })
 
@@ -189,6 +192,57 @@ describe('Clientes', () => {
     expect(api.put.mock.calls[0][0]).toBe('/clientes/1')
     expect(api.put.mock.calls[0][1]).toMatchObject({ cep: '01001000', nome: 'Cliente Exemplo' })
     expect(api.put.mock.calls[0][1]).not.toHaveProperty('totalPedidos')
+  })
+
+  it('inativa o cliente depois da confirmação', async () => {
+    api.delete.mockResolvedValue({})
+    renderComToast(<Clientes />)
+    await screen.findByText('Cliente Exemplo')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Inativar Cliente Exemplo' }))
+    expect(screen.getByRole('dialog')).toHaveTextContent('Inativar Cliente Exemplo?')
+    fireEvent.click(screen.getByRole('button', { name: 'Inativar' }))
+
+    expect(await screen.findByText('Cliente inativado.')).toBeInTheDocument()
+    expect(api.delete).toHaveBeenCalledWith('/clientes/1')
+    await waitFor(() => expect(chamadasA('/clientes/resumo')).toHaveLength(2))
+  })
+
+  it('mostra o erro da API quando inativar falha', async () => {
+    api.delete.mockRejectedValue({ response: { data: { message: 'Sem permissão.' } } })
+    renderComToast(<Clientes />)
+    await screen.findByText('Cliente Exemplo')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Inativar Cliente Exemplo' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Inativar' }))
+
+    expect(await screen.findByText('Sem permissão.')).toBeInTheDocument()
+  })
+
+  it('mostrar inativos pede incluirInativos e permite reativar', async () => {
+    api.patch.mockResolvedValue({ data: {} })
+    renderComToast(<Clientes />)
+    await screen.findByText('Cliente Exemplo')
+    responder({ resumo: [{ ...OUTRA, status: 'INATIVO' }] })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mostrar inativos' }))
+
+    await waitFor(() =>
+      expect(api.get).toHaveBeenCalledWith('/clientes/resumo', { params: { incluirInativos: true } })
+    )
+    fireEvent.click(await screen.findByRole('button', { name: 'Reativar Outra Pessoa' }))
+
+    expect(await screen.findByText('Cliente reativado.')).toBeInTheDocument()
+    expect(api.patch).toHaveBeenCalledWith('/clientes/2/reativar')
+  })
+
+  it('a FUNCIONARIA não vê inativar nem o filtro de inativos', async () => {
+    useSessao.mockReturnValue({ perfil: 'FUNCIONARIA', ehDona: false })
+    renderComToast(<Clientes />)
+    await screen.findByText('Cliente Exemplo')
+
+    expect(screen.queryByRole('button', { name: /Inativar/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Mostrar inativos' })).not.toBeInTheDocument()
   })
 
   it('não salva com CEP incompleto', async () => {

@@ -2,8 +2,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import ClienteCard from './ClienteCard'
 import api from '../../services/api'
+import useSessao from '../sessao/useSessao'
 
 vi.mock('../../services/api', () => ({ default: { get: vi.fn() } }))
+vi.mock('../sessao/useSessao', () => ({ default: vi.fn() }))
 
 const CLIENTE = {
   idCliente: 1,
@@ -26,8 +28,8 @@ const ITENS = [
   { fkPedido: 6, fkProduto: 1, quantidade: 1, valorTotal: 100.5 },
 ]
 
-function renderizar(cliente = CLIENTE) {
-  render(<ClienteCard cliente={cliente} produtos={PRODUTOS} aoEditar={vi.fn()} />)
+function renderizar(cliente = CLIENTE, acoes = {}) {
+  render(<ClienteCard cliente={cliente} produtos={PRODUTOS} aoEditar={vi.fn()} {...acoes} />)
 }
 
 function respostas({ pedidos = PEDIDOS, itens = ITENS } = {}) {
@@ -39,6 +41,7 @@ function respostas({ pedidos = PEDIDOS, itens = ITENS } = {}) {
 describe('ClienteCard', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    useSessao.mockReturnValue({ perfil: 'DONA', ehDona: true })
   })
 
   it('mostra as métricas do resumo sem chamar a API', () => {
@@ -107,6 +110,32 @@ describe('ClienteCard', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Tentar de novo' }))
 
     expect(await screen.findByText('#0006')).toBeInTheDocument()
+  })
+
+  it('inativar só para a DONA', () => {
+    const onInativar = vi.fn()
+    renderizar({ ...CLIENTE, status: 'ATIVO' }, { onInativar })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Inativar Cliente Exemplo' }))
+
+    expect(onInativar).toHaveBeenCalledTimes(1)
+  })
+
+  it('esconde inativar e reativar para a FUNCIONARIA', () => {
+    useSessao.mockReturnValue({ perfil: 'FUNCIONARIA', ehDona: false })
+    renderizar({ ...CLIENTE, status: 'ATIVO' })
+
+    expect(screen.queryByRole('button', { name: /Inativar/ })).not.toBeInTheDocument()
+  })
+
+  it('cliente inativo mostra o selo e o botão de reativar', () => {
+    const onReativar = vi.fn()
+    renderizar({ ...CLIENTE, status: 'INATIVO' }, { onReativar })
+
+    expect(screen.getByText('Inativo')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Inativar/ })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Reativar Cliente Exemplo' }))
+    expect(onReativar).toHaveBeenCalledTimes(1)
   })
 
   it('divide os itens em lotes de 200 pedidos', async () => {

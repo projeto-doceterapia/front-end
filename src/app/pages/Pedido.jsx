@@ -31,7 +31,7 @@ export default function Pedido({ onBack }) {
       try {
         const respostas = await Promise.all([api.get('/produtos'), api.get('/clientes')])
         setProdutos(respostas[0].data || [])
-        setClientes(respostas[1].data || [])
+        setClientes((respostas[1].data || []).filter((item) => item.status === 'ATIVO'))
       } catch (erro) {
         setErro('Não foi possível carregar clientes e produtos.')
         console.error(erro)
