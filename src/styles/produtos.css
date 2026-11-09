@@ -104,6 +104,7 @@
 }
 
 .ficha-form .campo,
+.catalog-form .campo,
 .dialogo-campos label {
   display: grid;
   gap: 0.3rem;
@@ -111,7 +112,8 @@
   font-size: 0.75rem;
 }
 
-.ficha-form label {
+.ficha-form label,
+.catalog-form .campo > label {
   color: #66748a;
   font-size: 0.75rem;
 }
