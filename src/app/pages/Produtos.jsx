@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Plus, Search, X } from 'lucide-react'
+import { Plus, Search, Settings2, X } from 'lucide-react'
 import ProdutoCard from '../../components/produtos/ProdutoCard'
+import ConfiguracaoPrecificacao from '../../components/produtos/ConfiguracaoPrecificacao'
 import useSessao from '../../components/sessao/useSessao'
 import useToast from '../../components/feedback/useToast'
 import { numeroDecimal } from '../../components/estoque/estoqueUtils'
@@ -55,6 +56,7 @@ export default function Produtos() {
   const [erro, setErro] = useState('')
   const [erroMargem, setErroMargem] = useState('')
   const [salvando, setSalvando] = useState(false)
+  const [precificacaoAberta, setPrecificacaoAberta] = useState(false)
   const origemDoModal = useRef(null)
 
   async function carregar() {
@@ -144,7 +146,13 @@ export default function Produtos() {
         subtitulo="Gerencie o catálogo de produtos da confeitaria"
         acao={ehDona ? 'Novo Produto' : undefined}
         aoClicar={() => abrir()}
-      />
+      >
+        {ehDona && (
+          <button type="button" className="outline-button" onClick={() => setPrecificacaoAberta(true)}>
+            <Settings2 size={16} /> Precificação
+          </button>
+        )}
+      </PageTop>
       <section className="catalog-body">
         <div className="filter-chips">
           <button
@@ -196,6 +204,15 @@ export default function Produtos() {
           <p className="empty-catalog">Nenhum produto encontrado.</p>
         )}
       </section>
+      {precificacaoAberta && (
+        <ConfiguracaoPrecificacao
+          aoFechar={() => setPrecificacaoAberta(false)}
+          aoSalvar={() => {
+            setPrecificacaoAberta(false)
+            carregar()
+          }}
+        />
+      )}
       {modal && (
         <Modal
           titulo={edicao ? 'Editar produto' : 'Novo produto'}

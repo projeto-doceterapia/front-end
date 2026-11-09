@@ -105,7 +105,7 @@
 
 .ficha-form .campo,
 .catalog-form .campo,
-.dialogo-campos label {
+.dialogo-campos .campo {
   display: grid;
   gap: 0.3rem;
   color: #66748a;
@@ -113,7 +113,8 @@
 }
 
 .ficha-form label,
-.catalog-form .campo > label {
+.catalog-form .campo > label,
+.dialogo-campos .campo > label {
   color: #66748a;
   font-size: 0.75rem;
 }
@@ -159,8 +160,8 @@
   resize: vertical;
 }
 
-.dialogo-catalogo .farol-modal > header h2 {
-  margin: 0;
+.dialogo-estado {
+  margin: 1.25rem 1.375rem;
 }
 
 .catalog-actions {
