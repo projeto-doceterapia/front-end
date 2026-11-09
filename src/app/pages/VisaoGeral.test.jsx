@@ -27,12 +27,13 @@ const FINANCEIROS = {
   ticketMedio: 98.75,
   gastosInsumos: 109.3,
   lucroEstimado: 285.7,
+  margem: 72.33,
   produtosMaisVendidosPorFaturamento: [],
   cancelados: { quantidade: 1, pago: 40, devolvido: 20, retido: 20 },
   emOrcamento: { quantidade: 2, valor: 150 },
   faturamentoPorMes: [
-    { mes: '2026-06', total: 0 }, { mes: '2026-07', total: 0 }, { mes: '2026-08', total: 0 },
-    { mes: '2026-09', total: 0 }, { mes: '2026-10', total: 36 }, { mes: '2026-11', total: 395 },
+    { mes: '2026-06', total: 0, gastos: 0, lucro: 0 }, { mes: '2026-07', total: 0, gastos: 0, lucro: 0 }, { mes: '2026-08', total: 0, gastos: 0, lucro: 0 },
+    { mes: '2026-09', total: 0, gastos: 0, lucro: 0 }, { mes: '2026-10', total: 36, gastos: 10, lucro: 26 }, { mes: '2026-11', total: 395, gastos: 109.3, lucro: 285.7 },
   ],
 }
 
@@ -93,10 +94,12 @@ describe('VisaoGeral', () => {
     expect(valorDoCartao('Ticket médio')).toBe('R$ 98,75')
     expect(valorDoCartao('Gastos com insumos')).toBe('R$ 109,30')
     expect(valorDoCartao('Lucro estimado')).toBe('R$ 285,70')
+    expect(valorDoCartao('Margem')).toBe('72,3%')
     expect(screen.getByText('Em orçamento')).toBeInTheDocument()
     expect(screen.getByText('Chocolate meio amargo')).toBeInTheDocument()
     expect(screen.getByText('Brigadeiro gourmet')).toBeInTheDocument()
-    expect(screen.getByText('Faturamento mensal')).toBeInTheDocument()
+    expect(screen.getByText('Faturamento mensal x custo x lucro')).toBeInTheDocument()
+    expect(screen.getByText('Custo', { selector: 'span' })).toBeInTheDocument()
   })
 
   it('mostra carregando enquanto a chamada está pendente', () => {
@@ -120,7 +123,7 @@ describe('VisaoGeral', () => {
     responder()
     fireEvent.click(screen.getByRole('button', { name: 'Tentar novamente' }))
 
-    expect(await screen.findByText('Faturamento mensal')).toBeInTheDocument()
+    expect(await screen.findByText('Faturamento mensal x custo x lucro')).toBeInTheDocument()
   })
 
   it('mostra a mensagem de vazio quando o período não tem pedidos', async () => {
@@ -135,9 +138,10 @@ describe('VisaoGeral', () => {
 
     expect(api.get).not.toHaveBeenCalledWith('/indicadores/financeiros', expect.anything())
     expect(screen.queryByText('Lucro estimado')).not.toBeInTheDocument()
+    expect(screen.queryByText('Margem')).not.toBeInTheDocument()
     expect(screen.queryByText('Ticket médio')).not.toBeInTheDocument()
     expect(screen.queryByText('Gastos com insumos')).not.toBeInTheDocument()
-    expect(screen.queryByText('Faturamento mensal')).not.toBeInTheDocument()
+    expect(screen.queryByText('Faturamento mensal x custo x lucro')).not.toBeInTheDocument()
     expect(screen.getByText('Dias lotados')).toBeInTheDocument()
   })
 
