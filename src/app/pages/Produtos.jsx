@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Plus, Search, Settings2, X } from 'lucide-react'
+import { Pencil, Plus, Search, Settings2, X } from 'lucide-react'
 import ProdutoCard from '../../components/produtos/ProdutoCard'
+import CategoriaProdutoForm from '../../components/produtos/CategoriaProdutoForm'
 import ConfiguracaoPrecificacao from '../../components/produtos/ConfiguracaoPrecificacao'
 import useSessao from '../../components/sessao/useSessao'
 import useToast from '../../components/feedback/useToast'
@@ -59,6 +60,7 @@ export default function Produtos() {
   const [salvando, setSalvando] = useState(false)
   const [precificacaoAberta, setPrecificacaoAberta] = useState(false)
   const [soAbaixoDoSugerido, setSoAbaixoDoSugerido] = useState(false)
+  const [categoriaEmEdicao, setCategoriaEmEdicao] = useState(null)
   const origemDoModal = useRef(null)
 
   async function carregar() {
@@ -81,6 +83,9 @@ export default function Produtos() {
     carregar()
   }, [])
 
+  const categoriaSelecionada = categorias.find(
+    (c) => String(c.idCategoriaProduto) === categoriaAtiva
+  )
   const totalAbaixoDoSugerido = ehDona ? produtos.filter(precoAbaixoDoSugerido).length : 0
   const filtrarAbaixoDoSugerido = soAbaixoDoSugerido && totalAbaixoDoSugerido > 0
 
@@ -178,9 +183,14 @@ export default function Produtos() {
               {c.nome}
             </button>
           ))}
-          <button className="add-chip">
+          <button className="add-chip" onClick={() => setCategoriaEmEdicao({})}>
             <Plus size={13} /> Categoria
           </button>
+          {categoriaSelecionada && (
+            <button className="add-chip" onClick={() => setCategoriaEmEdicao(categoriaSelecionada)}>
+              <Pencil size={13} /> Editar categoria
+            </button>
+          )}
         </div>
         <label className="catalog-search">
           <Search size={18} />
@@ -226,6 +236,16 @@ export default function Produtos() {
           <p className="empty-catalog">Nenhum produto encontrado.</p>
         )}
       </section>
+      {categoriaEmEdicao && (
+        <CategoriaProdutoForm
+          categoria={categoriaEmEdicao.idCategoriaProduto ? categoriaEmEdicao : null}
+          aoFechar={() => setCategoriaEmEdicao(null)}
+          aoSalva={() => {
+            setCategoriaEmEdicao(null)
+            carregar()
+          }}
+        />
+      )}
       {precificacaoAberta && (
         <ConfiguracaoPrecificacao
           aoFechar={() => setPrecificacaoAberta(false)}

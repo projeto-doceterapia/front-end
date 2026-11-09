@@ -313,4 +313,35 @@ describe('Produtos', () => {
       expect(screen.queryByText(/preço abaixo do sugerido/i)).not.toBeInTheDocument()
     })
   })
+
+  describe('categorias', () => {
+    it('cria categoria pelo botão e recarrega a lista', async () => {
+      const api = montarApi({
+        'POST /categorias-produto': { status: 201, data: { idCategoriaProduto: 5, nome: 'Doces' } },
+      })
+      await abrir('DONA')
+
+      fireEvent.click(screen.getByRole('button', { name: /Categoria/ }))
+      fireEvent.change(await screen.findByLabelText('Nome'), { target: { value: 'Doces' } })
+      fireEvent.click(screen.getByRole('button', { name: 'Salvar categoria' }))
+
+      await waitFor(() => expect(api.chamadasDe('GET /categorias-produto')).toHaveLength(2))
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+
+    it('oferece editar só com uma categoria selecionada', async () => {
+      const api = montarApi({
+        'PUT /categorias-produto/1': { status: 200, data: { idCategoriaProduto: 1, nome: 'Bolos grandes' } },
+      })
+      await abrir('FUNCIONARIA')
+
+      expect(screen.queryByRole('button', { name: /Editar categoria/ })).not.toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: 'Bolos' }))
+      fireEvent.click(screen.getByRole('button', { name: /Editar categoria/ }))
+      fireEvent.change(await screen.findByLabelText('Nome'), { target: { value: 'Bolos grandes' } })
+      fireEvent.click(screen.getByRole('button', { name: 'Salvar categoria' }))
+
+      await waitFor(() => expect(api.chamadasDe('PUT /categorias-produto/1')).toHaveLength(1))
+    })
+  })
 })
