@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { FileText } from 'lucide-react'
 import CardResumo from '../../components/visao-geral/CardResumo'
 import EstoqueAtencao from '../../components/visao-geral/EstoqueAtencao'
 import Filtros from '../../components/visao-geral/Filtros'
@@ -6,16 +7,19 @@ import GraficoFaturamento from '../../components/visao-geral/GraficoFaturamento'
 import GraficoPedidos from '../../components/visao-geral/GraficoPedidos'
 import PedidosAndamento from '../../components/visao-geral/PedidosAndamento'
 import ProdutosMaisPedidos from '../../components/visao-geral/ProdutosMaisPedidos'
+import RelatorioVisaoGeral from '../../components/visao-geral/RelatorioVisaoGeral'
+import { RESSALVA_LUCRO } from '../../components/visao-geral/relatorioUtils'
 import { mesAtual } from '../../components/visao-geral/periodoUtils'
 import useSessao from '../../components/sessao/useSessao'
 import { buscarFinanceiros, buscarOperacionais } from '../../services/indicadores'
-
-const RESSALVA_LUCRO = 'Estimativa: compara o faturamento das entregas com as compras do período, não o consumo exato de insumos.'
 
 export default function VisaoGeral() {
   const { ehDona } = useSessao()
   const [periodo, setPeriodo] = useState(() => mesAtual(new Date()))
   const [tentativa, setTentativa] = useState(0)
+  const [relatorioAberto, setRelatorioAberto] = useState(false)
+  const botaoRelatorio = useRef(null)
+  const relatorioFoiAberto = useRef(false)
   const [estado, setEstado] = useState({ carregando: true, erro: false, operacionais: null, financeiros: null })
 
   useEffect(() => {
@@ -30,6 +34,15 @@ export default function VisaoGeral() {
     return () => { ativo = false }
   }, [periodo, ehDona, tentativa])
 
+  useEffect(() => {
+    if (!relatorioAberto && relatorioFoiAberto.current) botaoRelatorio.current?.focus()
+  }, [relatorioAberto])
+
+  function abrirRelatorio() {
+    relatorioFoiAberto.current = true
+    setRelatorioAberto(true)
+  }
+
   function alterarPeriodo(novo) {
     setEstado((atual) => ({ ...atual, carregando: true, erro: false }))
     setPeriodo(novo)
@@ -43,9 +56,18 @@ export default function VisaoGeral() {
   const { carregando, erro, operacionais, financeiros } = estado
   const semPedidos = operacionais && Object.values(operacionais.pedidosPorStatus).every((quantidade) => quantidade === 0)
 
+  if (relatorioAberto) return <RelatorioVisaoGeral onBack={() => setRelatorioAberto(false)} />
+
   return (
     <main className="dashboard" aria-busy={carregando}>
-      <header className="dashboard-heading"><div><h1>Visão Geral</h1><p>Acompanhe o desempenho e tome decisões com clareza</p></div></header>
+      <header className="dashboard-heading">
+        <div><h1>Visão Geral</h1><p>Acompanhe o desempenho e tome decisões com clareza</p></div>
+        {ehDona && (
+          <button type="button" className="outline-button" ref={botaoRelatorio} onClick={abrirRelatorio}>
+            <FileText size={16} aria-hidden="true" /> Gerar relatório
+          </button>
+        )}
+      </header>
       <Filtros de={periodo.de} ate={periodo.ate} onChange={alterarPeriodo} />
       {carregando && <p className="empty-dashboard" role="status">Carregando indicadores...</p>}
       {erro && (
