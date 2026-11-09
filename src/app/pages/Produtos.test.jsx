@@ -258,4 +258,59 @@ describe('Produtos', () => {
     expect(await screen.findByText('Preço atual deve ser maior ou igual a zero')).toBeInTheDocument()
     expect(screen.getByLabelText('Nome')).toHaveValue('Bolo Exemplo')
   })
+
+  it('salva a configuração de precificação e recarrega os produtos', async () => {
+    const api = montarApi({ 'PUT /configuracao-precificacao': { status: 200, data: { margemPadrao: 80, percentualIndiretos: 5 } } })
+    await abrir('DONA')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Precificação' }))
+    fireEvent.change(await screen.findByLabelText('Margem padrão (%)'), { target: { value: '80' } })
+    fireEvent.change(screen.getByLabelText('Custos indiretos (%)'), { target: { value: '5' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar configuração' }))
+
+    await waitFor(() => expect(api.chamadasDe('GET /produtos')).toHaveLength(2))
+    expect(JSON.parse(api.chamadasDe('PUT /configuracao-precificacao')[0].corpo)).toEqual({
+      margemPadrao: 80,
+      percentualIndiretos: 5,
+    })
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  describe('alerta de preço abaixo do sugerido', () => {
+    const OUTRO = { ...PRODUTO, idProduto: 2, nome: 'Brownie Exemplo', precoAtual: 20, precoSugerido: 18 }
+
+    it('conta os produtos abaixo do sugerido e filtra a lista', async () => {
+      montarApi({
+        'GET /produtos': { status: 200, data: [PRODUTO, OUTRO] },
+        'GET /produtos/2/insumos': { status: 200, data: [] },
+      })
+      await abrir('DONA')
+
+      expect(screen.getByText('1 produto com preço abaixo do sugerido')).toBeInTheDocument()
+      expect(screen.getAllByText('Preço abaixo do sugerido')).toHaveLength(1)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Mostrar só esses' }))
+      expect(screen.getByText('Bolo Exemplo')).toBeInTheDocument()
+      expect(screen.queryByText('Brownie Exemplo')).not.toBeInTheDocument()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Mostrar todos' }))
+      expect(screen.getByText('Brownie Exemplo')).toBeInTheDocument()
+    })
+
+    it('não mostra nada quando o preço atual alcança o sugerido', async () => {
+      montarApi({ 'GET /produtos': { status: 200, data: [OUTRO] }, 'GET /produtos/2/insumos': { status: 200, data: [] } })
+      simularPerfil('DONA')
+      renderComToast(<Produtos />)
+      await screen.findByText('Brownie Exemplo')
+
+      expect(screen.queryByText(/preço abaixo do sugerido/i)).not.toBeInTheDocument()
+    })
+
+    it('esconde o alerta da FUNCIONARIA', async () => {
+      montarApi()
+      await abrir('FUNCIONARIA')
+
+      expect(screen.queryByText(/preço abaixo do sugerido/i)).not.toBeInTheDocument()
+    })
+  })
 })

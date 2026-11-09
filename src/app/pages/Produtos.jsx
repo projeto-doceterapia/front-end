@@ -8,6 +8,7 @@ import { numeroDecimal } from '../../components/estoque/estoqueUtils'
 import {
   margemParaEnvio,
   mensagemErroProduto,
+  precoAbaixoDoSugerido,
 } from '../../components/produtos/precificacaoUtils'
 import {
   listarCategorias,
@@ -57,6 +58,7 @@ export default function Produtos() {
   const [erroMargem, setErroMargem] = useState('')
   const [salvando, setSalvando] = useState(false)
   const [precificacaoAberta, setPrecificacaoAberta] = useState(false)
+  const [soAbaixoDoSugerido, setSoAbaixoDoSugerido] = useState(false)
   const origemDoModal = useRef(null)
 
   async function carregar() {
@@ -79,16 +81,20 @@ export default function Produtos() {
     carregar()
   }, [])
 
+  const totalAbaixoDoSugerido = ehDona ? produtos.filter(precoAbaixoDoSugerido).length : 0
+  const filtrarAbaixoDoSugerido = soAbaixoDoSugerido && totalAbaixoDoSugerido > 0
+
   const visiveis = useMemo(
     () =>
       produtos.filter((produto) => {
         const texto = `${produto.nome} ${produto.categoriaNome || ''}`.toLowerCase()
         return (
           texto.includes(busca.toLowerCase()) &&
-          (categoriaAtiva === 'todas' || String(produto.categoriaId) === categoriaAtiva)
+          (categoriaAtiva === 'todas' || String(produto.categoriaId) === categoriaAtiva) &&
+          (!filtrarAbaixoDoSugerido || precoAbaixoDoSugerido(produto))
         )
       }),
-    [produtos, busca, categoriaAtiva]
+    [produtos, busca, categoriaAtiva, filtrarAbaixoDoSugerido]
   )
 
   function abrir(produto = null) {
@@ -184,6 +190,22 @@ export default function Produtos() {
             placeholder="Buscar produto..."
           />
         </label>
+        {totalAbaixoDoSugerido > 0 && (
+          <p className="catalog-aviso">
+            <span>
+              {totalAbaixoDoSugerido}{' '}
+              {totalAbaixoDoSugerido === 1 ? 'produto com preço abaixo do sugerido' : 'produtos com preço abaixo do sugerido'}
+            </span>
+            <button
+              type="button"
+              className="outline-button"
+              aria-pressed={filtrarAbaixoDoSugerido}
+              onClick={() => setSoAbaixoDoSugerido(!filtrarAbaixoDoSugerido)}
+            >
+              {filtrarAbaixoDoSugerido ? 'Mostrar todos' : 'Mostrar só esses'}
+            </button>
+          </p>
+        )}
         {carregando && (
           <p className="empty-catalog" role="status">Carregando produtos...</p>
         )}
