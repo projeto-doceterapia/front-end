@@ -1294,20 +1294,6 @@ button {
   font-size: 12px;
   line-height: 1.5;
 }
-.ingredient-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-.ingredient-chips span {
-  padding: 5px 10px;
-  border: 1px solid #ead3c4;
-  border-radius: 16px;
-  background: #fff;
-  color: #617089;
-  font-size: 12px;
-}
 .pricing-panel {
   padding: 12px;
   border: 1px solid #f8e7e8;
