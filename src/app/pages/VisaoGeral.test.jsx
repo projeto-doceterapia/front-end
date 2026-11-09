@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import VisaoGeral from './VisaoGeral'
 import api from '../../services/api'
 import useSessao from '../../components/sessao/useSessao'
@@ -166,5 +166,27 @@ describe('VisaoGeral', () => {
 
     expect(screen.getByText(/compara o faturamento das entregas com as compras do período, não o consumo exato de insumos/))
       .toBeInTheDocument()
+  })
+
+  it('botão do relatório só para a DONA', async () => {
+    await abrir('DONA')
+    expect(screen.getByRole('button', { name: 'Gerar relatório' })).toBeInTheDocument()
+
+    cleanup()
+    await abrir('FUNCIONARIA')
+    expect(screen.queryByRole('button', { name: 'Gerar relatório' })).not.toBeInTheDocument()
+  })
+
+  it('abre o relatório no lugar dos painéis e devolve o foco ao voltar', async () => {
+    await abrir('DONA')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Gerar relatório' }))
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Relatório do período' })).toHaveFocus()
+    expect(screen.queryByText('Estoque em atenção')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Voltar à Visão Geral' }))
+
+    expect(screen.getByRole('button', { name: 'Gerar relatório' })).toHaveFocus()
   })
 })
