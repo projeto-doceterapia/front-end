@@ -10,6 +10,7 @@ import {
   UsersRound,
 } from 'lucide-react'
 import logoImage from '../assets/logo.png'
+import { NOME_NEGOCIO } from './identidade'
 
 const itens = [
   { id: 'visao-geral', label: 'Visão Geral', icone: Grid2x2 },
@@ -28,7 +29,7 @@ export default function Sidebar({ telaAtual, aoNavegar }) {
       <div className="sidebar-brand">
         <img src={logoImage} alt="Logo Doceterapia" />
         <div>
-          <strong>Doceterapia</strong>
+          <strong>{NOME_NEGOCIO}</strong>
           <span>Confeitaria</span>
         </div>
       </div>
