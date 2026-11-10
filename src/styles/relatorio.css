@@ -1,0 +1,253 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700&display=swap');
+
+.relatorio {
+  --relatorio-glace: #EDAAC2;
+  --relatorio-titulo: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --relatorio-corpo: Montserrat, 'Segoe UI', Arial, sans-serif;
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+  color: var(--foreground);
+  font-family: var(--relatorio-corpo);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.relatorio h1,
+.relatorio h2 {
+  margin: 0;
+  color: var(--accent);
+  font-family: var(--relatorio-titulo);
+  font-weight: 700;
+}
+
+.relatorio h1 { font-size: 1.75rem; }
+.relatorio h2 { font-size: 1.25rem; margin-bottom: 0.75rem; }
+.relatorio h3 { margin: 0 0 0.5rem; color: var(--accent); font-size: 1rem; }
+.relatorio p { margin: 0.25rem 0; }
+
+.relatorio-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.relatorio-periodo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.relatorio-acoes button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.relatorio-acoes button.relatorio-imprimir {
+  margin-left: auto;
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.relatorio-acoes button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.relatorio-acoes input {
+  min-height: 2.5rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  font: inherit;
+}
+
+.relatorio-aviso {
+  flex-basis: 100%;
+  color: var(--destructive);
+}
+
+.relatorio-cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1.5px solid var(--primary);
+}
+
+.relatorio-cabecalho h1:focus { outline: none; }
+
+.relatorio-negocio {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.relatorio-slogan { font-style: italic; }
+
+.relatorio-logo {
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: #fff;
+  object-fit: contain;
+}
+
+.relatorio-estado { margin: 1.5rem 0; }
+
+.relatorio-erro button {
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.relatorio-secao {
+  padding: 1rem 0;
+  border-bottom: 1.5px solid var(--primary);
+  break-inside: avoid;
+}
+
+.relatorio-valores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.relatorio-valores dt { font-size: 0.8125rem; }
+.relatorio-valores dd { margin: 0; color: var(--accent); font-size: 1.125rem; font-weight: 700; }
+
+.relatorio-nota { font-size: 0.8125rem; font-style: italic; }
+.relatorio-destaque strong { color: var(--accent); font-size: 1.25rem; }
+
+.relatorio-ressalva {
+  padding: 0.5rem 0.75rem;
+  border-left: 4px solid var(--relatorio-glace);
+  background: var(--secondary);
+  color: var(--accent);
+}
+
+.relatorio-cancelados { margin-top: 1rem; }
+
+.relatorio-tabela {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.relatorio-tabela th,
+.relatorio-tabela td {
+  padding: 0.375rem 0.5rem;
+  border-bottom: 1px solid var(--secondary);
+  text-align: left;
+}
+
+.relatorio-tabela thead th,
+.relatorio-tabela tfoot th,
+.relatorio-tabela tfoot td {
+  background: var(--secondary);
+  color: var(--accent);
+}
+
+.relatorio-colunas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1.5rem;
+}
+
+.relatorio-ranking {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.relatorio-ranking li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.125rem 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.relatorio-produto-valor { font-weight: 700; }
+.relatorio-trilha { grid-column: 1 / -1; display: block; height: 0.5rem; }
+
+.relatorio-barra {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+}
+
+.relatorio::after {
+  content: '';
+  display: block;
+  height: 4mm;
+  margin-top: 1rem;
+  background: var(--secondary);
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 15mm;
+
+    @bottom-center {
+      content: 'Página ' counter(page);
+      color: #4A4A4A;
+      font-size: 9pt;
+    }
+  }
+
+  .sidebar,
+  .app-topbar,
+  .relatorio-acoes,
+  [data-sem-impressao] {
+    display: none;
+  }
+
+  .app-shell {
+    display: block;
+    zoom: 1;
+    background: #fff;
+  }
+
+  .app-content { margin: 0; padding: 0; }
+
+  body { background: #fff; }
+
+  .relatorio {
+    max-width: none;
+    padding: 0;
+    font-size: 10pt;
+  }
+
+  .relatorio-tabela thead { display: table-header-group; }
+
+  .relatorio-logo {
+    width: 18mm;
+    height: 18mm;
+  }
+
+  .relatorio-barra,
+  .relatorio-cabecalho,
+  .relatorio::after {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

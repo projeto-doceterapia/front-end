@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import logoImage from "../../assets/logo.png";
 import useToast from "../../components/feedback/useToast";
+import { NOME_NEGOCIO } from "../../components/identidade";
 import useSessao from "../../components/sessao/useSessao";
 import { ehFalhaAoBuscarUsuario } from "../../services/sessao";
 
@@ -64,7 +65,7 @@ export default function Login() {
               />
             </div>
             <div className="login-brand">
-              <h1>Doceterapia</h1>
+              <h1>{NOME_NEGOCIO}</h1>
               <p>
                 Sistema de Gestão da Confeitaria
               </p>
