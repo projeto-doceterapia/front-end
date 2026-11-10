@@ -1777,6 +1777,38 @@ button {
 .catalog-form .primary-button {
   justify-self: end;
 }
+.zip-field {
+  display: grid;
+  gap: 5px;
+}
+.zip-field label {
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.zip-feedback {
+  margin: 0;
+  min-height: 1em;
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.zip-field input[aria-invalid='true'] {
+  border-color: var(--destructive);
+}
+.zip-field input[aria-invalid='true'] + .zip-feedback {
+  color: var(--destructive);
+}
+.client-history-status {
+  margin: 0;
+}
+.client-history-retry {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
 @media (max-width: 900px) {
   .catalog-heading,
   .catalog-body {

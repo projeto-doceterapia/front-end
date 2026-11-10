@@ -1,101 +1,180 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Building2, ClipboardList, Search, UsersRound } from 'lucide-react'
 import api from '../../services/api'
 import { Modal, PageTop } from './Produtos'
 import ClienteCard from '../../components/clientes/ClienteCard'
+import CampoCep from '../../components/endereco/CampoCep'
+import { montarEndereco } from '../../components/endereco/enderecoUtils'
+import { mensagemErro } from '../../components/estoque/estoqueUtils'
+import ConfirmDialog from '../../components/feedback/ConfirmDialog'
+import useToast from '../../components/feedback/useToast'
+import useSessao from '../../components/sessao/useSessao'
 
+const ESPERA_BUSCA_MS = 300
 const clienteInicial = {
   nome: '',
   telefone: '',
   endereco: '',
+  cep: '',
   tipoPessoa: 'FISICA',
   classificacaoCliente: 'PADRAO',
   status: 'ATIVO',
   observacao: '',
 }
 
+function formularioDe(cliente) {
+  return {
+    nome: cliente.nome,
+    telefone: cliente.telefone,
+    endereco: cliente.endereco,
+    cep: cliente.cep ?? '',
+    tipoPessoa: cliente.tipoPessoa,
+    classificacaoCliente: cliente.classificacaoCliente,
+    status: cliente.status ?? 'ATIVO',
+    observacao: cliente.observacao ?? '',
+  }
+}
+
 export default function Clientes() {
+  const { sucesso, erro: avisarErro } = useToast()
+  const { ehDona } = useSessao()
   const [clientes, setClientes] = useState([])
-  const [pedidos, setPedidos] = useState([])
-  const [itens, setItens] = useState([])
   const [produtos, setProdutos] = useState([])
   const [busca, setBusca] = useState('')
   const [filtro, setFiltro] = useState('todos')
+  const [carregando, setCarregando] = useState(true)
+  const [mostrarInativos, setMostrarInativos] = useState(false)
+  const [alvoInativacao, setAlvoInativacao] = useState(null)
+  const [inativando, setInativando] = useState(false)
   const [modal, setModal] = useState(false)
   const [edicao, setEdicao] = useState(null)
   const [form, setForm] = useState(clienteInicial)
+  const [ajudaEndereco, setAjudaEndereco] = useState(false)
   const [erro, setErro] = useState('')
+  const requisicaoAtual = useRef(0)
+  const campoEndereco = useRef(null)
 
-  async function carregar() {
+  const carregarClientes = useCallback(async (termo, incluirInativos) => {
+    const requisicao = ++requisicaoAtual.current
+    setCarregando(true)
+    setErro('')
     try {
-      const [resClientes, resPedidos, resItens, resProdutos] = await Promise.all([
-        api.get('/clientes'),
-        api.get('/pedidos'),
-        api.get('/itens-pedido'),
-        api.get('/produtos'),
-      ])
-
-      setClientes(resClientes.data || [])
-      setPedidos(resPedidos.data || [])
-      setItens(resItens.data || [])
-      setProdutos(resProdutos.data || [])
+      const params = {}
+      if (termo) params.busca = termo
+      if (incluirInativos) params.incluirInativos = true
+      const resposta = await api.get('/clientes/resumo', {
+        params: Object.keys(params).length ? params : undefined,
+      })
+      if (requisicao === requisicaoAtual.current) setClientes(resposta.data || [])
     } catch {
-      setErro(
-        'Não foi possível carregar os clientes. Verifique a conexão com o servidor.'
-      )
+      if (requisicao === requisicaoAtual.current) {
+        setErro('Não foi possível carregar os clientes. Verifique a conexão com o servidor.')
+      }
+    } finally {
+      if (requisicao === requisicaoAtual.current) setCarregando(false)
     }
-  }
-
-  useEffect(() => {
-    carregar()
   }, [])
 
-  const pedidosCliente = (id) => pedidos.filter((pedido) => pedido.clienteId === id)
+  useEffect(() => {
+    api
+      .get('/produtos')
+      .then((resposta) => setProdutos(resposta.data || []))
+      .catch(() => setProdutos([]))
+  }, [])
+
+  const termoBusca = busca.trim()
+  useEffect(() => {
+    if (termoBusca.length === 1) return undefined
+
+    const espera = setTimeout(
+      () => carregarClientes(termoBusca, mostrarInativos),
+      termoBusca ? ESPERA_BUSCA_MS : 0
+    )
+    return () => clearTimeout(espera)
+  }, [termoBusca, mostrarInativos, carregarClientes])
 
   const visiveis = useMemo(
     () =>
-      clientes.filter((cliente) => {
-        const texto =
-          `${cliente.nome} ${cliente.telefone} ${cliente.endereco}`.toLowerCase()
-        const correspondeBusca = texto.includes(busca.toLowerCase())
-        const correspondeFiltro =
+      clientes.filter(
+        (cliente) =>
           filtro === 'todos' ||
           (filtro === 'empresa' && cliente.tipoPessoa === 'JURIDICA') ||
           (filtro === 'frequente' && cliente.classificacaoCliente === 'FREQUENTE') ||
           (filtro === 'volume' && cliente.classificacaoCliente === 'ALTO_VOLUME')
-
-        return correspondeBusca && correspondeFiltro
-      }),
-    [clientes, busca, filtro]
+      ),
+    [clientes, filtro]
   )
 
   function abrir(cliente = null) {
     setEdicao(cliente)
-    setForm(cliente ? { ...cliente } : clienteInicial)
-    setErro('')
+    setForm(cliente ? formularioDe(cliente) : clienteInicial)
+    setAjudaEndereco(false)
     setModal(true)
+  }
+
+  function preencherEndereco(endereco) {
+    setForm((atual) => ({ ...atual, endereco: montarEndereco(endereco) }))
+    setAjudaEndereco(true)
+    campoEndereco.current?.focus()
   }
 
   async function salvar(evento) {
     evento.preventDefault()
 
-    try {
-      if (edicao) {
-        await api.put(`/clientes/${edicao.idCliente}`, form)
-      } else {
-        await api.post('/clientes', form)
-      }
+    if (form.cep && form.cep.length !== 8) {
+      avisarErro('Informe os 8 dígitos do CEP ou deixe o campo vazio.')
+      return
+    }
 
-      setModal(false)
-      carregar()
-    } catch {
-      setErro('Não foi possível salvar. Confira os campos obrigatórios.')
+    try {
+      const corpo = { ...form, cep: form.cep || null }
+      if (edicao) {
+        await api.put(`/clientes/${edicao.idCliente}`, corpo)
+      } else {
+        await api.post('/clientes', corpo)
+      }
+    } catch (falha) {
+      avisarErro(mensagemErro(falha, 'Não foi possível salvar o cliente.'))
+      return
+    }
+
+    sucesso('Cliente salvo.')
+    setModal(false)
+    carregarClientes(termoBusca.length === 1 ? '' : termoBusca, mostrarInativos)
+  }
+
+  function recarregar() {
+    return carregarClientes(termoBusca.length === 1 ? '' : termoBusca, mostrarInativos)
+  }
+
+  async function inativar() {
+    setInativando(true)
+    try {
+      await api.delete(`/clientes/${alvoInativacao.idCliente}`)
+      sucesso('Cliente inativado.')
+      setAlvoInativacao(null)
+      recarregar()
+    } catch (falha) {
+      avisarErro(mensagemErro(falha, 'Não foi possível inativar o cliente.'))
+    } finally {
+      setInativando(false)
+    }
+  }
+
+  async function reativar(cliente) {
+    try {
+      await api.patch(`/clientes/${cliente.idCliente}/reativar`)
+      sucesso('Cliente reativado.')
+      recarregar()
+    } catch (falha) {
+      avisarErro(mensagemErro(falha, 'Não foi possível reativar o cliente.'))
     }
   }
 
   const altoVolume = clientes.filter(
     (cliente) => cliente.classificacaoCliente === 'ALTO_VOLUME'
   ).length
+  const pedidosTotais = clientes.reduce((total, cliente) => total + (cliente.totalPedidos ?? 0), 0)
 
   return (
     <main className="catalog-page clients-page">
@@ -109,16 +188,22 @@ export default function Clientes() {
         <div className="client-stats">
           <Stat icon={<UsersRound />} titulo="Total" valor={clientes.length} />
           <Stat icon={<Building2 />} titulo="Alto volume" valor={altoVolume} amarelo />
-          <Stat icon={<ClipboardList />} titulo="Pedidos totais" valor={pedidos.length} />
+          <Stat icon={<ClipboardList />} titulo="Pedidos totais" valor={pedidosTotais} />
         </div>
-        {erro && !modal && <p className="catalog-error">{erro}</p>}
+        {erro && (
+          <p className="catalog-error" role="alert">
+            {erro}
+          </p>
+        )}
         <div className="client-filters">
           <label className="catalog-search">
             <Search size={18} />
             <input
+              type="search"
+              aria-label="Buscar cliente por nome ou telefone"
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              placeholder="Buscar por nome, telefone ou endereço..."
+              placeholder="Nome ou telefone..."
             />
           </label>
           <div className="filter-chips">
@@ -146,24 +231,48 @@ export default function Clientes() {
             >
               Alto volume
             </button>
+            {ehDona && (
+              <button
+                aria-pressed={mostrarInativos}
+                className={mostrarInativos ? 'selected' : ''}
+                onClick={() => setMostrarInativos(!mostrarInativos)}
+              >
+                Mostrar inativos
+              </button>
+            )}
           </div>
         </div>
+        {carregando && (
+          <p className="empty-catalog" role="status">
+            Carregando clientes...
+          </p>
+        )}
         <div className="clients-list">
           {visiveis.map((cliente) => (
             <ClienteCard
               key={cliente.idCliente}
               cliente={cliente}
-              pedidos={pedidosCliente(cliente.idCliente)}
-              itens={itens}
               produtos={produtos}
               aoEditar={() => abrir(cliente)}
+              onInativar={() => setAlvoInativacao(cliente)}
+              onReativar={() => reativar(cliente)}
             />
           ))}
         </div>
-        {!erro && visiveis.length === 0 && (
+        {!carregando && !erro && visiveis.length === 0 && (
           <p className="empty-catalog">Nenhum cliente encontrado.</p>
         )}
       </section>
+      <ConfirmDialog
+        aberto={Boolean(alvoInativacao)}
+        titulo="Inativar cliente"
+        mensagem={`Inativar ${alvoInativacao?.nome}? O cliente some da lista e do pedido, mas o histórico é mantido.`}
+        textoConfirmar="Inativar"
+        perigoso
+        ocupado={inativando}
+        onConfirm={inativar}
+        onCancel={() => setAlvoInativacao(null)}
+      />
       {modal && (
         <Modal
           titulo={edicao ? 'Editar cliente' : 'Novo cliente'}
@@ -186,13 +295,25 @@ export default function Clientes() {
                 onChange={(e) => setForm({ ...form, telefone: e.target.value })}
               />
             </label>
+            <CampoCep
+              id="cep-cliente"
+              valor={form.cep}
+              onChange={(cep) => setForm({ ...form, cep })}
+              onEnderecoEncontrado={preencherEndereco}
+            />
             <label>
               Endereço
               <input
+                ref={campoEndereco}
                 required
+                maxLength={255}
                 value={form.endereco}
+                aria-describedby={ajudaEndereco ? 'endereco-cliente-ajuda' : undefined}
                 onChange={(e) => setForm({ ...form, endereco: e.target.value })}
               />
+              {ajudaEndereco && (
+                <small id="endereco-cliente-ajuda">Complete com o número e o complemento.</small>
+              )}
             </label>
             <label>
               Tipo
@@ -217,7 +338,6 @@ export default function Clientes() {
                 <option value="ALTO_VOLUME">Alto volume</option>
               </select>
             </label>
-            {erro && <p className="catalog-error">{erro}</p>}
             <button className="primary-button">Salvar cliente</button>
           </form>
         </Modal>
