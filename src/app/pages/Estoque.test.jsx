@@ -33,10 +33,15 @@ const CONFLITO_MOVIMENTOS = {
   },
 }
 
+function respostaPadrao(url) {
+  if (url === '/insumos') return Promise.resolve({ data: [INSUMO] })
+  if (url === '/estoque/movimentos') return Promise.resolve({ data: [] })
+  return Promise.resolve({ data: [CATEGORIA] })
+}
+
 async function abrirExclusao() {
   render(<Estoque />)
-  await screen.findByText('Farinha de Trigo')
-  fireEvent.click(screen.getByRole('button', { name: 'Editar Farinha de Trigo' }))
+  fireEvent.click(await screen.findByRole('button', { name: 'Editar Farinha de Trigo' }))
   fireEvent.click(screen.getByRole('button', { name: 'Excluir insumo' }))
   fireEvent.click(screen.getByRole('button', { name: /Confirmar exclusão/ }))
 }
@@ -54,11 +59,7 @@ describe('Estoque - exclusão com movimentações', () => {
     dialogCloseOriginal = HTMLDialogElement.prototype.close
     HTMLDialogElement.prototype.showModal = function () { this.open = true }
     HTMLDialogElement.prototype.close = function () { this.open = false }
-    api.get.mockImplementation((url) =>
-      url === '/insumos'
-        ? Promise.resolve({ data: [INSUMO] })
-        : Promise.resolve({ data: [CATEGORIA] }),
-    )
+    api.get.mockImplementation(respostaPadrao)
   })
 
   afterEach(() => {
@@ -87,6 +88,61 @@ describe('Estoque - exclusão com movimentações', () => {
     await abrirExclusao()
 
     await screen.findByText(CONFLITO_MOVIMENTOS.response.data.message)
-    expect(screen.getByText('Farinha de Trigo')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Editar Farinha de Trigo' })).toBeInTheDocument()
+  })
+})
+
+describe('Estoque - movimentações recentes', () => {
+  const MOVIMENTO = {
+    idMovimentacao: 58, insumoId: 7, tipo: 'ENTRADA_COMPRA', quantidade: 2, ocorridoEm: '2026-11-03T09:12:00',
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date(2026, 10, 3, 10, 0) })
+    api.get.mockImplementation((url) => (url === '/estoque/movimentos'
+      ? Promise.resolve({ data: [MOVIMENTO] })
+      : respostaPadrao(url)))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('abre com as movimentações dos últimos 30 dias', async () => {
+    render(<Estoque />)
+
+    expect(await screen.findByText('Entrada de compra')).toBeInTheDocument()
+    expect(api.get).toHaveBeenCalledWith('/estoque/movimentos', { params: { de: '2026-10-04', ate: '2026-11-03' } })
+  })
+
+  it('amplia o período e filtra por insumo', async () => {
+    render(<Estoque />)
+    await screen.findByText('Entrada de compra')
+
+    fireEvent.change(screen.getByLabelText('De'), { target: { value: '2026-08-01' } })
+    await waitFor(() => expect(api.get).toHaveBeenCalledWith(
+      '/estoque/movimentos', { params: { de: '2026-08-01', ate: '2026-11-03' } }))
+
+    fireEvent.change(screen.getByLabelText('Insumo'), { target: { value: '7' } })
+    await waitFor(() => expect(api.get).toHaveBeenCalledWith(
+      '/estoque/movimentos', { params: { de: '2026-08-01', ate: '2026-11-03', insumoId: '7' } }))
+  })
+
+  it('mostra a mensagem de vazio e o erro com nova tentativa', async () => {
+    api.get.mockImplementation((url) => (url === '/estoque/movimentos'
+      ? Promise.resolve({ data: [] })
+      : respostaPadrao(url)))
+    const { unmount } = render(<Estoque />)
+    expect(await screen.findByText('Nenhuma movimentação neste período.')).toBeInTheDocument()
+    unmount()
+
+    api.get.mockImplementation((url) => (url === '/estoque/movimentos'
+      ? Promise.reject(new Error('falha'))
+      : respostaPadrao(url)))
+    render(<Estoque />)
+    const alerta = await screen.findByText('Não foi possível carregar as movimentações.')
+    expect(alerta.closest('[role="alert"]')).not.toBeNull()
+    expect(screen.getByRole('button', { name: 'Tentar novamente' })).toBeInTheDocument()
   })
 })

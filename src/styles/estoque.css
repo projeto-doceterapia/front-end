@@ -106,3 +106,9 @@
   .stock-level-filters { width: 100%; }
   .stock-level-filters button { flex: 1; }
 }
+
+.stock-movements { margin-top: 14px; }
+.stock-movements-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 10px 14px; }
+.stock-movements-toolbar h2 { margin: 0 12px 0 0; font-size: 13px; }
+.stock-movements-toolbar select { padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; background: var(--input-background); color: var(--foreground); }
+.stock-movements .filtros-periodo { margin: 0; }

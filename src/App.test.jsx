@@ -73,6 +73,11 @@ async function focoNoEmail() {
   await waitFor(() => expect(campo).toHaveFocus())
 }
 
+async function fonteDoStream() {
+  await waitFor(() => expect(FakeEventSource.instancias).toHaveLength(1))
+  return FakeEventSource.instancias[0]
+}
+
 describe('App - sessão', () => {
   beforeEach(() => {
     FakeEventSource.instancias = []
@@ -123,15 +128,15 @@ describe('App - sessão', () => {
     entrarComCredenciais()
     await screen.findByRole('heading', { name: 'Tela Agenda' })
 
-    expect(FakeEventSource.instancias).toHaveLength(1)
-    expect(FakeEventSource.instancias[0].url).toContain('/notificacoes/stream')
-    expect(FakeEventSource.instancias[0].opcoes).toEqual({ withCredentials: true })
+    const fonte = await fonteDoStream()
+    expect(fonte.url).toContain('/notificacoes/stream')
+    expect(fonte.opcoes).toEqual({ withCredentials: true })
   })
 
   it('sai e fecha o stream de notificações', async () => {
     const falsa = abrirApp({ [ME]: COM_SESSAO, [LOGOUT]: { status: 204 } })
     await screen.findByRole('heading', { name: 'Tela Agenda' })
-    const fonte = FakeEventSource.instancias[0]
+    const fonte = await fonteDoStream()
     expect(fonte.fechada).toBe(false)
 
     fireEvent.click(screen.getByRole('button', { name: 'Sair' }))
@@ -149,7 +154,7 @@ describe('App - sessão', () => {
 
     expect(await screen.findByText('Não foi possível sair. Tente novamente.')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Tela Agenda' })).toBeInTheDocument()
-    expect(FakeEventSource.instancias[0].fechada).toBe(false)
+    expect((await fonteDoStream()).fechada).toBe(false)
     await waitFor(() => expect(screen.getByRole('button', { name: 'Sair' })).toBeEnabled())
   })
 
@@ -174,7 +179,7 @@ describe('App - sessão', () => {
   it('volta ao login com um aviso quando a sessão expira e fecha o stream', async () => {
     abrirApp({ [ME]: COM_SESSAO, 'GET /insumos': { status: 401 } })
     await screen.findByRole('heading', { name: 'Tela Agenda' })
-    const fonte = FakeEventSource.instancias[0]
+    const fonte = await fonteDoStream()
 
     await act(async () => {
       await api.get('/insumos').catch(() => {})
