@@ -6,6 +6,7 @@ import ResumoPedidos from '../../components/pedidos/ResumoPedidos'
 import TabelaHistoricoPedidos from '../../components/pedidos/TabelaHistoricoPedidos'
 import api from '../../services/api'
 import { dataPedido } from '../../components/pedidos/pedidoUtils'
+import { carregarPedidosComRelacionamentos, intervaloRelativo } from '../../services/pedidosConsulta'
 
 const ITENS_POR_PAGINA = 8
 const PERIODOS = [['todos', 'Todos'], ['hoje', 'Hoje'], ['semana', 'Esta semana'], ['mes', 'Este mês']]
@@ -35,13 +36,13 @@ export default function HistoricoPedidos({ onNewOrder }) {
     async function carregar() {
       try {
         const respostas = await Promise.all([
-          api.get('/pedidos'), api.get('/clientes'), api.get('/itens-pedido'), api.get('/produtos'), api.get('/pagamentos'),
+          carregarPedidosComRelacionamentos(intervaloRelativo(90, 0)), api.get('/clientes'), api.get('/produtos'),
         ])
-        setPedidos(respostas[0].data || [])
+        setPedidos(respostas[0].pedidos)
         setClientes(respostas[1].data || [])
-        setItens(respostas[2].data || [])
-        setProdutos(respostas[3].data || [])
-        setPagamentos(respostas[4].data || [])
+        setItens(respostas[0].itens)
+        setProdutos(respostas[2].data || [])
+        setPagamentos(respostas[0].pagamentos)
       } catch (error) {
         setErro('Não foi possível carregar o histórico de pedidos. Verifique a conexão com o servidor.')
         console.error(error)

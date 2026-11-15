@@ -6,6 +6,7 @@ import PaginacaoPedidos from '../../components/pedidos/PaginacaoPedidos'
 import ResumoPedidos from '../../components/pedidos/ResumoPedidos'
 import api from '../../services/api'
 import { dataPedido } from '../../components/pedidos/pedidoUtils'
+import { carregarPedidosComRelacionamentos, intervaloRelativo } from '../../services/pedidosConsulta'
 
 const ITENS_POR_PAGINA = 6
 const FILTROS = [
@@ -36,13 +37,13 @@ export default function Producao({ onNewOrder }) {
     async function carregar() {
       try {
         const respostas = await Promise.all([
-          api.get('/pedidos'), api.get('/clientes'), api.get('/itens-pedido'), api.get('/produtos'), api.get('/pagamentos'),
+          carregarPedidosComRelacionamentos({ ...intervaloRelativo(30, 7), status: 'AGUARDANDO_SINAL,ESPERANDO_FAZER,EM_PRODUCAO,AGUARDANDO_ENTREGA' }), api.get('/clientes'), api.get('/produtos'),
         ])
-        setPedidos(respostas[0].data || [])
+        setPedidos(respostas[0].pedidos)
         setClientes(respostas[1].data || [])
-        setItens(respostas[2].data || [])
-        setProdutos(respostas[3].data || [])
-        setPagamentos(respostas[4].data || [])
+        setItens(respostas[0].itens)
+        setProdutos(respostas[2].data || [])
+        setPagamentos(respostas[0].pagamentos)
       } catch (error) {
         setErro('Não foi possível carregar os pedidos de produção. Verifique a conexão com o servidor.')
         console.error(error)

@@ -6,6 +6,7 @@ import ResumoAgenda from '../../components/agenda/ResumoAgenda'
 import ConfiguracaoFarol from '../../components/agenda/ConfiguracaoFarol'
 import api from '../../services/api'
 import { carregarDadosTeste } from '../../services/dadosTeste'
+import { carregarPedidosComRelacionamentos, intervaloDoMes } from '../../services/pedidosConsulta'
 
 function dataISO(data) {
   return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}-${String(data.getDate()).padStart(2, '0')}`
@@ -27,15 +28,15 @@ export default function Agenda({ onNewOrder }) {
   const [carregandoDados, setCarregandoDados] = useState(false)
   const [mensagem, setMensagem] = useState('')
 
-  async function buscarDados() {
+  async function buscarDados(dataBase = mesExibido) {
     try {
       const respostas = await Promise.all([
-        api.get('/pedidos'), api.get('/pagamentos'), api.get('/itens-pedido'), api.get('/produtos'),
+        carregarPedidosComRelacionamentos({ ...intervaloDoMes(dataBase), status: 'ORCAMENTO,AGUARDANDO_SINAL,ESPERANDO_FAZER,EM_PRODUCAO,AGUARDANDO_ENTREGA,ENTREGUE' }), api.get('/produtos'),
       ])
-      setPedidos(respostas[0].data || [])
-      setPagamentos(respostas[1].data || [])
-      setItens(respostas[2].data || [])
-      setProdutos(respostas[3].data || [])
+      setPedidos(respostas[0].pedidos)
+      setPagamentos(respostas[0].pagamentos)
+      setItens(respostas[0].itens)
+      setProdutos(respostas[1].data || [])
 
       try {
         const respostaFarol = await api.get('/configuracao-farol')
@@ -50,7 +51,7 @@ export default function Agenda({ onNewOrder }) {
 
   useEffect(() => {
     buscarDados()
-  }, [])
+  }, [mesExibido])
 
   async function preencherDadosTeste() {
     setCarregandoDados(true)
