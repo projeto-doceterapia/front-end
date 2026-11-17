@@ -82,6 +82,16 @@ describe('DetalhePedido', () => {
     expect(dialogo).toHaveTextContent('1 item sem ficha técnica: estoque não verificado.')
   })
 
+  it('editar itens só nas fases que permitem', () => {
+    renderizar({ ...PEDIDO, statusPedido: 'AGUARDANDO_SINAL' })
+    expect(screen.getByRole('button', { name: 'Editar itens' })).toBeInTheDocument()
+  })
+
+  it('sem editar itens em produção', () => {
+    renderizar()
+    expect(screen.queryByRole('button', { name: 'Editar itens' })).not.toBeInTheDocument()
+  })
+
   it('Esc fecha', () => {
     const onFechar = renderizar()
     fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
