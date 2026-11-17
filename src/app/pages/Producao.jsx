@@ -5,9 +5,11 @@ import PedidoProducaoCard from '../../components/pedidos/PedidoProducaoCard'
 import PaginacaoPedidos from '../../components/pedidos/PaginacaoPedidos'
 import PainelPedido from '../../components/pedidos/PainelPedido'
 import ResumoPedidos from '../../components/pedidos/ResumoPedidos'
+import FiltroPeriodoPedidos from '../../components/pedidos/FiltroPeriodoPedidos'
+import useRecortePedidos from '../../components/pedidos/useRecortePedidos'
 import api from '../../services/api'
-import { dataPedido, pagamentoDoPedido, substituirPedido } from '../../components/pedidos/pedidoUtils'
-import { carregarPedidosComRelacionamentos, intervaloRelativo } from '../../services/pedidosConsulta'
+import { dataPedido, pagamentoDoPedido, STATUS_PEDIDO, substituirPedido } from '../../components/pedidos/pedidoUtils'
+import { dataISO, filtroAberturaProducao, formatarDataCompleta, STATUS_PRODUCAO } from '../../components/pedidos/filtrosUtils'
 
 const ITENS_POR_PAGINA = 6
 const FILTROS = [
@@ -19,42 +21,25 @@ const FILTROS = [
   ['EM_PRODUCAO', 'Em produção'],
   ['AGUARDANDO_ENTREGA', 'Prontos p/ entrega'],
 ]
-
-function dataISO(data) {
-  return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}-${String(data.getDate()).padStart(2, '0')}`
-}
+const OPCOES_STATUS = STATUS_PRODUCAO.map((status) => [status, STATUS_PEDIDO[status]])
 
 export default function Producao({ onNewOrder }) {
-  const [pedidos, setPedidos] = useState([])
+  const recorte = useRecortePedidos(filtroAberturaProducao)
+  const { pedidos, setPedidos, itens, pagamentos, carregando, erro } = recorte
   const [clientes, setClientes] = useState([])
-  const [itens, setItens] = useState([])
   const [produtos, setProdutos] = useState([])
-  const [pagamentos, setPagamentos] = useState([])
   const [filtro, setFiltro] = useState('todos')
   const [pagina, setPagina] = useState(1)
-  const [erro, setErro] = useState('')
-  const [carregando, setCarregando] = useState(true)
   const [aberto, setAberto] = useState(null)
 
   useEffect(() => {
-    async function carregar() {
-      try {
-        const respostas = await Promise.all([
-          carregarPedidosComRelacionamentos({ ...intervaloRelativo(30, 7), status: 'AGUARDANDO_SINAL,ESPERANDO_FAZER,EM_PRODUCAO,AGUARDANDO_ENTREGA' }), api.get('/clientes'), api.get('/produtos'),
-        ])
-        setPedidos(respostas[0].pedidos)
-        setClientes(respostas[1].data || [])
-        setItens(respostas[0].itens)
-        setProdutos(respostas[2].data || [])
-        setPagamentos(respostas[0].pagamentos)
-      } catch (error) {
-        setErro('Não foi possível carregar os pedidos de produção. Verifique a conexão com o servidor.')
-        console.error(error)
-      } finally {
-        setCarregando(false)
-      }
-    }
-    carregar()
+    // The edit dialog still offers the client list; the cards use nomeCliente from the order.
+    Promise.all([api.get('/clientes'), api.get('/produtos')])
+      .then(([respostaClientes, respostaProdutos]) => {
+        setClientes(respostaClientes.data || [])
+        setProdutos(respostaProdutos.data || [])
+      })
+      .catch((falha) => console.error(falha))
   }, [])
 
   const hoje = dataISO(new Date())
@@ -71,7 +56,8 @@ export default function Producao({ onNewOrder }) {
   const inicioSemanaISO = dataISO(primeiroDiaSemana)
   const fimSemanaISO = dataISO(ultimoDiaSemana)
 
-  const emAndamento = pedidos.filter((pedido) => !['ORCAMENTO', 'CANCELADO', 'ENTREGUE'].includes(pedido.statusPedido))
+  // An order advanced past the loaded stages (e.g. delivered) leaves the queue without a reload.
+  const emAndamento = pedidos.filter((pedido) => recorte.filtro.status.includes(pedido.statusPedido))
   const visiveis = useMemo(() => emAndamento.filter((pedido) => {
     const data = dataPedido(pedido)
     if (filtro === 'hoje') return data === hoje
@@ -103,10 +89,25 @@ export default function Producao({ onNewOrder }) {
     setPagina(1)
   }
 
+  function carregarRecorte(novoFiltro) {
+    setPagina(1)
+    recorte.carregar(novoFiltro)
+  }
+
+  const periodo = `${formatarDataCompleta(recorte.filtro.de)} e ${formatarDataCompleta(recorte.filtro.ate)}`
+
   return (
     <main className="orders-page production-page">
       <PageTop titulo="Produção" subtitulo="Acompanhe o que precisa ser produzido — pedidos confirmados em andamento" acao="Novo Pedido" aoClicar={onNewOrder} />
       <ResumoPedidos itens={resumo} />
+      <FiltroPeriodoPedidos
+        filtro={recorte.filtro}
+        opcoesStatus={OPCOES_STATUS}
+        exigeStatus
+        carregando={carregando}
+        onAplicar={carregarRecorte}
+        onRestaurar={() => carregarRecorte(filtroAberturaProducao())}
+      />
       <section className="production-filters" aria-label="Filtrar pedidos de produção">
         {FILTROS.map(([valor, texto]) => (
           <button type="button" key={valor} className={filtro === valor ? 'selected' : ''} onClick={() => mudarFiltro(valor)}>{texto}</button>
@@ -114,8 +115,8 @@ export default function Producao({ onNewOrder }) {
       </section>
       {erro && <p className="orders-error" role="alert">{erro}</p>}
       {carregando && <p className="orders-empty orders-loading" role="status">Carregando pedidos...</p>}
-      <section className="production-list" aria-label="Fila de produção">
-        {pedidosPagina.map((pedido) => (
+      <section className="production-list" aria-label="Fila de produção" aria-busy={carregando}>
+        {!carregando && pedidosPagina.map((pedido) => (
           <PedidoProducaoCard
             key={pedido.idPedido}
             pedido={pedido}
@@ -127,9 +128,10 @@ export default function Producao({ onNewOrder }) {
             onPedidoAtualizado={atualizarNaLista}
           />
         ))}
-        {!erro && !carregando && visiveis.length === 0 && <p className="orders-empty">Nenhum pedido corresponde a este filtro.</p>}
+        {!erro && !carregando && emAndamento.length === 0 && <p className="orders-empty">Nenhum pedido com entrega entre {periodo}.</p>}
+        {!erro && !carregando && emAndamento.length > 0 && visiveis.length === 0 && <p className="orders-empty">Nenhum pedido corresponde a este filtro.</p>}
       </section>
-      {visiveis.length > 0 && <PaginacaoPedidos totalItens={visiveis.length} porPagina={ITENS_POR_PAGINA} pagina={Math.min(pagina, totalPaginas)} aoMudar={setPagina} />}
+      {!carregando && visiveis.length > 0 && <PaginacaoPedidos totalItens={visiveis.length} porPagina={ITENS_POR_PAGINA} pagina={Math.min(pagina, totalPaginas)} aoMudar={setPagina} />}
       {pedidoAberto && (
         <PainelPedido
           pedido={pedidoAberto}

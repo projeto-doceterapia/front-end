@@ -5,9 +5,11 @@ import PaginacaoPedidos from '../../components/pedidos/PaginacaoPedidos'
 import PainelPedido from '../../components/pedidos/PainelPedido'
 import ResumoPedidos from '../../components/pedidos/ResumoPedidos'
 import TabelaHistoricoPedidos from '../../components/pedidos/TabelaHistoricoPedidos'
+import FiltroPeriodoPedidos from '../../components/pedidos/FiltroPeriodoPedidos'
+import useRecortePedidos from '../../components/pedidos/useRecortePedidos'
 import api from '../../services/api'
 import { dataPedido, substituirPedido } from '../../components/pedidos/pedidoUtils'
-import { carregarPedidosComRelacionamentos, intervaloRelativo } from '../../services/pedidosConsulta'
+import { dataISO, filtroAberturaHistorico, formatarDataCompleta } from '../../components/pedidos/filtrosUtils'
 
 const ITENS_POR_PAGINA = 8
 const PERIODOS = [['todos', 'Todos'], ['hoje', 'Hoje'], ['semana', 'Esta semana'], ['mes', 'Este mês']]
@@ -17,43 +19,25 @@ const ETAPAS = [
   ['AGUARDANDO_ENTREGA', 'Aguard. entrega'], ['ENTREGUE', 'Entregue'], ['CANCELADO', 'Cancelado'],
 ]
 
-function dataISO(data) {
-  return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}-${String(data.getDate()).padStart(2, '0')}`
-}
-
 export default function HistoricoPedidos({ onNewOrder }) {
-  const [pedidos, setPedidos] = useState([])
+  const recorte = useRecortePedidos(filtroAberturaHistorico)
+  const { pedidos, setPedidos, itens, pagamentos, carregando, erro } = recorte
   const [clientes, setClientes] = useState([])
-  const [itens, setItens] = useState([])
   const [produtos, setProdutos] = useState([])
-  const [pagamentos, setPagamentos] = useState([])
   const [periodo, setPeriodo] = useState('todos')
   const [etapa, setEtapa] = useState('todos')
   const [busca, setBusca] = useState('')
   const [pagina, setPagina] = useState(1)
-  const [erro, setErro] = useState('')
-  const [carregando, setCarregando] = useState(true)
   const [aberto, setAberto] = useState(null)
 
   useEffect(() => {
-    async function carregar() {
-      try {
-        const respostas = await Promise.all([
-          carregarPedidosComRelacionamentos(intervaloRelativo(90, 0)), api.get('/clientes'), api.get('/produtos'),
-        ])
-        setPedidos(respostas[0].pedidos)
-        setClientes(respostas[1].data || [])
-        setItens(respostas[0].itens)
-        setProdutos(respostas[2].data || [])
-        setPagamentos(respostas[0].pagamentos)
-      } catch (error) {
-        setErro('Não foi possível carregar o histórico de pedidos. Verifique a conexão com o servidor.')
-        console.error(error)
-      } finally {
-        setCarregando(false)
-      }
-    }
-    carregar()
+    // The edit dialog still offers the client list; rows use nomeCliente from the order.
+    Promise.all([api.get('/clientes'), api.get('/produtos')])
+      .then(([respostaClientes, respostaProdutos]) => {
+        setClientes(respostaClientes.data || [])
+        setProdutos(respostaProdutos.data || [])
+      })
+      .catch((falha) => console.error(falha))
   }, [])
 
   const hoje = new Date()
@@ -96,11 +80,22 @@ export default function HistoricoPedidos({ onNewOrder }) {
     setPagina(1)
   }
 
+  function carregarRecorte(novoFiltro) {
+    setPagina(1)
+    recorte.carregar(novoFiltro)
+  }
+
   return (
     <main className="orders-page history-page">
       <PageTop titulo="Histórico de Pedidos" subtitulo="Consulte, filtre e acompanhe pedidos registrados" acao="Novo Pedido" aoClicar={onNewOrder} />
       <ResumoPedidos itens={resumo} />
-      <section className="history-panel">
+      <FiltroPeriodoPedidos
+        filtro={recorte.filtro}
+        carregando={carregando}
+        onAplicar={carregarRecorte}
+        onRestaurar={() => carregarRecorte(filtroAberturaHistorico())}
+      />
+      <section className="history-panel" aria-busy={carregando}>
         <div className="history-controls">
           <div className="history-periods"><span>Período:</span>{PERIODOS.map(([valor, texto]) => <button type="button" className={periodo === valor ? 'selected' : ''} key={valor} onClick={() => alterarFiltro(setPeriodo, valor)}>{texto}</button>)}</div>
           <div className="history-stages"><span>Filtrar por etapa</span><div>{ETAPAS.map(([valor, texto]) => <button type="button" className={etapa === valor ? 'selected' : ''} key={valor} onClick={() => alterarFiltro(setEtapa, valor)}>{texto}<b>{valor === 'todos' ? pedidos.length : pedidos.filter((pedido) => pedido.statusPedido === valor).length}</b></button>)}</div></div>
@@ -108,7 +103,8 @@ export default function HistoricoPedidos({ onNewOrder }) {
         </div>
         {erro && <p className="orders-error" role="alert">{erro}</p>}
         {carregando && <p className="orders-empty orders-loading" role="status">Carregando pedidos...</p>}
-        {!carregando && !erro && (
+        {!carregando && !erro && !pedidos.length && <p className="orders-empty">Nenhum pedido com entrega entre {formatarDataCompleta(recorte.filtro.de)} e {formatarDataCompleta(recorte.filtro.ate)}.</p>}
+        {!carregando && !erro && pedidos.length > 0 && (
           <TabelaHistoricoPedidos
             pedidos={pedidosPagina}
             clientes={clientes}
@@ -119,7 +115,7 @@ export default function HistoricoPedidos({ onNewOrder }) {
             onEditar={(pedido) => setAberto({ id: pedido.idPedido, modo: 'editar' })}
           />
         )}
-        {visiveis.length > 0 && <PaginacaoPedidos totalItens={visiveis.length} porPagina={ITENS_POR_PAGINA} pagina={Math.min(pagina, totalPaginas)} aoMudar={setPagina} />}
+        {!carregando && !erro && visiveis.length > 0 && <PaginacaoPedidos totalItens={visiveis.length} porPagina={ITENS_POR_PAGINA} pagina={Math.min(pagina, totalPaginas)} aoMudar={setPagina} />}
       </section>
       {pedidoAberto && (
         <PainelPedido
