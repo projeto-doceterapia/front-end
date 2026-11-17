@@ -3,9 +3,10 @@ import { AlertCircle, ChefHat, PackageCheck, Truck } from 'lucide-react'
 import { PageTop } from './Produtos'
 import PedidoProducaoCard from '../../components/pedidos/PedidoProducaoCard'
 import PaginacaoPedidos from '../../components/pedidos/PaginacaoPedidos'
+import PainelPedido from '../../components/pedidos/PainelPedido'
 import ResumoPedidos from '../../components/pedidos/ResumoPedidos'
 import api from '../../services/api'
-import { dataPedido } from '../../components/pedidos/pedidoUtils'
+import { dataPedido, pagamentoDoPedido, substituirPedido } from '../../components/pedidos/pedidoUtils'
 import { carregarPedidosComRelacionamentos, intervaloRelativo } from '../../services/pedidosConsulta'
 
 const ITENS_POR_PAGINA = 6
@@ -32,6 +33,8 @@ export default function Producao({ onNewOrder }) {
   const [filtro, setFiltro] = useState('todos')
   const [pagina, setPagina] = useState(1)
   const [erro, setErro] = useState('')
+  const [carregando, setCarregando] = useState(true)
+  const [aberto, setAberto] = useState(null)
 
   useEffect(() => {
     async function carregar() {
@@ -47,6 +50,8 @@ export default function Producao({ onNewOrder }) {
       } catch (error) {
         setErro('Não foi possível carregar os pedidos de produção. Verifique a conexão com o servidor.')
         console.error(error)
+      } finally {
+        setCarregando(false)
       }
     }
     carregar()
@@ -87,6 +92,12 @@ export default function Producao({ onNewOrder }) {
     { titulo: 'Entregas hoje', valor: totalHoje, icone: Truck, cor: 'summary-rose' },
   ]
 
+  const pedidoAberto = aberto && pedidos.find((pedido) => Number(pedido.idPedido) === Number(aberto.id))
+
+  function atualizarNaLista(atualizado) {
+    setPedidos((atuais) => substituirPedido(atuais, atualizado))
+  }
+
   function mudarFiltro(novoFiltro) {
     setFiltro(novoFiltro)
     setPagina(1)
@@ -102,6 +113,7 @@ export default function Producao({ onNewOrder }) {
         ))}
       </section>
       {erro && <p className="orders-error" role="alert">{erro}</p>}
+      {carregando && <p className="orders-empty orders-loading" role="status">Carregando pedidos...</p>}
       <section className="production-list" aria-label="Fila de produção">
         {pedidosPagina.map((pedido) => (
           <PedidoProducaoCard
@@ -110,12 +122,26 @@ export default function Producao({ onNewOrder }) {
             clientes={clientes}
             itens={itens}
             produtos={produtos}
-            pagamento={pagamentos.find((item) => Number(item.pedidoId ?? item.fkPedido) === Number(pedido.idPedido))}
+            pagamento={pagamentoDoPedido(pedido, pagamentos)}
+            onAbrir={() => setAberto({ id: pedido.idPedido, modo: 'detalhe' })}
+            onPedidoAtualizado={atualizarNaLista}
           />
         ))}
-        {!erro && visiveis.length === 0 && <p className="orders-empty">Nenhum pedido corresponde a este filtro.</p>}
+        {!erro && !carregando && visiveis.length === 0 && <p className="orders-empty">Nenhum pedido corresponde a este filtro.</p>}
       </section>
       {visiveis.length > 0 && <PaginacaoPedidos totalItens={visiveis.length} porPagina={ITENS_POR_PAGINA} pagina={Math.min(pagina, totalPaginas)} aoMudar={setPagina} />}
+      {pedidoAberto && (
+        <PainelPedido
+          pedido={pedidoAberto}
+          modoInicial={aberto.modo}
+          clientes={clientes}
+          itens={itens}
+          produtos={produtos}
+          pagamentos={pagamentos}
+          onFechar={() => setAberto(null)}
+          onPedidoAtualizado={atualizarNaLista}
+        />
+      )}
     </main>
   )
 }
