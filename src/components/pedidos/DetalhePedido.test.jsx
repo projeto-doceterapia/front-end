@@ -69,6 +69,19 @@ describe('DetalhePedido', () => {
     expect(screen.getByRole('button', { name: 'Cancelar pedido' })).toBeInTheDocument()
   })
 
+  it('mostra o indicador de falta e avisa itens sem ficha técnica', () => {
+    useSessao.mockReturnValue({ ehDona: true })
+    const itens = [...ITENS, { idProdutoPedido: 2, fkPedido: 42, fkProduto: 9, quantidade: 1, valorTotal: 40, semFichaTecnica: true }]
+    render(
+      <ToastProvider>
+        <DetalhePedido pedido={{ ...PEDIDO, confirmadoComFaltaInsumo: true }} clientes={[]} itens={itens} produtos={PRODUTOS} pagamento={PAGAMENTO} onFechar={vi.fn()} onPedidoAtualizado={vi.fn()} onEditar={vi.fn()} onCancelar={vi.fn()} />
+      </ToastProvider>,
+    )
+    const dialogo = screen.getByRole('dialog')
+    expect(dialogo).toHaveTextContent('Confirmado com falta de insumo')
+    expect(dialogo).toHaveTextContent('1 item sem ficha técnica: estoque não verificado.')
+  })
+
   it('Esc fecha', () => {
     const onFechar = renderizar()
     fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
