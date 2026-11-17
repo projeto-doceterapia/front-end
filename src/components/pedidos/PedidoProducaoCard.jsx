@@ -1,5 +1,6 @@
 import { ArrowRight, CalendarDays, MessageSquare, UserRound } from 'lucide-react'
 import AcaoAvancarFase from './AcaoAvancarFase'
+import IndicadorFaltaInsumo from './IndicadorFaltaInsumo'
 import { codigoPedido, dataPedido, formatarData, nomeCliente, produtosDoPedido, textoStatus, textoStatusPagamento } from './pedidoUtils'
 
 export default function PedidoProducaoCard({ pedido, clientes, itens, produtos, pagamento, onAbrir, onPedidoAtualizado }) {
@@ -24,6 +25,7 @@ export default function PedidoProducaoCard({ pedido, clientes, itens, produtos, 
           <span className={`order-status status-${String(status || '').toLowerCase()}`}>{textoStatus(status)}</span>
           {dias === 0 && <span className="order-highlight">Começar hoje</span>}
           {pagamento?.statusPagamento === 'PAGO_INTEGRAL' && <span className="order-highlight paid-tag">Pago</span>}
+          <IndicadorFaltaInsumo pedido={pedido} />
         </div>
         <h2>{linhasProduto.join(', ') || pedido.tipoPedido || 'Pedido sem produtos'}</h2>
         <div className="production-order-meta">

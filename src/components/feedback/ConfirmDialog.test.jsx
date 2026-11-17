@@ -178,6 +178,12 @@ describe('ConfirmDialog', () => {
     expect(botao('Confirmar')).not.toHaveClass('confirm-perigo')
   })
 
+  it('sem onConfirm mostra só o botão de cancelar, com o foco nele', () => {
+    render(<ConfirmDialog aberto titulo="Aviso" mensagem="Só leitura." textoCancelar="Fechar" onCancel={() => {}} />)
+    expect(screen.getAllByRole('button')).toHaveLength(1)
+    expect(botao('Fechar')).toHaveFocus()
+  })
+
   it('trava a rolagem do body enquanto aberto e restaura o valor anterior', () => {
     document.body.style.overflow = 'scroll'
     render(<Exemplo />)
