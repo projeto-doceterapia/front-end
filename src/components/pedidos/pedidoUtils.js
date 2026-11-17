@@ -10,8 +10,8 @@ export const STATUS_PEDIDO = {
 
 export const STATUS_PAGAMENTO = {
   AGUARDANDO_SINAL: 'Aguardando sinal',
-  AGUARDANDO_PAGAMENTO: 'Aguardando pagamento',
-  PAGO_INTEGRAL: 'Pago',
+  AGUARDANDO_PAGAMENTO: 'Sinal pago, restante pendente',
+  PAGO_INTEGRAL: 'Pago integralmente',
 }
 
 export const FORMA_PAGAMENTO = {
@@ -30,6 +30,16 @@ export function formatarData(data) {
   if (!data) return 'Sem data'
   const [ano, mes, dia] = dataPedido({ dataEntrega: data }).split('-')
   return ano && mes && dia ? `${dia}/${mes}` : data
+}
+
+export function formatarDataCompleta(data) {
+  const [ano, mes, dia] = String(data || '').slice(0, 10).split('-')
+  return ano && mes && dia ? `${dia}/${mes}/${ano}` : 'Sem data'
+}
+
+// Mirrors the server rounding (half up to the cent); only for the quote preview, never for registered values.
+export function sinalPrevisto(total) {
+  return Math.round(Number(total || 0) * 50) / 100
 }
 
 export function nomeCliente(pedido, clientes) {
