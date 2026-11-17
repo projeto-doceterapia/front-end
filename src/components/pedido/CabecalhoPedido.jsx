@@ -9,7 +9,7 @@ export default function CabecalhoPedido({ etapa }) {
       </div>
       <h1>{pagamentoAtivo ? 'Pagamento e resumo' : 'Registrar Pedido'}</h1>
       <p className="page-subtitle">
-        {pagamentoAtivo ? 'Revise os dados do pedido e escolha a forma de pagamento' : 'Monte o pedido ou salve um orçamento para confirmar depois'}
+        {pagamentoAtivo ? 'Revise os dados e os valores previstos do pedido' : 'Monte o pedido ou salve um orçamento para confirmar depois'}
       </p>
     </>
   )
