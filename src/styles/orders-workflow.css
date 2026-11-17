@@ -379,4 +379,9 @@
 .pedido-form select,
 .pedido-form textarea { padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--input-background); color: var(--foreground); font: inherit; font-weight: 400; }
 .pedido-campo-erro { color: var(--destructive); font-weight: 400; }
+.pagamento-registro { margin-top: 12px; }
+.pagamento-registro fieldset { display: grid; gap: 8px; margin: 0; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); }
+.pagamento-registro legend { padding: 0 4px; font-weight: 600; }
+.pagamento-registro button { justify-self: start; }
+.pagamento-a-receber { color: var(--foreground); font-weight: 600; }
 .production-order-actions .order-action { font-size: 0.75rem; }
