@@ -7,7 +7,7 @@ export default function ResumoAgenda({ pedidos, aoConfigurarFarol }) {
 
   return (
     <div className="agenda-stats">
-      <strong>{pedidos.length} <span>Pedidos cadastrados</span></strong>
+      <strong>{pedidos.length} <span>Pedidos no período</span></strong>
       <i />
       <strong className="orange">{quantidade('AGUARDANDO_SINAL')} <span>Aguardando sinal</span></strong>
       <i />

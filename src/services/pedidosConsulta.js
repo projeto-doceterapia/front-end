@@ -1,42 +1,33 @@
 import api from './api'
+import { dividirEmLotes } from '../components/pedidos/filtrosUtils'
 
-const TAMANHO_LOTE = 200
-
-function dataISO(data) {
-  return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}-${String(data.getDate()).padStart(2, '0')}`
+// Repeated filters travel comma-separated (status=A,B); axios would otherwise send status[]=A.
+function emLista(valores) {
+  return valores.join(',')
 }
 
-export async function carregarPedidosComRelacionamentos(params) {
-  const { data: pedidos = [] } = await api.get('/pedidos', { params })
-  const lotes = []
-  for (let inicio = 0; inicio < pedidos.length; inicio += TAMANHO_LOTE) {
-    lotes.push(pedidos.slice(inicio, inicio + TAMANHO_LOTE).map((pedido) => pedido.idPedido).join(','))
-  }
-  const relacionados = await Promise.all(lotes.map(async (pedidoId) => {
-    const [itens, pagamentos] = await Promise.all([
-      api.get('/itens-pedido', { params: { pedidoId } }),
-      api.get('/pagamentos', { params: { pedidoId } }),
-    ])
-    return { itens: itens.data || [], pagamentos: pagamentos.data || [] }
-  }))
-  return {
-    pedidos,
-    itens: relacionados.flatMap((resultado) => resultado.itens),
-    pagamentos: relacionados.flatMap((resultado) => resultado.pagamentos),
-  }
+export function listarPedidos({ de, ate, status }, config = {}) {
+  const params = status?.length ? { de, ate, status: emLista(status) } : { de, ate }
+  return api.get('/pedidos', { ...config, params }).then((resposta) => resposta.data || [])
 }
 
-export function intervaloDoMes(data) {
-  const inicio = new Date(data.getFullYear(), data.getMonth(), 1)
-  const fim = new Date(data.getFullYear(), data.getMonth() + 1, 0)
-  return { de: dataISO(inicio), ate: dataISO(fim) }
+async function listarPorPedidos(url, ids, config) {
+  if (!ids.length) return []
+  const respostas = await Promise.all(dividirEmLotes(ids).map((lote) => api.get(url, { ...config, params: { pedidoId: emLista(lote) } })))
+  return respostas.flatMap((resposta) => resposta.data || [])
 }
 
-export function intervaloRelativo(diasAntes, diasDepois) {
-  const hoje = new Date()
-  const de = new Date(hoje)
-  const ate = new Date(hoje)
-  de.setDate(de.getDate() - diasAntes)
-  ate.setDate(ate.getDate() + diasDepois)
-  return { de: dataISO(de), ate: dataISO(ate) }
+export function listarItensDosPedidos(ids, config = {}) {
+  return listarPorPedidos('/itens-pedido', ids, config)
+}
+
+export function listarPagamentosDosPedidos(ids, config = {}) {
+  return listarPorPedidos('/pagamentos', ids, config)
+}
+
+export async function carregarPedidosComRelacionamentos(filtro, config = {}) {
+  const pedidos = await listarPedidos(filtro, config)
+  const ids = pedidos.map((pedido) => pedido.idPedido)
+  const [itens, pagamentos] = await Promise.all([listarItensDosPedidos(ids, config), listarPagamentosDosPedidos(ids, config)])
+  return { pedidos, itens, pagamentos }
 }

@@ -29,6 +29,6 @@ describe('ResumoAgenda por perfil', () => {
     render(<ResumoAgenda pedidos={PEDIDOS} aoConfigurarFarol={vi.fn()} />)
 
     expect(screen.queryByRole('button', { name: /Configurar farol/ })).not.toBeInTheDocument()
-    expect(screen.getByText('Pedidos cadastrados')).toBeInTheDocument()
+    expect(screen.getByText('Pedidos no período')).toBeInTheDocument()
   })
 })
