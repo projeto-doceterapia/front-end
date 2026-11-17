@@ -6,6 +6,10 @@ export function avancarStatus(id, statusPedido, confirmarComFalta = false) {
   return api.patch(`/pedidos/${id}/status`, null, { params }).then((resposta) => resposta.data)
 }
 
+export function buscarPedido(id) {
+  return api.get(`/pedidos/${id}`).then((resposta) => resposta.data)
+}
+
 export function atualizarPedido(id, dados) {
   return api.put(`/pedidos/${id}`, dados).then((resposta) => resposta.data)
 }

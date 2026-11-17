@@ -5,13 +5,14 @@ import { DialogoFaltaInsumoDaSessao } from './DialogoFaltaInsumo'
 import { extrairFaltas } from './viabilidadeUtils'
 
 const CANCELADO = { cancelado: true }
+const SUCESSO_PADRAO = 'Pedido confirmado com falta de insumo.'
 
 export default function useConfirmacaoComFalta() {
   const toast = useToast()
   const [pendente, setPendente] = useState(null)
   const [ocupado, setOcupado] = useState(false)
 
-  async function executar(chamada, { onFaltas } = {}) {
+  async function executar(chamada, { onFaltas, mensagemSucesso = SUCESSO_PADRAO } = {}) {
     try {
       return { cancelado: false, comFalta: false, dados: await chamada(false) }
     } catch (erro) {
@@ -19,7 +20,7 @@ export default function useConfirmacaoComFalta() {
       if (!faltas) throw erro
       onFaltas?.()
       return new Promise((resolver) => {
-        setPendente({ faltas, mensagem: erro.response.data.message, chamada, resolver })
+        setPendente({ faltas, mensagem: erro.response.data.message, chamada, mensagemSucesso, resolver })
       })
     }
   }
@@ -28,7 +29,7 @@ export default function useConfirmacaoComFalta() {
     setOcupado(true)
     try {
       const dados = await pendente.chamada(true)
-      toast.sucesso('Pedido confirmado com falta de insumo.')
+      toast.sucesso(pendente.mensagemSucesso)
       pendente.resolver({ cancelado: false, comFalta: true, dados })
     } catch (erro) {
       toast.erro(mensagemErro(erro, 'Não foi possível confirmar o pedido.'))
