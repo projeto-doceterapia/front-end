@@ -2,17 +2,18 @@ import { useEffect, useMemo, useState } from 'react'
 import { AlertCircle, Clock3, PackageCheck, Search, ShoppingBag } from 'lucide-react'
 import { PageTop } from './Produtos'
 import PaginacaoPedidos from '../../components/pedidos/PaginacaoPedidos'
+import PainelPedido from '../../components/pedidos/PainelPedido'
 import ResumoPedidos from '../../components/pedidos/ResumoPedidos'
 import TabelaHistoricoPedidos from '../../components/pedidos/TabelaHistoricoPedidos'
 import api from '../../services/api'
-import { dataPedido } from '../../components/pedidos/pedidoUtils'
+import { dataPedido, substituirPedido } from '../../components/pedidos/pedidoUtils'
 import { carregarPedidosComRelacionamentos, intervaloRelativo } from '../../services/pedidosConsulta'
 
 const ITENS_POR_PAGINA = 8
 const PERIODOS = [['todos', 'Todos'], ['hoje', 'Hoje'], ['semana', 'Esta semana'], ['mes', 'Este mês']]
 const ETAPAS = [
   ['todos', 'Todos'], ['ORCAMENTO', 'Orçamento'], ['AGUARDANDO_SINAL', 'Aguard. sinal 50%'],
-  ['EM_PRODUCAO', 'Em produção'], ['AGUARDANDO_PAGAMENTO', 'Aguard. pagamento'],
+  ['ESPERANDO_FAZER', 'Aguard. produção'], ['EM_PRODUCAO', 'Em produção'],
   ['AGUARDANDO_ENTREGA', 'Aguard. entrega'], ['ENTREGUE', 'Entregue'], ['CANCELADO', 'Cancelado'],
 ]
 
@@ -31,6 +32,8 @@ export default function HistoricoPedidos({ onNewOrder }) {
   const [busca, setBusca] = useState('')
   const [pagina, setPagina] = useState(1)
   const [erro, setErro] = useState('')
+  const [carregando, setCarregando] = useState(true)
+  const [aberto, setAberto] = useState(null)
 
   useEffect(() => {
     async function carregar() {
@@ -46,6 +49,8 @@ export default function HistoricoPedidos({ onNewOrder }) {
       } catch (error) {
         setErro('Não foi possível carregar o histórico de pedidos. Verifique a conexão com o servidor.')
         console.error(error)
+      } finally {
+        setCarregando(false)
       }
     }
     carregar()
@@ -76,9 +81,15 @@ export default function HistoricoPedidos({ onNewOrder }) {
   const resumo = [
     { titulo: 'Total de pedidos', valor: pedidos.length, icone: ShoppingBag, cor: 'summary-rose' },
     { titulo: 'Aguardando sinal', valor: pedidos.filter((pedido) => pedido.statusPedido === 'AGUARDANDO_SINAL').length, icone: AlertCircle, cor: 'summary-amber' },
-    { titulo: 'Aguard. pagamento', valor: pedidos.filter((pedido) => pedido.statusPedido === 'AGUARDANDO_PAGAMENTO').length, icone: Clock3, cor: 'summary-orange' },
-    { titulo: '100% pago — entrega', valor: pedidos.filter((pedido) => pedido.statusPedido === 'AGUARDANDO_ENTREGA').length, icone: PackageCheck, cor: 'summary-purple' },
+    { titulo: 'Aguardando produção', valor: pedidos.filter((pedido) => pedido.statusPedido === 'ESPERANDO_FAZER').length, icone: Clock3, cor: 'summary-orange' },
+    { titulo: 'Aguardando entrega', valor: pedidos.filter((pedido) => pedido.statusPedido === 'AGUARDANDO_ENTREGA').length, icone: PackageCheck, cor: 'summary-purple' },
   ]
+
+  const pedidoAberto = aberto && pedidos.find((pedido) => Number(pedido.idPedido) === Number(aberto.id))
+
+  function atualizarNaLista(atualizado) {
+    setPedidos((atuais) => substituirPedido(atuais, atualizado))
+  }
 
   function alterarFiltro(setter, valor) {
     setter(valor)
@@ -96,9 +107,32 @@ export default function HistoricoPedidos({ onNewOrder }) {
           <label className="history-search"><Search size={17} /><input value={busca} onChange={(evento) => alterarFiltro(setBusca, evento.target.value)} placeholder="Buscar por cliente, código ou produto..." /></label>
         </div>
         {erro && <p className="orders-error" role="alert">{erro}</p>}
-        <TabelaHistoricoPedidos pedidos={pedidosPagina} clientes={clientes} itens={itens} produtos={produtos} pagamentos={pagamentos} />
+        {carregando && <p className="orders-empty orders-loading" role="status">Carregando pedidos...</p>}
+        {!carregando && !erro && (
+          <TabelaHistoricoPedidos
+            pedidos={pedidosPagina}
+            clientes={clientes}
+            itens={itens}
+            produtos={produtos}
+            pagamentos={pagamentos}
+            onAbrir={(pedido) => setAberto({ id: pedido.idPedido, modo: 'detalhe' })}
+            onEditar={(pedido) => setAberto({ id: pedido.idPedido, modo: 'editar' })}
+          />
+        )}
         {visiveis.length > 0 && <PaginacaoPedidos totalItens={visiveis.length} porPagina={ITENS_POR_PAGINA} pagina={Math.min(pagina, totalPaginas)} aoMudar={setPagina} />}
       </section>
+      {pedidoAberto && (
+        <PainelPedido
+          pedido={pedidoAberto}
+          modoInicial={aberto.modo}
+          clientes={clientes}
+          itens={itens}
+          produtos={produtos}
+          pagamentos={pagamentos}
+          onFechar={() => setAberto(null)}
+          onPedidoAtualizado={atualizarNaLista}
+        />
+      )}
     </main>
   )
 }
