@@ -137,3 +137,17 @@ como em produção. Telas com `useSessao` podem usar `vi.mock` do módulo, infor
 O Vitest roda com jsdom e `@testing-library/react`. A configuração global fica em
 `src/test/setup.js`; os arquivos de teste ficam ao lado do código que cobrem
 (`*.test.jsx` / `*.test.js`).
+### Testes de ponta a ponta (E2E)
+
+O Playwright (`@playwright/test`) roda no Chromium e fica na pasta `e2e/` (`*.spec.js`). O Vitest
+ignora essa pasta.
+
+```bash
+npx playwright install chromium   # uma vez por máquina
+npm run test:e2e                  # sobe o `npm run dev` sozinho e roda os testes
+npx playwright test --ui          # modo interativo
+```
+
+As chamadas à API são simuladas no navegador por `e2e/support/apiFalsa.js` (`page.route`), então
+os testes não precisam do back-end nem de dados reais. Use apenas dados fictícios. Relatórios e
+traces ficam em `playwright-report/` e `test-results/`, ambos fora do Git.
