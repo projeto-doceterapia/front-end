@@ -1,22 +1,27 @@
 import useSessao from '../sessao/useSessao'
+import { contarSemFichaTecnica, textoSemFichaTecnica } from '../pedido/viabilidadeUtils'
 import AcaoAvancarFase from './AcaoAvancarFase'
 import DialogoPedido from './DialogoPedido'
+import IndicadorFaltaInsumo from './IndicadorFaltaInsumo'
 import PagamentoPedido from './PagamentoPedido'
 import { podeCancelar } from './fluxoPedido'
+import { podeEditarItens } from './itensEdicao'
 import { codigoPedido, dinheiro, formatarData, nomeCliente, textoStatus } from './pedidoUtils'
 
 const FORMA_ENTREGA = { ENTREGA: 'Entrega', RETIRADA: 'Retirada' }
 
-export default function DetalhePedido({ pedido, clientes, itens, produtos, pagamento, onFechar, onPedidoAtualizado, onEditar, onCancelar }) {
+export default function DetalhePedido({ pedido, clientes, itens, produtos, pagamento, onFechar, onPedidoAtualizado, onEditar, onEditarItens, onCancelar }) {
   const { ehDona } = useSessao()
   const status = pedido.statusPedido
   const finalizado = !podeCancelar(status)
   const itensPedido = itens.filter((item) => Number(item.fkPedido) === Number(pedido.idPedido))
+  const semFicha = contarSemFichaTecnica(itensPedido)
 
   const rodape = !finalizado && (
     <>
       {ehDona && <button type="button" className="order-action order-action-danger" onClick={onCancelar}>Cancelar pedido</button>}
       <button type="button" className="order-action" onClick={onEditar}>Editar pedido</button>
+      {podeEditarItens(status, pagamento) && <button type="button" className="order-action" onClick={onEditarItens}>Editar itens</button>}
       <AcaoAvancarFase pedido={pedido} onPedidoAtualizado={onPedidoAtualizado} />
     </>
   )
@@ -26,6 +31,7 @@ export default function DetalhePedido({ pedido, clientes, itens, produtos, pagam
       <section className="pedido-secao" aria-label="Fase">
         <h3>Fase</h3>
         <span className={`order-status status-${String(status || '').toLowerCase()}`}>{textoStatus(status)}</span>
+        <IndicadorFaltaInsumo pedido={pedido} />
         {status === 'AGUARDANDO_SINAL' && <p className="pedido-aviso">O pedido avança para a produção quando o sinal for registrado.</p>}
       </section>
       <section className="pedido-secao" aria-label="Dados do pedido">
@@ -38,6 +44,7 @@ export default function DetalhePedido({ pedido, clientes, itens, produtos, pagam
       </section>
       <section className="pedido-secao" aria-label="Itens">
         <h3>Itens</h3>
+        {semFicha > 0 && <p className="pedido-aviso">{textoSemFichaTecnica(semFicha)}</p>}
         {itensPedido.length ? (
           <ul className="pedido-itens">
             {itensPedido.map((item) => (
