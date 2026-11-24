@@ -4,7 +4,7 @@ function dataISO(ano, mes, dia) {
   return `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`
 }
 
-export default function Calendario({ pedidos, farol, mesExibido, dataSelecionada, aoMudarMes, aoIrParaHoje, aoSelecionarData }) {
+export default function Calendario({ pedidos, periodo, farol, mesExibido, dataSelecionada, aoMudarMes, aoIrParaHoje, aoSelecionarData }) {
   const ano = mesExibido.getFullYear()
   const mes = mesExibido.getMonth()
   const primeiroDia = new Date(ano, mes, 1).getDay()
@@ -45,10 +45,11 @@ export default function Calendario({ pedidos, farol, mesExibido, dataSelecionada
 
           const pedidosDia = pedidosDoDia(dia)
           const data = dataISO(ano, mes, dia)
-          const classe = `calendar-day${classeFarol(pedidosDia.length)}${dataSelecionada === data ? ' selected' : ''}`
+          const foraDoPeriodo = data < periodo.de || data > periodo.ate
+          const classe = `calendar-day${classeFarol(pedidosDia.length)}${dataSelecionada === data ? ' selected' : ''}${foraDoPeriodo ? ' outside-range' : ''}`
 
           return (
-            <button type="button" className={classe} onClick={() => aoSelecionarData(data)} key={data}>
+            <button type="button" className={classe} onClick={() => aoSelecionarData(data)} key={data} aria-label={foraDoPeriodo ? `${dia}, dia fora do período carregado` : undefined}>
               <span className="day-number">{dia}</span>
               {!!pedidosDia.length && <div className="day-order"><strong><em /> {pedidosDia.length} {pedidosDia.length === 1 ? 'Pedido' : 'Pedidos'}</strong><small>{pedidosDia[0].nomeCliente}</small></div>}
             </button>

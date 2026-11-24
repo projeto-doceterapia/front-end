@@ -296,6 +296,20 @@
 .orders-empty,
 .orders-error { padding: 24px; border: 1px solid #ecd7c8; border-radius: 12px; background: #fff; color: #8c9aac; text-align: center; }
 .orders-error { width: calc(100% - 56px); max-width: 1216px; margin: 0 auto 14px; border-color: #f0c3c3; color: #a33b3b; }
+.period-filter { display: flex; width: calc(100% - 56px); max-width: 1216px; flex-direction: column; gap: 10px; margin: 0 auto 16px; padding: 14px 16px; border: 1px solid #ecd7c8; border-radius: 12px; background: var(--card); color: var(--foreground); font-size: 0.8rem; }
+.agenda-page .period-filter { width: 100%; max-width: none; }
+.period-filter-fields,
+.period-filter-actions,
+.period-filter-stages { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.period-filter-fields input[type="date"] { min-height: 34px; padding: 0 8px; border: 1px solid #ecd7c8; border-radius: 8px; background: var(--input-background); color: inherit; font: inherit; }
+.period-filter-stages { margin: 0; padding: 0; border: 0; }
+.period-filter-stages legend { float: left; margin-right: 4px; font-weight: var(--font-weight-medium); }
+.period-filter-check { display: inline-flex; align-items: center; gap: 6px; }
+.period-filter-current { color: var(--muted-foreground); }
+.period-filter-error { margin: 0; color: var(--destructive); }
+.period-filter :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.calendar-day.outside-range { opacity: 0.45; background-image: repeating-linear-gradient(135deg, transparent 0 6px, rgba(0, 0, 0, 0.04) 6px 8px); }
+.agenda-month-hint { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 14px; color: var(--muted-foreground); font-size: 0.8rem; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
 
 @media (max-width: 900px) {
@@ -323,6 +337,7 @@
   .production-list,
   .orders-pagination,
   .history-panel,
+  .period-filter,
   .orders-error { width: calc(100% - 28px); }
   .orders-page .catalog-heading { padding-top: 20px; padding-bottom: 18px; }
   .orders-page .catalog-heading h1 { font-size: 21px; }
@@ -379,4 +394,9 @@
 .pedido-form select,
 .pedido-form textarea { padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--input-background); color: var(--foreground); font: inherit; font-weight: 400; }
 .pedido-campo-erro { color: var(--destructive); font-weight: 400; }
+.pagamento-registro { margin-top: 12px; }
+.pagamento-registro fieldset { display: grid; gap: 8px; margin: 0; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); }
+.pagamento-registro legend { padding: 0 4px; font-weight: 600; }
+.pagamento-registro button { justify-self: start; }
+.pagamento-a-receber { color: var(--foreground); font-weight: 600; }
 .production-order-actions .order-action { font-size: 0.75rem; }

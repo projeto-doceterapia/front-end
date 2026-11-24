@@ -40,7 +40,7 @@ describe('DetalhePedido', () => {
     expect(dialogo).toHaveTextContent('Cliente Exemplo')
     expect(dialogo).toHaveTextContent('Rua Exemplo, 100')
     expect(dialogo).toHaveTextContent('Bolo de cenoura ×2')
-    expect(dialogo).toHaveTextContent('Aguardando pagamento')
+    expect(dialogo).toHaveTextContent('Sinal pago, restante pendente')
     expect(dialogo).toHaveTextContent('Em produção')
     expect(screen.getByRole('button', { name: 'Marcar como pronto' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Pedido #0042' })).toHaveFocus()

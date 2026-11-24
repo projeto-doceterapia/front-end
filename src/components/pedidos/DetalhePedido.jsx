@@ -51,7 +51,7 @@ export default function DetalhePedido({ pedido, clientes, itens, produtos, pagam
           <p className="pedido-vazio">Nenhum item neste pedido.</p>
         )}
       </section>
-      <PagamentoPedido pagamento={pagamento} />
+      <PagamentoPedido key={pedido.idPedido} pedido={pedido} pagamento={pagamento} onPedidoAtualizado={onPedidoAtualizado} />
     </DialogoPedido>
   )
 }
