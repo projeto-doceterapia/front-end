@@ -23,7 +23,6 @@ export default function Pedido({ onBack }) {
     enderecoEntrega: '',
     dataEntrega: '',
     anotacao: '',
-    formaPagamento: 'PIX',
   })
 
   useEffect(() => {
