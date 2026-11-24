@@ -5,7 +5,6 @@ import ListaPedidos from '../../components/agenda/ListaPedidos'
 import ResumoAgenda from '../../components/agenda/ResumoAgenda'
 import ConfiguracaoFarol from '../../components/agenda/ConfiguracaoFarol'
 import api from '../../services/api'
-import { carregarDadosTeste } from '../../services/dadosTeste'
 import { carregarPedidosComRelacionamentos, intervaloDoMes } from '../../services/pedidosConsulta'
 
 function dataISO(data) {
@@ -25,8 +24,6 @@ export default function Agenda({ onNewOrder }) {
   const [erroFarol, setErroFarol] = useState('')
   const [mesExibido, setMesExibido] = useState(new Date(hoje.getFullYear(), hoje.getMonth(), 1))
   const [dataSelecionada, setDataSelecionada] = useState(dataISO(hoje))
-  const [carregandoDados, setCarregandoDados] = useState(false)
-  const [mensagem, setMensagem] = useState('')
 
   async function buscarDados(dataBase = mesExibido) {
     try {
@@ -52,22 +49,6 @@ export default function Agenda({ onNewOrder }) {
   useEffect(() => {
     buscarDados()
   }, [mesExibido])
-
-  async function preencherDadosTeste() {
-    setCarregandoDados(true)
-    setMensagem('')
-
-    try {
-      await carregarDadosTeste()
-      await buscarDados()
-      setMensagem('Dados de teste carregados. Agora crie um pedido pela tela.')
-    } catch (erro) {
-      setMensagem('Não foi possível carregar os dados. Verifique se o backend está em execução.')
-      console.error(erro)
-    } finally {
-      setCarregandoDados(false)
-    }
-  }
 
   function mudarMes(variacao) {
     const novoMes = new Date(mesExibido.getFullYear(), mesExibido.getMonth() + variacao, 1)
@@ -131,8 +112,7 @@ export default function Agenda({ onNewOrder }) {
 
   return (
     <main className="agenda-page">
-      <CabecalhoAgenda aoCriarPedido={onNewOrder} aoCarregarDadosTeste={preencherDadosTeste} carregandoDados={carregandoDados} />
-      {mensagem && <p className="form-error order-error">{mensagem}</p>}
+      <CabecalhoAgenda aoCriarPedido={onNewOrder} />
       <ResumoAgenda pedidos={pedidosDoMes} aoConfigurarFarol={abrirConfiguracaoFarol} />
 
       <section className="agenda-layout">
