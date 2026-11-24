@@ -114,8 +114,14 @@ body {
   font-weight: 600;
   text-align: left;
 }
-.sidebar-submenu button:hover {
+.sidebar-submenu button:hover,
+.sidebar-submenu button.active {
   color: #fff;
+}
+
+.sidebar button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 
 .section-placeholder {
@@ -149,13 +155,34 @@ body {
   }
 
   .sidebar-brand div,
-  .sidebar-item span,
   .sidebar-chevron {
     display: none;
+  }
+
+  .sidebar-rotulo {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   .sidebar-item {
     justify-content: center;
     padding: 0;
+  }
+
+  .sidebar-submenu {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: 0;
+    justify-items: center;
+  }
+
+  .sidebar-submenu button {
+    justify-content: center;
+    width: 100%;
+    min-height: 32px;
   }
 }
