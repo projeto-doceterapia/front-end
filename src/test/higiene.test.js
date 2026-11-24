@@ -39,4 +39,13 @@ describe('higiene do código', () => {
     expect(html).toMatch(/<html lang="pt-BR">/)
     expect(html).toMatch(/<title>Doceterapia<\/title>/)
   })
+
+  it('versões exatas', () => {
+    const pacote = JSON.parse(lerNaRaiz('package.json'))
+    const versoes = { ...pacote.dependencies, ...pacote.devDependencies }
+
+    for (const [nome, versao] of Object.entries(versoes)) {
+      expect(versao, nome).toMatch(/^\d+\.\d+\.\d+$/)
+    }
+  })
 })
