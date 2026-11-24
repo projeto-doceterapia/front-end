@@ -1,7 +1,8 @@
 import { ArrowRight, CalendarDays, MessageSquare, UserRound } from 'lucide-react'
-import { dataPedido, formatarData, nomeCliente, produtosDoPedido, textoStatus } from './pedidoUtils'
+import AcaoAvancarFase from './AcaoAvancarFase'
+import { codigoPedido, dataPedido, formatarData, nomeCliente, produtosDoPedido, textoStatus, textoStatusPagamento } from './pedidoUtils'
 
-export default function PedidoProducaoCard({ pedido, clientes, itens, produtos, pagamento }) {
+export default function PedidoProducaoCard({ pedido, clientes, itens, produtos, pagamento, onAbrir, onPedidoAtualizado }) {
   const dataEntrega = dataPedido(pedido)
   const hoje = new Date()
   hoje.setHours(0, 0, 0, 0)
@@ -19,10 +20,10 @@ export default function PedidoProducaoCard({ pedido, clientes, itens, produtos, 
       </div>
       <div className="production-order-main">
         <div className="production-tags">
-          <span className="order-code">#{String(pedido.idPedido).padStart(4, '0')}</span>
+          <span className="order-code">{codigoPedido(pedido.idPedido)}</span>
           <span className={`order-status status-${String(status || '').toLowerCase()}`}>{textoStatus(status)}</span>
           {dias === 0 && <span className="order-highlight">Começar hoje</span>}
-          {pagamento?.statusPagamento === 'PAGO' && <span className="order-highlight paid-tag">Pago</span>}
+          {pagamento?.statusPagamento === 'PAGO_INTEGRAL' && <span className="order-highlight paid-tag">Pago</span>}
         </div>
         <h2>{linhasProduto.join(', ') || pedido.tipoPedido || 'Pedido sem produtos'}</h2>
         <div className="production-order-meta">
@@ -32,8 +33,9 @@ export default function PedidoProducaoCard({ pedido, clientes, itens, produtos, 
         </div>
       </div>
       <div className="production-order-actions">
-        <span className="payment-hint">{pagamento?.statusPagamento ? textoStatus(pagamento.statusPagamento) : 'Pagamento pendente'}</span>
-        <button type="button" aria-label={`Abrir pedido ${pedido.idPedido}`} title="Abrir pedido">
+        <span className="payment-hint">{textoStatusPagamento(pagamento?.statusPagamento)}</span>
+        <AcaoAvancarFase pedido={pedido} onPedidoAtualizado={onPedidoAtualizado} />
+        <button type="button" aria-label={`Abrir pedido ${pedido.idPedido}`} title="Abrir pedido" onClick={onAbrir}>
           <ArrowRight size={17} />
         </button>
       </div>

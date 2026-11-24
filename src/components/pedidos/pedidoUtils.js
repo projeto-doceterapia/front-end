@@ -1,12 +1,25 @@
 export const STATUS_PEDIDO = {
   ORCAMENTO: 'Orçamento',
+  AGUARDANDO_SINAL: 'Aguardando sinal',
   ESPERANDO_FAZER: 'Aguardando produção',
   EM_PRODUCAO: 'Em produção',
-  AGUARDANDO_SINAL: 'Aguardando sinal',
-  AGUARDANDO_PAGAMENTO: 'Aguardando pagamento',
   AGUARDANDO_ENTREGA: 'Aguardando entrega',
   ENTREGUE: 'Entregue',
   CANCELADO: 'Cancelado',
+}
+
+export const STATUS_PAGAMENTO = {
+  AGUARDANDO_SINAL: 'Aguardando sinal',
+  AGUARDANDO_PAGAMENTO: 'Aguardando pagamento',
+  PAGO_INTEGRAL: 'Pago',
+}
+
+export const FORMA_PAGAMENTO = {
+  PIX: 'Pix',
+  DINHEIRO: 'Dinheiro',
+  CARTAO_CREDITO: 'Cartão de crédito',
+  CARTAO_DEBITO: 'Cartão de débito',
+  TRANSFERENCIA: 'Transferência',
 }
 
 export function dataPedido(pedido) {
@@ -50,4 +63,31 @@ export function dinheiro(valor) {
 
 export function textoStatus(status) {
   return STATUS_PEDIDO[status] || String(status || 'Sem etapa').replaceAll('_', ' ')
+}
+export function textoStatusPagamento(status) {
+  return STATUS_PAGAMENTO[status] || 'Pagamento pendente'
+}
+
+export function pagamentoDoPedido(pedido, pagamentos) {
+  return pagamentos.find((registro) => Number(registro.pedidoId ?? registro.fkPedido) === Number(pedido.idPedido))
+}
+
+export function valorPago(pagamento) {
+  if (!pagamento) return 0
+  if (pagamento.statusPagamento === 'PAGO_INTEGRAL') return Number(pagamento.valorTotal || 0)
+  if (pagamento.statusPagamento === 'AGUARDANDO_PAGAMENTO') return Number(pagamento.valorSinal || 0)
+  return 0
+}
+
+export function textoFormaPagamento(pagamento) {
+  const forma = pagamento?.formaPagamentoRestante || pagamento?.formaPagamentoSinal
+  return forma ? FORMA_PAGAMENTO[forma] || forma : 'Pendente'
+}
+
+export function codigoPedido(idPedido) {
+  return `#${String(idPedido).padStart(4, '0')}`
+}
+
+export function substituirPedido(pedidos, atualizado) {
+  return pedidos.map((pedido) => (Number(pedido.idPedido) === Number(atualizado.idPedido) ? { ...pedido, ...atualizado } : pedido))
 }
