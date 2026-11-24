@@ -1837,3 +1837,11 @@ button {
     margin-top: 13px;
   }
 }
+
+.stock-shortage-tag { border: 1px solid var(--destructive); color: var(--destructive); }
+.history-status + .stock-shortage-tag { margin-top: 4px; }
+.stock-shortage-list { margin: 8px 0; padding-left: 20px; display: grid; gap: 4px; }
+.stock-shortage-list li { overflow-wrap: anywhere; }
+.delivery-suggestion { margin: 4px 0 0; color: var(--muted-foreground); font-size: 0.875rem; }
+.delivery-suggestion button { margin-left: 8px; padding: 0; border: 0; background: none; color: var(--accent); font: inherit; text-decoration: underline; cursor: pointer; }
+.client-search-status { margin: 4px 0 0; color: var(--muted-foreground); font-size: 0.875rem; }

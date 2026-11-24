@@ -1,6 +1,7 @@
 import { Pencil, ReceiptText } from 'lucide-react'
 import { podeCancelar } from './fluxoPedido'
 import { codigoPedido, dinheiro, formatarData, nomeCliente, pagamentoDoPedido, produtosDoPedido, textoFormaPagamento, textoStatus, totalPedido, valorPago } from './pedidoUtils'
+import IndicadorFaltaInsumo from './IndicadorFaltaInsumo'
 
 export default function TabelaHistoricoPedidos({ pedidos, clientes, itens, produtos, pagamentos, onAbrir, onEditar }) {
   return (
@@ -23,7 +24,7 @@ export default function TabelaHistoricoPedidos({ pedidos, clientes, itens, produ
                 <td className="history-product" title={produtosPedido.join(', ')}>{produtosPedido.join(', ') || pedido.tipoPedido || '—'}</td>
                 <td>{formatarData(pedido.dataEntrega)}</td>
                 <td><strong>{dinheiro(total)}</strong><div className="payment-progress"><i style={{ width: `${percentualPago}%` }} /></div><small>{percentualPago}% pago</small></td>
-                <td><span className={`history-status status-${String(pedido.statusPedido || '').toLowerCase()}`}><ReceiptText size={12} />{textoStatus(pedido.statusPedido)}</span></td>
+                <td><span className={`history-status status-${String(pedido.statusPedido || '').toLowerCase()}`}><ReceiptText size={12} />{textoStatus(pedido.statusPedido)}</span><IndicadorFaltaInsumo pedido={pedido} /></td>
                 <td><span className="payment-method">{textoFormaPagamento(pagamento)}</span></td>
                 <td>{podeCancelar(pedido.statusPedido) && <button className="history-edit" type="button" aria-label={`Editar pedido ${pedido.idPedido}`} title="Editar pedido" onClick={() => onEditar(pedido)}><Pencil size={15} /></button>}</td>
               </tr>
