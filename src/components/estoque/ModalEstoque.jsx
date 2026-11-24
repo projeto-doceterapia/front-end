@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import { X } from 'lucide-react'
 
 export default function ModalEstoque({ titulo, aoFechar, ocupado, children }) {
+  const idTitulo = useId()
   const dialogo = useRef(null)
 
   useEffect(() => {
@@ -11,16 +12,16 @@ export default function ModalEstoque({ titulo, aoFechar, ocupado, children }) {
     dialogo.current.showModal()
     return () => {
       document.body.style.overflow = overflow
-      anterior?.focus()
+      if (anterior?.isConnected) anterior.focus()
     }
   }, [])
 
   return (
-    <dialog ref={dialogo} className="stock-modal" aria-labelledby="stock-modal-title"
+    <dialog ref={dialogo} className="stock-modal" aria-modal="true" aria-labelledby={idTitulo}
       onCancel={(event) => { event.preventDefault(); if (!ocupado) aoFechar() }}
       onClick={(event) => { if (event.target === event.currentTarget && !ocupado) aoFechar() }}>
       <header className="stock-modal-heading">
-        <div><h2 id="stock-modal-title">{titulo}</h2><p>Preencha os dados do insumo</p></div>
+        <div><h2 id={idTitulo}>{titulo}</h2><p>Preencha os dados do insumo</p></div>
         <button type="button" className="stock-icon-button" aria-label="Fechar" disabled={ocupado} onClick={aoFechar}><X size={14} /></button>
       </header>
       {children}

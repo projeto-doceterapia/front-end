@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Pencil, Plus, Search, Settings2, X } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { Pencil, Plus, Search, Settings2 } from 'lucide-react'
+import Modal from '../../components/Modal'
 import ProdutoCard from '../../components/produtos/ProdutoCard'
 import CategoriaProdutoForm from '../../components/produtos/CategoriaProdutoForm'
 import ConfiguracaoPrecificacao from '../../components/produtos/ConfiguracaoPrecificacao'
@@ -61,7 +62,6 @@ export default function Produtos() {
   const [precificacaoAberta, setPrecificacaoAberta] = useState(false)
   const [soAbaixoDoSugerido, setSoAbaixoDoSugerido] = useState(false)
   const [categoriaEmEdicao, setCategoriaEmEdicao] = useState(null)
-  const origemDoModal = useRef(null)
 
   async function carregar() {
     try {
@@ -103,7 +103,6 @@ export default function Produtos() {
   )
 
   function abrir(produto = null) {
-    origemDoModal.current = document.activeElement
     setEdicao(produto)
     setForm(produto ? formularioDe(produto) : produtoInicial)
     setErroMargem('')
@@ -112,7 +111,6 @@ export default function Produtos() {
 
   function fechar() {
     setModal(false)
-    if (origemDoModal.current?.isConnected) origemDoModal.current.focus()
   }
 
   async function salvar(event) {
@@ -351,20 +349,5 @@ export function PageTop({ titulo, subtitulo, acao, aoClicar, children }) {
         )}
       </div>
     </>
-  )
-}
-export function Modal({ titulo, children, aoFechar }) {
-  return (
-    <div className="catalog-overlay">
-      <section className="catalog-modal">
-        <header>
-          <h2>{titulo}</h2>
-          <button onClick={aoFechar} aria-label="Fechar">
-            <X size={19} />
-          </button>
-        </header>
-        {children}
-      </section>
-    </div>
   )
 }
