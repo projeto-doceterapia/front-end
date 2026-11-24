@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import estilos from '../index.css?raw'
 import Sidebar from './Sidebar'
@@ -9,6 +9,10 @@ function itensPrincipais() {
 }
 
 describe('Sidebar', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
   it('ordem do fluxo', () => {
     render(<Sidebar telaAtual="agenda" aoNavegar={vi.fn()} />)
 
@@ -48,5 +52,57 @@ describe('Sidebar', () => {
 
     expect(screen.getByRole('button', { name: 'Pedidos' })).toHaveAttribute('aria-current', 'page')
     expect(screen.getByRole('button', { name: 'Histórico' })).toHaveAttribute('aria-current', 'page')
+  })
+
+  describe('menu recolhível', () => {
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    it('recolhe e expande pelo botão com estado anunciado', () => {
+      const { container } = render(<Sidebar telaAtual="agenda" aoNavegar={vi.fn()} />)
+      const alternar = screen.getByRole('button', { name: 'Recolher menu' })
+      expect(alternar).toHaveAttribute('aria-expanded', 'true')
+      expect(alternar).toHaveAttribute('aria-controls', 'sidebar-nav')
+
+      fireEvent.click(alternar)
+
+      const expandir = screen.getByRole('button', { name: 'Expandir menu' })
+      expect(expandir).toHaveAttribute('aria-expanded', 'false')
+      expect(container.querySelector('.sidebar')).toHaveClass('recolhida')
+      expect(screen.getByRole('button', { name: 'Agenda' })).toHaveAttribute('title', 'Agenda')
+
+      fireEvent.click(expandir)
+      expect(container.querySelector('.sidebar')).not.toHaveClass('recolhida')
+    })
+
+    it('lembra a preferência neste navegador', () => {
+      const { unmount } = render(<Sidebar telaAtual="agenda" aoNavegar={vi.fn()} />)
+      fireEvent.click(screen.getByRole('button', { name: 'Recolher menu' }))
+      unmount()
+
+      render(<Sidebar telaAtual="agenda" aoNavegar={vi.fn()} />)
+
+      expect(screen.getByRole('button', { name: 'Expandir menu' })).toBeInTheDocument()
+    })
+
+    it('funciona sem armazenamento disponível', () => {
+      vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('bloqueado') })
+      vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('bloqueado') })
+      render(<Sidebar telaAtual="agenda" aoNavegar={vi.fn()} />)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Recolher menu' }))
+
+      expect(screen.getByRole('button', { name: 'Expandir menu' })).toBeInTheDocument()
+      vi.restoreAllMocks()
+    })
+
+    it('fica sempre compacto e sem botão em tela estreita', () => {
+      vi.stubGlobal('matchMedia', () => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() }))
+      const { container } = render(<Sidebar telaAtual="agenda" aoNavegar={vi.fn()} />)
+
+      expect(container.querySelector('.sidebar')).toHaveClass('recolhida')
+      expect(screen.queryByRole('button', { name: /menu$/ })).not.toBeInTheDocument()
+    })
   })
 })
