@@ -40,7 +40,7 @@ describe('DetalhePedido', () => {
     expect(dialogo).toHaveTextContent('Cliente Exemplo')
     expect(dialogo).toHaveTextContent('Rua Exemplo, 100')
     expect(dialogo).toHaveTextContent('Bolo de cenoura ×2')
-    expect(dialogo).toHaveTextContent('Aguardando pagamento')
+    expect(dialogo).toHaveTextContent('Sinal pago, restante pendente')
     expect(dialogo).toHaveTextContent('Em produção')
     expect(screen.getByRole('button', { name: 'Marcar como pronto' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Pedido #0042' })).toHaveFocus()
@@ -67,6 +67,29 @@ describe('DetalhePedido', () => {
   it('cancelar visível para a DONA', () => {
     renderizar(PEDIDO, { ehDona: true })
     expect(screen.getByRole('button', { name: 'Cancelar pedido' })).toBeInTheDocument()
+  })
+
+  it('mostra o indicador de falta e avisa itens sem ficha técnica', () => {
+    useSessao.mockReturnValue({ ehDona: true })
+    const itens = [...ITENS, { idProdutoPedido: 2, fkPedido: 42, fkProduto: 9, quantidade: 1, valorTotal: 40, semFichaTecnica: true }]
+    render(
+      <ToastProvider>
+        <DetalhePedido pedido={{ ...PEDIDO, confirmadoComFaltaInsumo: true }} clientes={[]} itens={itens} produtos={PRODUTOS} pagamento={PAGAMENTO} onFechar={vi.fn()} onPedidoAtualizado={vi.fn()} onEditar={vi.fn()} onCancelar={vi.fn()} />
+      </ToastProvider>,
+    )
+    const dialogo = screen.getByRole('dialog')
+    expect(dialogo).toHaveTextContent('Confirmado com falta de insumo')
+    expect(dialogo).toHaveTextContent('1 item sem ficha técnica: estoque não verificado.')
+  })
+
+  it('editar itens só nas fases que permitem', () => {
+    renderizar({ ...PEDIDO, statusPedido: 'AGUARDANDO_SINAL' })
+    expect(screen.getByRole('button', { name: 'Editar itens' })).toBeInTheDocument()
+  })
+
+  it('sem editar itens em produção', () => {
+    renderizar()
+    expect(screen.queryByRole('button', { name: 'Editar itens' })).not.toBeInTheDocument()
   })
 
   it('Esc fecha', () => {

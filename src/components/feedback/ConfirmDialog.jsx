@@ -33,9 +33,9 @@ export default function ConfirmDialog({
   useEffect(() => {
     if (!aberto) return
     // A disabled button drops the focus out of the dialog, so the container holds it while the call runs.
-    const alvo = ocupado ? dialogo : (perigoso ? botaoCancelar : botaoConfirmar)
+    const alvo = ocupado ? dialogo : (perigoso || !onConfirm ? botaoCancelar : botaoConfirmar)
     alvo.current.focus()
-  }, [aberto, ocupado, perigoso])
+  }, [aberto, ocupado, perigoso, onConfirm])
 
   if (!aberto) return null
 
@@ -96,15 +96,17 @@ export default function ConfirmDialog({
           <button ref={botaoCancelar} type="button" className="confirm-botao confirm-cancelar" disabled={ocupado} onClick={onCancel}>
             {textoCancelar}
           </button>
-          <button
-            ref={botaoConfirmar}
-            type="button"
-            className={`confirm-botao ${perigoso ? 'confirm-perigo' : 'confirm-padrao'}`}
-            disabled={ocupado}
-            onClick={onConfirm}
-          >
-            {textoConfirmar}
-          </button>
+          {onConfirm && (
+            <button
+              ref={botaoConfirmar}
+              type="button"
+              className={`confirm-botao ${perigoso ? 'confirm-perigo' : 'confirm-padrao'}`}
+              disabled={ocupado}
+              onClick={onConfirm}
+            >
+              {textoConfirmar}
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -6,17 +6,14 @@ import ResumoAgenda from '../../components/agenda/ResumoAgenda'
 import ConfiguracaoFarol from '../../components/agenda/ConfiguracaoFarol'
 import api from '../../services/api'
 import { carregarDadosTeste } from '../../services/dadosTeste'
-import { carregarPedidosComRelacionamentos, intervaloDoMes } from '../../services/pedidosConsulta'
-
-function dataISO(data) {
-  return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}-${String(data.getDate()).padStart(2, '0')}`
-}
+import FiltroPeriodoPedidos from '../../components/pedidos/FiltroPeriodoPedidos'
+import useRecortePedidos from '../../components/pedidos/useRecortePedidos'
+import { dataISO, filtroAberturaAgenda, filtroDoMes, formatarDataCompleta, periodoCobreMes } from '../../components/pedidos/filtrosUtils'
 
 export default function Agenda({ onNewOrder }) {
   const hoje = new Date()
-  const [pedidos, setPedidos] = useState([])
-  const [pagamentos, setPagamentos] = useState([])
-  const [itens, setItens] = useState([])
+  const recorte = useRecortePedidos(filtroAberturaAgenda)
+  const { pedidos, itens, pagamentos, carregando, erro } = recorte
   const [produtos, setProdutos] = useState([])
   const [farol, setFarol] = useState(null)
   const [mostrarFarol, setMostrarFarol] = useState(false)
@@ -28,30 +25,25 @@ export default function Agenda({ onNewOrder }) {
   const [carregandoDados, setCarregandoDados] = useState(false)
   const [mensagem, setMensagem] = useState('')
 
-  async function buscarDados(dataBase = mesExibido) {
+  async function buscarCatalogos() {
     try {
-      const respostas = await Promise.all([
-        carregarPedidosComRelacionamentos({ ...intervaloDoMes(dataBase), status: 'ORCAMENTO,AGUARDANDO_SINAL,ESPERANDO_FAZER,EM_PRODUCAO,AGUARDANDO_ENTREGA,ENTREGUE' }), api.get('/produtos'),
-      ])
-      setPedidos(respostas[0].pedidos)
-      setPagamentos(respostas[0].pagamentos)
-      setItens(respostas[0].itens)
-      setProdutos(respostas[1].data || [])
+      const respostaProdutos = await api.get('/produtos')
+      setProdutos(respostaProdutos.data || [])
+    } catch (falha) {
+      console.error('Não foi possível carregar os produtos:', falha)
+    }
 
-      try {
-        const respostaFarol = await api.get('/configuracao-farol')
-        setFarol(respostaFarol.data)
-      } catch {
-        setFarol(null)
-      }
-    } catch (erro) {
-      console.error('Não foi possível carregar a agenda:', erro)
+    try {
+      const respostaFarol = await api.get('/configuracao-farol')
+      setFarol(respostaFarol.data)
+    } catch {
+      setFarol(null)
     }
   }
 
   useEffect(() => {
-    buscarDados()
-  }, [mesExibido])
+    buscarCatalogos()
+  }, [])
 
   async function preencherDadosTeste() {
     setCarregandoDados(true)
@@ -59,7 +51,7 @@ export default function Agenda({ onNewOrder }) {
 
     try {
       await carregarDadosTeste()
-      await buscarDados()
+      await Promise.all([buscarCatalogos(), recorte.carregar(recorte.filtro)])
       setMensagem('Dados de teste carregados. Agora crie um pedido pela tela.')
     } catch (erro) {
       setMensagem('Não foi possível carregar os dados. Verifique se o backend está em execução.')
@@ -129,15 +121,34 @@ export default function Agenda({ onNewOrder }) {
     return data.startsWith(`${mesExibido.getFullYear()}-${String(mesExibido.getMonth() + 1).padStart(2, '0')}`)
   })
 
+  const mesCoberto = periodoCobreMes(recorte.filtro, mesExibido)
+
   return (
     <main className="agenda-page">
       <CabecalhoAgenda aoCriarPedido={onNewOrder} aoCarregarDadosTeste={preencherDadosTeste} carregandoDados={carregandoDados} />
       {mensagem && <p className="form-error order-error">{mensagem}</p>}
       <ResumoAgenda pedidos={pedidosDoMes} aoConfigurarFarol={abrirConfiguracaoFarol} />
+      <FiltroPeriodoPedidos
+        filtro={recorte.filtro}
+        opcaoCancelados
+        carregando={carregando}
+        onAplicar={recorte.carregar}
+        onRestaurar={() => recorte.carregar(filtroAberturaAgenda())}
+      />
+      {!mesCoberto && (
+        <p className="agenda-month-hint">
+          O mês exibido não está todo no período carregado.
+          <button type="button" className="outline-button" onClick={() => recorte.carregar(filtroDoMes(mesExibido, recorte.filtro.status))} disabled={carregando}>Carregar este mês</button>
+        </p>
+      )}
+      {erro && <p className="orders-error" role="alert">{erro}</p>}
+      {carregando && <p className="orders-empty orders-loading" role="status">Carregando pedidos...</p>}
+      {!carregando && !erro && !pedidos.length && <p className="orders-empty">Nenhum pedido com entrega entre {formatarDataCompleta(recorte.filtro.de)} e {formatarDataCompleta(recorte.filtro.ate)}.</p>}
 
-      <section className="agenda-layout">
+      <section className="agenda-layout" aria-busy={carregando}>
         <Calendario
           pedidos={pedidos}
+          periodo={recorte.filtro}
           farol={farol}
           mesExibido={mesExibido}
           dataSelecionada={dataSelecionada}
