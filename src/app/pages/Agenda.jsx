@@ -25,29 +25,20 @@ export default function Agenda({ onNewOrder }) {
   const [mesExibido, setMesExibido] = useState(new Date(hoje.getFullYear(), hoje.getMonth(), 1))
   const [dataSelecionada, setDataSelecionada] = useState(dataISO(hoje))
 
-  async function buscarDados(dataBase = mesExibido) {
-    try {
-      const respostas = await Promise.all([
-        carregarPedidosComRelacionamentos({ ...intervaloDoMes(dataBase), status: 'ORCAMENTO,AGUARDANDO_SINAL,ESPERANDO_FAZER,EM_PRODUCAO,AGUARDANDO_ENTREGA,ENTREGUE' }), api.get('/produtos'),
-      ])
-      setPedidos(respostas[0].pedidos)
-      setPagamentos(respostas[0].pagamentos)
-      setItens(respostas[0].itens)
-      setProdutos(respostas[1].data || [])
-
-      try {
-        const respostaFarol = await api.get('/configuracao-farol')
-        setFarol(respostaFarol.data)
-      } catch {
-        setFarol(null)
-      }
-    } catch (erro) {
-      console.error('Não foi possível carregar a agenda:', erro)
-    }
-  }
-
   useEffect(() => {
-    buscarDados()
+    Promise.all([
+      carregarPedidosComRelacionamentos({ ...intervaloDoMes(mesExibido), status: 'ORCAMENTO,AGUARDANDO_SINAL,ESPERANDO_FAZER,EM_PRODUCAO,AGUARDANDO_ENTREGA,ENTREGUE' }), api.get('/produtos'),
+    ])
+      .then((respostas) => {
+        setPedidos(respostas[0].pedidos)
+        setPagamentos(respostas[0].pagamentos)
+        setItens(respostas[0].itens)
+        setProdutos(respostas[1].data || [])
+        return api.get('/configuracao-farol')
+          .then((resposta) => setFarol(resposta.data))
+          .catch(() => setFarol(null))
+      })
+      .catch((erro) => console.error('Não foi possível carregar a agenda:', erro))
   }, [mesExibido])
 
   function mudarMes(variacao) {

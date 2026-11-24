@@ -41,22 +41,26 @@ export default function AppTopbar() {
     return Number.isFinite(salvo) && salvo >= 1 && salvo <= 1.8 ? salvo : 1
   })
 
-  const carregar = useCallback(() => {
-    setCarregando(true)
-    setErro('')
-    return listarNaoLidas()
+  const buscar = useCallback(() => (
+    listarNaoLidas()
       .then((lista) => setNotificacoes(lista))
       .catch(() => setErro('Não foi possível carregar as notificações.'))
       .finally(() => setCarregando(false))
-  }, [])
+  ), [])
+
+  const carregar = useCallback(() => {
+    setCarregando(true)
+    setErro('')
+    return buscar()
+  }, [buscar])
 
   const removerNotificacao = useCallback((id) => {
     setNotificacoes((atuais) => atuais.filter((item) => item.idNotificacao !== id))
   }, [])
 
   useEffect(() => {
-    carregar()
-  }, [carregar])
+    buscar()
+  }, [buscar])
 
   useEffect(() => {
     const encerrar = assinarStream({

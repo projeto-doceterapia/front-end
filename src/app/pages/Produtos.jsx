@@ -63,20 +63,15 @@ export default function Produtos() {
   const [soAbaixoDoSugerido, setSoAbaixoDoSugerido] = useState(false)
   const [categoriaEmEdicao, setCategoriaEmEdicao] = useState(null)
 
-  async function carregar() {
-    try {
-      const [dadosProdutos, dadosCategorias] = await Promise.all([
-        listarProdutos(),
-        listarCategorias(),
-      ])
-      setProdutos(dadosProdutos)
-      setCategorias(dadosCategorias)
-      setErro('')
-    } catch {
-      setErro(ERRO_CARGA)
-    } finally {
-      setCarregando(false)
-    }
+  function carregar() {
+    return Promise.all([listarProdutos(), listarCategorias()])
+      .then(([dadosProdutos, dadosCategorias]) => {
+        setProdutos(dadosProdutos)
+        setCategorias(dadosCategorias)
+        setErro('')
+      })
+      .catch(() => setErro(ERRO_CARGA))
+      .finally(() => setCarregando(false))
   }
 
   useEffect(() => {
