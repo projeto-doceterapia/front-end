@@ -45,7 +45,7 @@
 .stock-categories button { display: inline-flex; align-items: center; gap: 2px; padding: 2px 7px; border: 1px solid #edd0bc; border-radius: 10px; background: #fff; color: #5a3a2e; font-size: 9px; }
 .stock-categories button.selected { background: #f3d7d8; border-color: #d9898c; }
 .stock-categories .stock-add-category { color: #98a2b3; border-style: dashed; border-color: #d9dfe7; background: transparent; }
-.stock-table-scroll { overflow-x: auto; }
+.stock-table-scroll { position: relative; overflow-x: auto; }
 .stock-table { width: 100%; min-width: 710px; border-collapse: collapse; table-layout: fixed; text-align: left; }
 .stock-table th { height: 31px; background: #faf7f5; color: #98a2b3; font-size: 10px; font-weight: 600; }
 .stock-table th, .stock-table td { padding: 0 16px; border-bottom: 1px solid #f1e5dc; }

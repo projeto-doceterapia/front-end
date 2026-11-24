@@ -278,7 +278,7 @@
 .history-search { display: flex; min-height: 42px; align-items: center; gap: 10px; padding: 0 12px; border: 1px solid #ecd7c8; border-radius: 12px; color: #98a3b2; }
 .history-search input { width: 100%; border: 0; outline: 0; background: transparent; color: #5b3528; font: inherit; }
 .history-search input::placeholder { color: #a5a9b1; }
-.history-table-scroll { width: 100%; overflow-x: auto; }
+.history-table-scroll { position: relative; width: 100%; overflow-x: auto; }
 .history-table { width: 100%; min-width: 880px; border-collapse: collapse; color: #424d5c; font-size: 12px; text-align: left; }
 .history-table th { padding: 13px 12px; background: #fcf8f6; color: #8c9aac; font-weight: 600; }
 .history-table td { padding: 13px 12px; border-top: 1px solid #f2e9e5; vertical-align: middle; }
@@ -302,6 +302,9 @@
   .orders-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .production-order { grid-template-columns: 50px minmax(0, 1fr) 40px; padding-inline: 14px; }
   .payment-hint { display: none; }
+  .topbar-user { gap: 0; }
+  .topbar-user span,
+  .topbar-logout span { display: none; }
 }
 
 @media (max-width: 650px) {
