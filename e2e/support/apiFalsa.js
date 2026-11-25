@@ -29,7 +29,7 @@ const INDICADORES_FINANCEIROS = {
 }
 
 // Answers every API call in the browser so the e2e suite never needs the back-end or real data.
-export async function simularApi(page, { logado = false, loginValido = true, dados = 'vazio' } = {}) {
+export async function simularApi(page, { logado = false, loginValido = true, dados = 'vazio', perfil = 'DONA' } = {}) {
   let sessaoAtiva = logado
 
   await page.route(`${API}/**`, (rota) => {
@@ -38,7 +38,7 @@ export async function simularApi(page, { logado = false, loginValido = true, dad
 
     if (pathname === '/usuarios/me') {
       return sessaoAtiva
-        ? rota.fulfill({ status: 200, json: USUARIO_DE_TESTE })
+        ? rota.fulfill({ status: 200, json: { ...USUARIO_DE_TESTE, perfil } })
         : rota.fulfill({ status: 401, json: {} })
     }
     if (pathname === '/usuarios/login') {
