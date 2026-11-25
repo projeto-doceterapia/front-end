@@ -16,7 +16,7 @@ function Item({ item, dinheiro, aoRemover, aoAlterarQuantidade }) {
   const totalItem = Number(item.produto.precoAtual) * item.quantidade
   return (
     <article>
-      <div><strong>{item.produto.nome}</strong><span><Edit3 size={15} /><button aria-label="Remover item" onClick={aoRemover}><Trash2 size={14} /></button></span></div>
+      <div><strong>{item.produto.nome}</strong><span><Edit3 size={15} /><button type="button" aria-label={`Remover ${item.produto.nome}`} title={`Remover ${item.produto.nome}`} onClick={aoRemover}><Trash2 size={14} /></button></span></div>
       <div className="quantity">
         <button onClick={() => aoAlterarQuantidade(item.produto.idProduto, -1)}><Minus size={13} /></button>
         {item.quantidade}

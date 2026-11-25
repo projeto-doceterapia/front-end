@@ -71,6 +71,7 @@ export default function ProdutoCard({ produto, aoEditar, onFichaAlterada }) {
           type="button"
           className="icon-action expand-action"
           aria-label={`${expandido ? 'Recolher' : 'Expandir'} ${produto.nome}`}
+          title={`${expandido ? 'Recolher' : 'Expandir'} ${produto.nome}`}
           aria-expanded={expandido}
           aria-controls={painelId}
           onClick={() => setExpandido(!expandido)}
@@ -82,6 +83,7 @@ export default function ProdutoCard({ produto, aoEditar, onFichaAlterada }) {
             type="button"
             className="icon-action"
             aria-label={`Editar ${produto.nome}`}
+            title={`Editar ${produto.nome}`}
             onClick={aoEditar}
           >
             <Pencil size={17} />

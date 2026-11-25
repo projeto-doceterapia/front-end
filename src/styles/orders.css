@@ -1872,3 +1872,35 @@ button {
     margin-top: 13px;
   }
 }
+
+.client-contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 12px;
+  color: #5b3528;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.client-status-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 36px;
+  margin-left: 28px;
+  padding: 0 12px;
+  border: 1px solid #5b3528;
+  border-left-width: 1px;
+  border-radius: 8px;
+  background: #fff;
+  color: #5b3528;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.client-deactivate {
+  border-color: #b42318;
+  color: #b42318;
+}

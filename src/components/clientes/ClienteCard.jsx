@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { ChevronDown, MapPin, Pencil, Phone, UserCheck, UserX } from 'lucide-react'
+import { ChevronDown, MapPin, MessageCircle, Pencil, Phone, UserCheck, UserX } from 'lucide-react'
+import { linkTelefone, linkWhatsApp } from './contatoUtils'
 import api from '../../services/api'
 import useSessao from '../sessao/useSessao'
 import { codigoPedido } from '../formatos'
@@ -91,10 +92,24 @@ export default function ClienteCard({ cliente, produtos, aoEditar, onInativar, o
             )}
           </div>
           <small>
-            <Phone size={13} />
-            {cliente.telefone}
-            <MapPin size={13} />
-            {cliente.endereco}
+            {cliente.telefone && (
+              <>
+                <a className="client-contact" href={linkTelefone(cliente.telefone)} title={`Ligar para ${cliente.nome}`}>
+                  <Phone size={13} aria-hidden="true" />
+                  {cliente.telefone}
+                </a>
+                <a className="client-contact" href={linkWhatsApp(cliente.telefone)} target="_blank" rel="noopener noreferrer" title={`Abrir conversa com ${cliente.nome} no WhatsApp`}>
+                  <MessageCircle size={13} aria-hidden="true" />
+                  WhatsApp
+                </a>
+              </>
+            )}
+            {cliente.endereco && (
+              <>
+                <MapPin size={13} aria-hidden="true" />
+                {cliente.endereco}
+              </>
+            )}
           </small>
         </div>
         <div className="client-metric">
@@ -115,6 +130,7 @@ export default function ClienteCard({ cliente, produtos, aoEditar, onInativar, o
           aria-label={`${expandido ? 'Recolher' : 'Expandir'} ${cliente.nome}`}
           aria-expanded={expandido}
           aria-controls={painelId}
+          title={`${expandido ? 'Recolher' : 'Expandir'} ${cliente.nome}`}
           onClick={alternar}
         >
           <ChevronDown size={17} className={expandido ? 'rotated' : ''} />
@@ -124,27 +140,30 @@ export default function ClienteCard({ cliente, produtos, aoEditar, onInativar, o
           className="icon-action"
           onClick={aoEditar}
           aria-label={`Editar ${cliente.nome}`}
+          title={`Editar ${cliente.nome}`}
         >
           <Pencil size={17} />
         </button>
         {ehDona && !inativo && (
           <button
             type="button"
-            className="icon-action"
+            className="client-status-action client-deactivate"
             onClick={onInativar}
             aria-label={`Inativar ${cliente.nome}`}
+            title={`Inativar ${cliente.nome}`}
           >
-            <UserX size={17} />
+            <UserX size={16} aria-hidden="true" /> Inativar
           </button>
         )}
         {ehDona && inativo && (
           <button
             type="button"
-            className="icon-action"
+            className="client-status-action"
             onClick={onReativar}
             aria-label={`Reativar ${cliente.nome}`}
+            title={`Reativar ${cliente.nome}`}
           >
-            <UserCheck size={17} />
+            <UserCheck size={16} aria-hidden="true" /> Reativar
           </button>
         )}
       </div>

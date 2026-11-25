@@ -160,6 +160,7 @@ export default function FichaTecnica({ produto, ficha, podeEditar, onFichaAltera
                     type="button"
                     className="icon-action"
                     aria-label={`Editar ${linha.nomeInsumo}`}
+                    title={`Editar ${linha.nomeInsumo}`}
                     data-foco={`editar-${linha.idProdutoInsumo}`}
                     disabled={formulario !== null}
                     onClick={() => abrirFormulario(linha, `editar-${linha.idProdutoInsumo}`)}
@@ -170,6 +171,7 @@ export default function FichaTecnica({ produto, ficha, podeEditar, onFichaAltera
                     type="button"
                     className="icon-action"
                     aria-label={`Remover ${linha.nomeInsumo}`}
+                    title={`Remover ${linha.nomeInsumo}`}
                     onClick={() => setRemocao(linha)}
                   >
                     <Trash2 size={15} />
