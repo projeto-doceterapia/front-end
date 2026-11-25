@@ -59,6 +59,8 @@
 }
 
 .usuarios-form legend {
+  float: left;
+  width: 100%;
   padding: 0;
   margin-bottom: 4px;
   color: var(--foreground);

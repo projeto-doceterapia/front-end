@@ -118,3 +118,4 @@
 .movimento-entrada td:nth-child(4) { color: #0a6b42; }
 .movimento-saida td:nth-child(3),
 .movimento-saida td:nth-child(4) { color: #9b2f3c; }
+.stock-page .catalog-heading { width: auto; max-width: none; flex-wrap: wrap; gap: 12px; }

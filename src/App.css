@@ -717,7 +717,7 @@ polyline {
 }
 
 .dashboard .resumos {
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
 }
 
 .item-estoque.nivel-critico em { color: #9b2f3c; }
@@ -735,4 +735,8 @@ polyline {
   .dashboard .grafico-pedidos .barras {
     padding-inline: 12px;
   }
+}
+
+.dashboard .grafico-pedidos .coluna {
+  flex: 1 0 44px;
 }

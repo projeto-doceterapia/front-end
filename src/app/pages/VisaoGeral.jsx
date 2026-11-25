@@ -82,7 +82,7 @@ export default function VisaoGeral() {
           {semPedidos && <p className="empty-dashboard" role="status">Nenhum pedido com entrega neste período.</p>}
           <section className="resumos">
             {ehDona && financeiros && <CardsFinanceiros financeiros={financeiros} />}
-            <CardResumo cor="vermelho" icone="□" titulo="Dias lotados" valor={operacionais.diasLotados.length} detalhe="dias marcados em vermelho no farol" />
+            <CardResumo cor="vermelho" icone="□" titulo="Dias lotados" valor={operacionais.diasLotados.length} detalhe="dias com a lotação máxima atingida" />
           </section>
           <EstoqueAtencao insumos={operacionais.insumosAbaixoDoMinimo} />
           <PedidosAndamento pedidosPorStatus={operacionais.pedidosPorStatus} />
