@@ -45,7 +45,7 @@
 }
 
 .ficha-estado.erro {
-  color: #c04c58;
+  color: #ab444e;
 }
 
 .margem-origem {
@@ -69,7 +69,7 @@
   border: 1px solid #ead3c4;
   border-radius: 0.625rem;
   background: #fff;
-  color: #617089;
+  color: #59677e;
   font-size: 0.8rem;
 }
 
@@ -108,14 +108,14 @@
 .dialogo-campos .campo {
   display: grid;
   gap: 0.3rem;
-  color: #66748a;
+  color: #5b677b;
   font-size: 0.75rem;
 }
 
 .ficha-form label,
 .catalog-form .campo > label,
 .dialogo-campos .campo > label {
-  color: #66748a;
+  color: #5b677b;
   font-size: 0.75rem;
 }
 
@@ -125,7 +125,7 @@
 .dialogo-campos textarea {
   width: 100%;
   padding: 0.5rem 0.625rem;
-  border: 1px solid #e2cfc4;
+  border: 1px solid var(--field-border);
   border-radius: 0.5rem;
   color: var(--ink);
   font: inherit;

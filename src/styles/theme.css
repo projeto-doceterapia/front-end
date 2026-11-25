@@ -6,12 +6,12 @@
   --card-foreground: #4A4A4A;
   --popover: #ffffff;
   --popover-foreground: #4A4A4A;
-  --primary: #D9898C;
+  --primary: #b14f58;
   --primary-foreground: #ffffff;
   --secondary: #F3D7D8;
   --secondary-foreground: #4A4A4A;
   --muted: #F5E8DC;
-  --muted-foreground: #717182;
+  --muted-foreground: #656574;
   --accent: #5A3A2E;
   --accent-foreground: #ffffff;
   --destructive: #d4183d;
@@ -22,7 +22,8 @@
   --switch-background: #cbced4;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: #D9898C;
+  --field-border: #9b7b6d;
+  --ring: #b14f58;
   --radius: 0.625rem;
 }
 
@@ -199,14 +200,14 @@ body {
   top: 50%;
   left: 0.875rem;
   transform: translateY(-50%);
-  color: #9ca3af;
+  color: #62676e;
   pointer-events: none;
 }
 
 .input-wrapper input {
   width: 100%;
   padding: 0.75rem 1rem 0.75rem 2.5rem;
-  border: 1px solid #e8d5c4;
+  border: 1px solid var(--field-border);
   border-radius: 0.75rem;
   background: rgba(245, 232, 220, 0.4);
   color: var(--foreground);
@@ -234,7 +235,7 @@ body {
   border: 0;
   transform: translateY(-50%);
   background: transparent;
-  color: #9ca3af;
+  color: #62676e;
   cursor: pointer;
 }
 
@@ -252,7 +253,7 @@ body {
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
   background: #fef2f2;
-  color: #ef4444;
+  color: #ba3535;
   font-size: 0.75rem;
 }
 

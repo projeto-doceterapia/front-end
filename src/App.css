@@ -24,7 +24,7 @@
 
 .dashboard > header p, .titulo p {
   margin-top: 3px;
-  color: #9a92ad;
+  color: #696376;
   font-size: 11px;
 }
 
@@ -58,12 +58,12 @@
   text-align: center;
   line-height: 24px;
   background: #fae1e0;
-  color: #dc8990;
+  color: #9e3f48;
 }
 
 .card p {
   margin-top: 7px;
-  color: #786b80;
+  color: #6d6174;
   font-size: 11px;
 }
 
@@ -75,12 +75,12 @@
 
 .card small {
   display: block;
-  color: #9a92a3;
+  color: #69636f;
   font-size: 10px;
 }
 
 .rosa strong {
-  color: #dc8990;
+  color: #9e3f48;
 }
 
 .verde {
@@ -89,16 +89,16 @@
 
 .verde .icone, .verde strong {
   background: #dff9ed;
-  color: #00a86b;
+  color: #00764b;
 }
 
 .vermelho strong {
-  color: #fc3442;
+  color: #c22833;
 }
 
 .vermelho .icone {
   background: #ffe6e8;
-  color: #f24a5a;
+  color: #b53743;
 }
 
 .marrom {
@@ -130,7 +130,7 @@
 }
 
 .titulo a {
-  color: #e77e87;
+  color: #9e3f48;
   font-size: 10px;
 }
 
@@ -152,12 +152,12 @@
   padding: 5px;
   border-radius: 6px;
   background: #fff2c8;
-  color: #fa9b00;
+  color: #915a00;
 }
 
 em {
   display: block;
-  color: #f48600;
+  color: #9a5400;
   font-size: 7px;
   font-style: normal;
 }
@@ -184,7 +184,7 @@ em {
   width: 42%;
   height: 5px;
   border-radius: 5px;
-  background: #ff9500;
+  background: #a35f00;
 }
 
 .pedidos {
@@ -209,36 +209,36 @@ em {
 }
 
 .pedido small {
-  color: #8a91a1;
+  color: #616571;
   font-size: 7px;
 }
 
 .azul {
   background: #eef6ff;
-  color: #1b72ff;
+  color: #1760d6;
 }
 
 .roxo {
   border-color: #ebd5fa;
   background: #faf1ff;
-  color: #a33dfa;
+  color: #8e35d9;
 }
 
 .verde {
   background: #edfcf5;
-  color: #009f64;
+  color: #00764a;
 }
 
 .amarelo {
   border-color: #f1e7c6;
   background: #fffbed;
-  color: #e57800;
+  color: #9c5200;
 }
 
 .filtros {
   display: flex;
   gap: 5px;
-  color: #8090a2;
+  color: #5c6875;
   font-size: 7px;
 }
 
@@ -247,12 +247,12 @@ em {
   border: 0;
   border-radius: 10px;
   background: #f4f5f7;
-  color: #8090a2;
+  color: #5c6875;
   font-weight: 400;
 }
 
 .filtros button.active, .filtros b {
-  background: #dc8990;
+  background: #b14f58;
   color: #fff;
 }
 
@@ -277,11 +277,11 @@ em {
 .coluna i {
   width: 18px;
   border-radius: 4px 4px 0 0;
-  background: #dc8990;
+  background: #b14f58;
 }
 
 .coluna small {
-  color: #9c91a2;
+  color: #6a636e;
   font-size: 7px;
   text-align: center;
 }
@@ -334,7 +334,7 @@ em {
 }
 
 .p1 {
-  background: #dc8990;
+  background: #b14f58;
 }
 
 .p2 {
@@ -342,12 +342,12 @@ em {
 }
 
 .p3 {
-  background: #f1ab76;
+  background: #916747;
 }
 
 .linhas {
   padding: 8px 15px 12px;
-  color: #df8a92;
+  color: #9e3f48;
   font-size: 8px;
   text-align: center;
 }
@@ -539,7 +539,7 @@ polyline {
 .dashboard .pizza span small {
   display: block;
   margin-top: 2px;
-  color: #8c9aac;
+  color: #5e6773;
   font-size: 9px;
   font-weight: 400;
 }
@@ -602,7 +602,7 @@ polyline {
   display: flex;
   justify-content: space-between;
   padding: 7px 4% 0;
-  color: #8994a5;
+  color: #5f6672;
   font-size: 10px;
 }
 
@@ -611,7 +611,7 @@ polyline {
   justify-content: center;
   gap: 20px;
   margin-top: 14px;
-  color: #718096;
+  color: #5a6678;
   font-size: 11px;
 }
 
@@ -626,15 +626,15 @@ polyline {
 }
 
 .dashboard .legenda-linhas .faturamento {
-  color: #dc8990;
+  color: #9e3f48;
 }
 
 .dashboard .legenda-linhas .custo {
-  color: #cb752f;
+  color: #965723;
 }
 
 .dashboard .legenda-linhas .lucro {
-  color: #27845d;
+  color: #227351;
 }
 
 @media (max-width: 700px) {
@@ -670,7 +670,7 @@ polyline {
 
 .datas-periodo input {
   padding: 4px 6px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--field-border);
   border-radius: 6px;
   background: var(--input-background);
   color: var(--foreground);

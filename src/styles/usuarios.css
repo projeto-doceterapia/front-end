@@ -56,7 +56,7 @@
   height: 38px;
   margin-top: 7px;
   padding: 0 10px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--field-border);
   border-radius: var(--radius);
   background: #fff;
   color: var(--foreground);
