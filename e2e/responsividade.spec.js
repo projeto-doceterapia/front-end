@@ -2,8 +2,7 @@ import { expect, test } from '@playwright/test'
 import { simularApi } from './support/apiFalsa'
 
 const LARGURAS = [390, 768, 1440]
-// The API fake answers every list with [], which the overview indicators cannot render.
-const TELAS = ['Agenda', 'Produção', 'Clientes', 'Registrar Pedido', 'Histórico', 'Produtos', 'Estoque']
+const TELAS = ['Visão Geral', 'Agenda', 'Produção', 'Clientes', 'Registrar Pedido', 'Histórico', 'Produtos', 'Estoque']
 
 for (const largura of LARGURAS) {
   test.describe(`Telas em ${largura} px`, () => {
