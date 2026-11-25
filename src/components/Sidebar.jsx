@@ -17,8 +17,8 @@ import logoImage from '../assets/logo.png'
 import { NOME_NEGOCIO } from './identidade'
 
 const itens = [
-  { id: 'visao-geral', label: 'Visão Geral', icone: Grid2x2 },
   { id: 'agenda', label: 'Agenda', icone: CalendarDays },
+  { id: 'visao-geral', label: 'Visão Geral', icone: Grid2x2 },
   { id: 'producao', label: 'Produção', icone: ChefHat },
   { id: 'clientes', label: 'Clientes', icone: UsersRound },
   { id: 'pedidos', label: 'Pedidos', icone: ShoppingBasket, expandido: true },

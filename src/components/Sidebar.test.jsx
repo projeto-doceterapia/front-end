@@ -17,7 +17,7 @@ describe('Sidebar', () => {
     render(<Sidebar telaAtual="agenda" aoNavegar={vi.fn()} />)
 
     expect(itensPrincipais().map((item) => item.textContent)).toEqual([
-      'Visão Geral', 'Agenda', 'Produção', 'Clientes', 'Pedidos', 'Produtos', 'Estoque',
+      'Agenda', 'Visão Geral', 'Produção', 'Clientes', 'Pedidos', 'Produtos', 'Estoque',
     ])
     const submenu = screen.getByRole('navigation').querySelector('.sidebar-submenu')
     expect(within(submenu).getAllByRole('button').map((botao) => botao.textContent)).toEqual([
