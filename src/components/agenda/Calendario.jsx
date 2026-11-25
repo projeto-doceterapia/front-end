@@ -29,9 +29,9 @@ export default function Calendario({ pedidos, farol, mesExibido, dataSelecionada
       <header className="calendar-header">
         <div><h2>{nomeMes}</h2><small>{ano}</small></div>
         <div className="calendar-actions">
-          <button type="button" aria-label="Mes anterior" onClick={() => aoMudarMes(-1)}><ChevronLeft size={16} /></button>
+          <button type="button" aria-label="Mês anterior" onClick={() => aoMudarMes(-1)}><ChevronLeft size={16} /></button>
           <button type="button" onClick={aoIrParaHoje}>Hoje</button>
-          <button type="button" aria-label="Proximo mes" onClick={() => aoMudarMes(1)}><ChevronRight size={16} /></button>
+          <button type="button" aria-label="Próximo mês" onClick={() => aoMudarMes(1)}><ChevronRight size={16} /></button>
         </div>
       </header>
 

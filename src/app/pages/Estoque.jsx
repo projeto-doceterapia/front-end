@@ -179,10 +179,10 @@ export default function Estoque() {
         {!carregando && !erro && !visiveis.length && <p className="stock-empty">{insumos.length ? 'Nenhum insumo encontrado para os filtros selecionados.' : 'Nenhum insumo cadastrado. Adicione seu primeiro insumo.'}</p>}
       </section>
       {!carregando && !erro && <MovimentacoesEstoque insumos={insumos} />}
-      {modal && <ModalEstoque titulo={modal === 'categoria' ? 'Nova Categoria' : edicao ? 'Editar Insumo' : 'Novo Insumo'} aoFechar={fechar} ocupado={ocupado}>
+      {modal && <ModalEstoque titulo={modal === 'categoria' ? 'Nova categoria' : edicao ? 'Editar insumo' : 'Novo insumo'} subtitulo={modal === 'categoria' ? 'Informe o nome da nova categoria' : 'Preencha os dados do insumo'} aoFechar={fechar} ocupado={ocupado}>
         <form className="stock-form" onSubmit={modal === 'categoria' ? salvarCategoria : salvar}>
           <fieldset disabled={ocupado}>
-            <label className="stock-full">{modal === 'categoria' ? 'Nome da categoria' : 'Nome do insumo'}<input autoFocus required maxLength={45} name="nome" value={form.nome} onChange={alterar} placeholder={modal === 'categoria' ? 'Ex: Base' : 'Ex: Farinha de Trigo'} /></label>
+            <label className="stock-full">{modal === 'categoria' ? 'Nome da categoria' : 'Nome do insumo'}<input autoFocus required maxLength={45} name="nome" value={form.nome} onChange={alterar} placeholder={modal === 'categoria' ? 'Ex.: Base' : 'Ex.: Farinha de trigo'} /></label>
             {modal === 'insumo' && <>
               <label>Quantidade atual<input required inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" name="quantidadeAtual" value={form.quantidadeAtual} onChange={alterar} /></label>
               <label>Unidade<select name="unidade" value={form.unidade} onChange={alterar}>{Object.entries(unidades).map(([id, nome]) => <option key={id} value={id}>{nome}</option>)}</select></label>

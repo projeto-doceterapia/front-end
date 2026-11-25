@@ -175,7 +175,7 @@ export default function Pedido({ onBack }) {
               </select>
             </label> : <>
               <label className="order-data-field">Nome completo<input name="nome" value={novoCliente.nome} onChange={alterarNovoCliente} placeholder="Nome do cliente" /></label>
-              <label className="order-data-field">Telefone<input name="telefone" value={novoCliente.telefone} onChange={alterarNovoCliente} placeholder="(11) 99999-9999" /></label>
+              <label className="order-data-field">Telefone<input name="telefone" value={novoCliente.telefone} onChange={alterarNovoCliente} placeholder="(11) 90000-0000" /></label>
               <label className="order-data-field">Tipo de pessoa<select name="tipoPessoa" value={novoCliente.tipoPessoa} onChange={alterarNovoCliente}><option value="FISICA">Pessoa física</option><option value="JURIDICA">Pessoa jurídica</option></select></label>
               <label className="order-data-field full-width">Endereço<input name="endereco" value={novoCliente.endereco} onChange={alterarNovoCliente} placeholder="Rua, número, bairro e cidade" /></label>
             </>}
