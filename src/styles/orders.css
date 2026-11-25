@@ -23,7 +23,7 @@ button {
   padding: 28px;
   background: var(--canvas);
   color: var(--ink);
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 
 .agenda-heading,
@@ -44,7 +44,7 @@ button {
 .agenda-heading h1,
 .order-page h1 {
   margin: 0;
-  font-size: 20px;
+  font-size: 1.25rem;
   letter-spacing: -0.5px;
 }
 
@@ -85,7 +85,7 @@ button {
   border-radius: 8px;
   background: white;
   color: #5f6772;
-  font-size: 11px;
+  font-size: 0.875rem;
 }
 
 .agenda-stats {
@@ -97,13 +97,13 @@ button {
 
 .agenda-stats strong {
   color: #90565b;
-  font-size: 17px;
+  font-size: 1.0625rem;
 }
 
 .agenda-stats strong span {
   margin-left: 5px;
   color: #606674;
-  font-size: 10px;
+  font-size: 0.875rem;
   font-weight: 400;
 }
 
@@ -158,7 +158,7 @@ button {
 .orders-card h2,
 .order-panel h2 {
   margin: 0;
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 
 .calendar-header small {
@@ -178,7 +178,7 @@ button {
   border-radius: 8px;
   background: white;
   color: #8d565a;
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .weekdays,
@@ -193,7 +193,7 @@ button {
   border-bottom: 1px solid #f2e9e5;
   color: #5d6675;
   text-align: center;
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .calendar-day {
@@ -254,7 +254,7 @@ button {
 }
 
 .day-order strong {
-  font-size: 11px;
+  font-size: 0.875rem;
 }
 
 .day-order em {
@@ -285,13 +285,13 @@ button {
   margin-top: 3px;
   color: #606674;
   text-align: right;
-  font-size: 9px;
+  font-size: 0.875rem;
 }
 
 .calendar-footer {
   padding: 11px 20px;
   color: #5e6672;
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .legenda-farol {
@@ -329,12 +329,12 @@ button {
 }
 
 .orders-card header small {
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .orders-card header h2 {
   margin-top: 3px;
-  font-size: 11px;
+  font-size: 0.875rem;
   color: var(--ink);
 }
 
@@ -363,7 +363,7 @@ button {
 .order-tags b {
   padding: 3px 5px;
   border-radius: 7px;
-  font-size: 9px;
+  font-size: 0.875rem;
   font-weight: 500;
 }
 
@@ -390,7 +390,7 @@ button {
   display: block;
   margin-top: 3px;
   color: #5d6674;
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .agenda-order small svg {
@@ -406,7 +406,7 @@ button {
   padding-top: 8px;
   border-top: 1px solid #eee5df;
   color: #5f6671;
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .order-total strong {
@@ -441,7 +441,7 @@ button {
 
 .breadcrumb {
   color: #5f6772;
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .breadcrumb span {
@@ -467,7 +467,7 @@ button {
   display: none;
   margin: 20px 0 16px;
   color: var(--ink);
-  font-size: 13px;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 
@@ -476,7 +476,7 @@ button {
   align-items: center;
   gap: 8px;
   color: #616771;
-  font-size: 12px;
+  font-size: 0.875rem;
   white-space: nowrap;
 }
 
@@ -544,7 +544,7 @@ button {
 }
 
 .panel-icon + h2 {
-  font-size: 13px;
+  font-size: 0.875rem;
 }
 
 .catalog-body {
@@ -582,7 +582,7 @@ button {
   border-radius: 14px;
   background: #fff;
   color: #68402f;
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .categories .selected {
@@ -623,7 +623,7 @@ button {
 .product small,
 .product p {
   color: #5d6774;
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .product b {
@@ -718,7 +718,7 @@ button {
   margin: 0 0 0 auto;
   color: #5c6774;
   text-align: right;
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .quantity p b {
@@ -735,7 +735,7 @@ button {
 
 .cart-panel footer strong {
   color: var(--ink);
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .payment-content {
@@ -756,7 +756,7 @@ button {
   flex-direction: column;
   gap: 7px;
   color: #5b677b;
-  font-size: 11px;
+  font-size: 0.875rem;
   font-weight: 700;
 }
 
@@ -826,7 +826,7 @@ button {
   display: block;
   margin-bottom: 13px;
   color: #5b677b;
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .payment-body select,
@@ -851,7 +851,7 @@ button {
   align-items: center;
   gap: 7px;
   color: var(--ink);
-  font-size: 12px;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 
@@ -871,7 +871,7 @@ button {
   justify-content: space-between;
   padding: 3px;
   color: #54687c;
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .payment-values b {
@@ -899,7 +899,7 @@ button {
   display: flex;
   justify-content: space-between;
   margin: 5px 0 !important;
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .summary-total {
@@ -908,7 +908,7 @@ button {
 }
 
 .summary-total b {
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 
 .summary-line {
@@ -916,7 +916,7 @@ button {
   justify-content: space-between;
   margin: 5px 0 !important;
   color: #5a6678;
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .summary-line span {
@@ -1041,7 +1041,7 @@ button {
   border-radius: 16px;
   background: #fff;
   color: #5c6777;
-  font-size: 11px;
+  font-size: 0.875rem;
 }
 
 .client-type-toggle button.active {
@@ -1088,7 +1088,7 @@ button {
 .farol-modal header p {
   margin: 5px 0 0;
   color: var(--muted);
-  font-size: 0.83rem;
+  font-size: 0.875rem;
 }
 
 .farol-modal > header button {
@@ -1147,7 +1147,7 @@ button {
   grid-column: 2;
   margin-top: 4px;
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: 0.875rem;
   font-weight: 400;
 }
 
@@ -1239,7 +1239,7 @@ button {
 
   .agenda-heading h1,
   .order-page h1 {
-    font-size: 18px;
+    font-size: 1.125rem;
   }
 
   .primary-button {
@@ -1259,11 +1259,11 @@ button {
   }
 
   .weekdays {
-    font-size: 8px;
+    font-size: 0.875rem;
   }
 
   .calendar-footer {
-    font-size: 8px;
+    font-size: 0.875rem;
   }
 
   .steps {
@@ -1276,7 +1276,7 @@ button {
   }
 
   .step span {
-    font-size: 10px;
+    font-size: 0.875rem;
   }
 }
 
@@ -1320,7 +1320,7 @@ button {
 .detail-description {
   margin: 0 0 10px;
   color: #5e6671;
-  font-size: 12px;
+  font-size: 0.875rem;
   line-height: 1.5;
 }
 .pricing-panel {
@@ -1328,7 +1328,7 @@ button {
   border: 1px solid #f8e7e8;
   border-radius: 14px;
   background: #fff;
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 .pricing-panel header {
   display: flex;
@@ -1360,7 +1360,7 @@ button {
   display: block;
   margin-bottom: 5px;
   color: #5e6671;
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 .suggested-price {
   color: #9e3f48;
@@ -1410,7 +1410,7 @@ button {
   border: 1px solid #ead3c4;
   border-radius: 14px;
   background: #fff;
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 .recent-order-id {
   flex-shrink: 0;
@@ -1458,7 +1458,7 @@ button {
   border-bottom: 1px solid #ecd7c8;
   background: #fff;
   color: #5f6675;
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 .app-topbar > .topbar-actions {
   display: flex;
@@ -1495,19 +1495,19 @@ button {
 }
 .catalog-heading h1 {
   margin: 0;
-  font-size: 25px;
+  font-size: 1.5625rem;
   letter-spacing: -1px;
 }
 .catalog-heading p {
   margin: 5px 0 0;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .catalog-heading .primary-button {
   min-height: 41px;
   border-radius: 13px;
   padding-inline: 18px;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .filter-chips {
   display: flex;
@@ -1522,7 +1522,7 @@ button {
   background: #fff;
   color: #59677e;
   font: inherit;
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 .filter-chips button.selected {
   border-color: #db898f;
@@ -1555,7 +1555,7 @@ button {
   outline: 0;
   color: var(--ink);
   font: inherit;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .catalog-search input::placeholder {
   color: #606670;
@@ -1597,7 +1597,7 @@ button {
 .client-data strong {
   display: block;
   margin-bottom: 7px;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 .catalog-info div,
@@ -1615,13 +1615,13 @@ button {
   border-radius: 10px;
   background: #f6eee8;
   color: #734532;
-  font-size: 11px;
+  font-size: 0.875rem;
   line-height: 1;
 }
 .catalog-info small {
   margin-left: 7px;
   color: #5f6671;
-  font-size: 11px;
+  font-size: 0.875rem;
 }
 .product-price,
 .client-metric {
@@ -1633,12 +1633,12 @@ button {
   display: block;
   margin-bottom: 4px;
   color: #606672;
-  font-size: 11px;
+  font-size: 0.875rem;
 }
 .product-price b,
 .client-metric b {
   color: #5b3528;
-  font-size: 16px;
+  font-size: 1rem;
 }
 .row-chevron,
 .icon-action {
@@ -1692,12 +1692,12 @@ button {
   margin-top: -25px;
   margin-left: 42px;
   color: #606672;
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 .client-stat b {
   display: block;
   margin-top: 22px;
-  font-size: 30px;
+  font-size: 1.875rem;
 }
 .client-filters {
   display: grid;
@@ -1717,7 +1717,7 @@ button {
   gap: 5px;
   margin-top: 9px;
   color: #5e6671;
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 .client-data small svg + * {
   margin-left: 10px;
@@ -1734,7 +1734,7 @@ button {
   min-width: 96px;
 }
 .client-metric span {
-  font-size: 13px;
+  font-size: 0.875rem;
 }
 .catalog-overlay {
   position: fixed;
@@ -1763,7 +1763,7 @@ button {
 }
 .catalog-modal h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 1.125rem;
 }
 .catalog-modal header button {
   border: 0;
@@ -1779,7 +1779,7 @@ button {
   display: grid;
   gap: 5px;
   color: #5b677b;
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 .catalog-form input,
 .catalog-form select,
@@ -1804,13 +1804,13 @@ button {
 }
 .zip-field label {
   color: var(--muted-foreground);
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 .zip-feedback {
   margin: 0;
   min-height: 1em;
   color: var(--muted-foreground);
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 .zip-field input[aria-invalid='true'] {
   border-color: var(--destructive);
@@ -1854,7 +1854,7 @@ button {
     gap: 12px;
   }
   .catalog-heading h1 {
-    font-size: 21px;
+    font-size: 1.3125rem;
   }
   .client-stats {
     grid-template-columns: 1fr;

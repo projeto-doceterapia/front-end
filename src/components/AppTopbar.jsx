@@ -189,10 +189,10 @@ export default function AppTopbar() {
             </section>
           )}
         </div>
-        <div className="font-size-controls" aria-label="Tamanho da fonte">
-          <button type="button" onClick={() => alterarEscala(-0.2)} disabled={escalaFonte <= 1} aria-label="Diminuir fonte" title="Diminuir fonte"><Minus size={13} /></button>
-          <span>Aa <small>{Math.round(escalaFonte * 100)}%</small></span>
-          <button type="button" onClick={() => alterarEscala(0.2)} disabled={escalaFonte >= 1.8} aria-label="Aumentar fonte" title="Aumentar fonte"><Plus size={13} /></button>
+        <div className="font-size-controls" role="group" aria-label="Tamanho do texto">
+          <button type="button" onClick={() => alterarEscala(-0.2)} disabled={escalaFonte <= 1} aria-label="Diminuir o texto" title="Diminuir o texto"><Minus size={16} aria-hidden="true" /></button>
+          <span><span aria-hidden="true">Aa </span><small>Texto {Math.round(escalaFonte * 100)}%</small></span>
+          <button type="button" onClick={() => alterarEscala(0.2)} disabled={escalaFonte >= 1.8} aria-label="Aumentar o texto" title="Aumentar o texto"><Plus size={16} aria-hidden="true" /></button>
         </div>
         <div className="topbar-user" aria-label={`${usuario.nome}, ${rotuloPerfil}`}>
           <b>{usuario.nome.charAt(0).toUpperCase()}</b>

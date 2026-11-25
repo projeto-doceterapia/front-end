@@ -9,7 +9,7 @@
   border-radius: 0.625rem;
   background: #f6eee8;
   color: #734532;
-  font-size: 0.7rem;
+  font-size: 0.875rem;
   line-height: 1;
 }
 
@@ -40,7 +40,7 @@
 .margem-origem {
   margin: 0.25rem 0 0.5rem;
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   line-height: 1.5;
 }
 
@@ -70,7 +70,7 @@
   border-radius: 0.625rem;
   background: #fff;
   color: #59677e;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
 }
 
 .ficha-linhas > li:has(.ficha-form) {
@@ -109,14 +109,14 @@
   display: grid;
   gap: 0.3rem;
   color: #5b677b;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
 }
 
 .ficha-form label,
 .catalog-form .campo > label,
 .dialogo-campos .campo > label {
   color: #5b677b;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
 }
 
 .ficha-form input,
@@ -141,12 +141,12 @@
 
 .campo-erro {
   color: #b42318;
-  font-size: 0.72rem;
+  font-size: 0.875rem;
 }
 
 .campo-ajuda {
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: 0.875rem;
 }
 
 .dialogo-campos {
@@ -178,7 +178,7 @@
   gap: 0.75rem;
   margin: 0 0 0.75rem;
   color: #b42318;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
 }
 
 .catalog-form small {

@@ -78,7 +78,7 @@ body {
   border-radius: 14px;
   background: transparent;
   color: #d8cbc7;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   text-align: left;
 }
@@ -110,7 +110,7 @@ body {
   background: transparent;
   color: #d8cbc7;
   font: inherit;
-  font-size: 13px;
+  font-size: 0.875rem;
   font-weight: 600;
   text-align: left;
 }

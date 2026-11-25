@@ -10,7 +10,7 @@
 .usuarios-lista {
   padding: 16px 22px 0;
   color: var(--muted-foreground);
-  font-size: 13px;
+  font-size: 0.875rem;
 }
 
 .usuarios-lista p {
