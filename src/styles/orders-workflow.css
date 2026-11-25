@@ -164,7 +164,7 @@
 
 .production-order {
   display: grid;
-  grid-template-columns: 52px minmax(0, 1fr) 145px;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px;
   min-height: 100px;
@@ -305,7 +305,8 @@
 
 @media (max-width: 900px) {
   .orders-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .production-order { grid-template-columns: 50px minmax(0, 1fr) 40px; padding-inline: 14px; }
+  .production-order { grid-template-columns: 50px minmax(0, 1fr); padding-inline: 14px; }
+  .production-order-actions { grid-column: 2; justify-content: flex-start; }
   .payment-hint { display: none; }
   .topbar-user { gap: 0; }
   .topbar-user span,
@@ -314,7 +315,7 @@
 
 @media (max-width: 650px) {
   .app-topbar { padding-inline: 12px; }
-  .app-topbar > div { display: flex; }
+  .app-topbar > .topbar-actions { display: flex; }
   .app-topbar .topbar-actions { gap: 7px; }
   .topbar-date { font-size: 10px; white-space: nowrap; }
   .font-size-controls { gap: 2px; padding-inline: 5px; }
@@ -341,7 +342,7 @@
   .orders-summary-label { gap: 6px; font-size: 10px; }
   .orders-summary-label span { width: 27px; height: 27px; flex-basis: 27px; }
   .orders-summary-card > strong { margin-top: 7px; font-size: 24px; }
-  .production-order { grid-template-columns: 42px minmax(0, 1fr) 30px; gap: 9px; min-height: 92px; padding: 12px 10px; }
+  .production-order { grid-template-columns: 42px minmax(0, 1fr); gap: 9px; min-height: 92px; padding: 12px 10px; }
   .production-deadline { width: 42px; height: 46px; border-radius: 11px; }
   .production-order-main h2 { font-size: 12px; }
   .production-order-meta { gap: 5px 9px; font-size: 10px; }
@@ -387,4 +388,4 @@
 .pedido-form select,
 .pedido-form textarea { padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--input-background); color: var(--foreground); font: inherit; font-weight: 400; }
 .pedido-campo-erro { color: var(--destructive); font-weight: 400; }
-.production-order-actions .order-action { font-size: 0.75rem; }
+.production-order-actions .order-action { width: auto; flex: 0 0 auto; padding: 0 10px; font-size: 0.75rem; white-space: nowrap; }

@@ -1450,7 +1450,7 @@ button {
   color: #8994aa;
   font-size: 12px;
 }
-.app-topbar > div {
+.app-topbar > .topbar-actions {
   display: flex;
   align-items: center;
   gap: 15px;
@@ -1470,6 +1470,7 @@ button {
 }
 .catalog-heading,
 .catalog-body {
+  width: calc(100% - 56px);
   max-width: 1216px;
   margin-inline: auto;
 }
@@ -1833,7 +1834,7 @@ button {
   }
 }
 @media (max-width: 650px) {
-  .app-topbar > div {
+  .app-topbar > .topbar-actions {
     display: none;
   }
   .catalog-heading {
