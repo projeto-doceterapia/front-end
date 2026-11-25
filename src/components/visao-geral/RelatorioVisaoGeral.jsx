@@ -3,6 +3,7 @@ import { Printer } from 'lucide-react'
 import logoRelatorio from '../../assets/logo-relatorio.png'
 import { NOME_NEGOCIO, SLOGAN } from '../identidade'
 import { unidades } from '../estoque/estoqueUtils'
+import { numero, plural } from '../formatos'
 import { buscarFinanceiros, buscarOperacionais } from '../../services/indicadores'
 import { mesAtual, validarPeriodo } from './periodoUtils'
 import {
@@ -128,7 +129,7 @@ function CorpoRelatorio({ operacionais, financeiros, geradoEm }) {
           </tbody>
           <tfoot><tr><th scope="row">Total</th><td>{contarPedidos(operacionais.pedidosPorStatus)}</td></tr></tfoot>
         </table>
-        <p className="relatorio-nota">Em orçamento: {emOrcamento.quantidade} pedidos, {formatarDinheiro(emOrcamento.valor)} (fora do faturamento).</p>
+        <p className="relatorio-nota">Em orçamento: {plural(emOrcamento.quantidade, 'pedido', 'pedidos')}, {formatarDinheiro(emOrcamento.valor)} (fora do faturamento).</p>
         <div className="relatorio-cancelados">
           <h3>Cancelados</h3>
           <dl className="relatorio-valores">
@@ -166,7 +167,7 @@ function CorpoRelatorio({ operacionais, financeiros, geradoEm }) {
             <tbody>
               {insumos.map((insumo) => (
                 <tr key={insumo.insumoId}>
-                  <td>{insumo.nome}</td><td>{Number(insumo.saldo)}</td><td>{Number(insumo.minimo)}</td><td>{unidades[insumo.unidade] ?? insumo.unidade}</td>
+                  <td>{insumo.nome}</td><td>{numero(insumo.saldo)}</td><td>{numero(insumo.minimo)}</td><td>{unidades[insumo.unidade] ?? insumo.unidade}</td>
                 </tr>
               ))}
             </tbody>

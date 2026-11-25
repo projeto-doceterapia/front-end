@@ -1,3 +1,5 @@
+export { codigoPedido, dinheiro } from '../formatos'
+
 export const STATUS_PEDIDO = {
   ORCAMENTO: 'Orçamento',
   AGUARDANDO_SINAL: 'Aguardando sinal',
@@ -57,9 +59,6 @@ export function totalPedido(pedido, itens, pagamentos) {
     .reduce((total, item) => total + Number(item.valorTotal ?? Number(item.valorUnitario || 0) * Number(item.quantidade || 1)), 0)
 }
 
-export function dinheiro(valor) {
-  return `R$ ${Number(valor || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
-}
 
 export function textoStatus(status) {
   return STATUS_PEDIDO[status] || String(status || 'Sem etapa').replaceAll('_', ' ')
@@ -84,9 +83,6 @@ export function textoFormaPagamento(pagamento) {
   return forma ? FORMA_PAGAMENTO[forma] || forma : 'Pendente'
 }
 
-export function codigoPedido(idPedido) {
-  return `#${String(idPedido).padStart(4, '0')}`
-}
 
 export function substituirPedido(pedidos, atualizado) {
   return pedidos.map((pedido) => (Number(pedido.idPedido) === Number(atualizado.idPedido) ? { ...pedido, ...atualizado } : pedido))

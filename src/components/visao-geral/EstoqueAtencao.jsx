@@ -1,4 +1,5 @@
 import { unidades } from '../estoque/estoqueUtils'
+import { numero } from '../formatos'
 
 export default function EstoqueAtencao({ insumos }) {
   return (
@@ -10,7 +11,7 @@ export default function EstoqueAtencao({ insumos }) {
           const percentual = Number(item.minimo) ? Math.min(100, (Number(item.saldo) / Number(item.minimo)) * 100) : 0
           return <div className="item-estoque" key={item.insumoId}>
             <span>!</span><b>{item.nome}<em>Baixo</em></b>
-            <p>Atual: <strong>{Number(item.saldo)} {unidade}</strong><small>Mínimo: {Number(item.minimo)} {unidade}</small></p>
+            <p>Atual: <strong>{numero(item.saldo)} {unidade}</strong><small>Mínimo: {numero(item.minimo)} {unidade}</small></p>
             <div className="progresso"><i style={{ width: `${percentual}%` }} /></div>
           </div>
         })}

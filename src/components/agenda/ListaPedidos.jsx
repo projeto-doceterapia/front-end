@@ -1,5 +1,6 @@
 import { Clock3, MapPin } from 'lucide-react'
 import { STATUS_PAGAMENTO, STATUS_PEDIDO } from '../pedidos/pedidoUtils'
+import { codigoPedido, dinheiro, plural } from '../formatos'
 
 export default function ListaPedidos({ pedidos, pagamentos, itens, produtos, dataSelecionada }) {
   const pedidosDoDia = pedidos.filter((pedido) => pedido.dataEntrega === dataSelecionada)
@@ -13,7 +14,7 @@ export default function ListaPedidos({ pedidos, pagamentos, itens, produtos, dat
         {pedidosDoDia.map((pedido) => <Pedido pedido={pedido} pagamento={pagamentos.find((item) => item.pedidoId === pedido.idPedido)} itens={itens} produtos={produtos} key={pedido.idPedido} />)}
         {!pedidosDoDia.length && <p className="empty-orders">Nenhum pedido para esta data.</p>}
       </div>
-      <footer><span>{pedidosDoDia.length} pedidos</span><strong>{dinheiro(total)}</strong></footer>
+      <footer><span>{plural(pedidosDoDia.length, 'pedido', 'pedidos')}</span><strong>{dinheiro(total)}</strong></footer>
     </aside>
   )
 }
@@ -26,7 +27,7 @@ function Pedido({ pedido, pagamento, itens, produtos }) {
 
   return (
     <article className="agenda-order">
-      <div className="order-tags"><span>#{pedido.idPedido}</span><b className={classe}>{STATUS_PEDIDO[pedido.statusPedido] ?? pedido.statusPedido}</b></div>
+      <div className="order-tags"><span>{codigoPedido(pedido.idPedido)}</span><b className={classe}>{STATUS_PEDIDO[pedido.statusPedido] ?? pedido.statusPedido}</b></div>
       <p>{nomesProdutos.join(', ') || 'Pedido sem produtos'}</p>
       <small>Cliente: {pedido.nomeCliente}</small>
       <small><Clock3 size={11} /> Entrega em {formatarData(pedido.dataEntrega)}</small>
@@ -56,5 +57,4 @@ function totalPedido(pedido, pagamentos, itens) {
   return itens.filter((item) => item.fkPedido === pedido.idPedido).reduce((soma, item) => soma + Number(item.valorTotal || 0), 0)
 }
 
-function dinheiro(valor) { return `R$ ${Number(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` }
 function formatarData(data) { return data ? new Date(`${data}T12:00:00`).toLocaleDateString('pt-BR') : 'Data não informada' }

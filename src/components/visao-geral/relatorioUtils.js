@@ -1,24 +1,15 @@
 import { paraData } from './periodoUtils'
+import { dinheiro } from '../formatos'
+import { STATUS_PEDIDO } from '../pedidos/pedidoUtils'
 
 export const RESSALVA_LUCRO = 'Estimativa: compara o faturamento das entregas com as compras do período, não o consumo exato de insumos.'
 
-export const ROTULOS_STATUS_PEDIDO = {
-  ORCAMENTO: 'Orçamento',
-  AGUARDANDO_SINAL: 'Aguardando sinal',
-  ESPERANDO_FAZER: 'Aguardando produção',
-  EM_PRODUCAO: 'Em produção',
-  AGUARDANDO_ENTREGA: 'Aguardando entrega',
-  ENTREGUE: 'Entregue',
-  CANCELADO: 'Cancelado',
-}
+export const ROTULOS_STATUS_PEDIDO = STATUS_PEDIDO
 
 const STATUS_DO_RELATORIO = Object.keys(ROTULOS_STATUS_PEDIDO).filter((status) => status !== 'CANCELADO')
 
-const FORMATO_DINHEIRO = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
-
-// Intl separates the symbol with a no-break space; a plain space keeps copied text and tests simple.
 export function formatarDinheiro(valor) {
-  return FORMATO_DINHEIRO.format(Number(valor ?? 0)).replace(/\u00a0/g, ' ')
+  return dinheiro(valor)
 }
 
 export function formatarDataBr(iso) {

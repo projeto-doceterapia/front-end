@@ -5,6 +5,7 @@ import ModalEstoque from '../../components/estoque/ModalEstoque'
 import MovimentacoesEstoque from '../../components/estoque/MovimentacoesEstoque'
 import { mensagemErro, nivelEstoque, numeroDecimal, unidades } from '../../components/estoque/estoqueUtils'
 import '../../styles/estoque.css'
+import { quantidade } from '../../components/formatos'
 
 const niveis = {
   normal: { nome: 'Normal', titulo: 'Em nível normal', Icone: CircleCheck },
@@ -166,8 +167,8 @@ export default function Estoque() {
             return <tr key={item.idInsumo} className={`stock-${status}`}>
               <td><div className="stock-item-name"><span className="stock-item-icon"><Package size={12} /></span>{item.nome}</div></td>
               <td><span className="stock-category-badge">{item.categoriaNome}</span></td>
-              <td>{Number(item.quantidadeAtual)} {unidades[item.unidade]}</td>
-              <td className="stock-muted">{Number(item.quantidadeMinima)} {unidades[item.unidade]}</td>
+              <td>{quantidade(item.quantidadeAtual, item.unidade)}</td>
+              <td className="stock-muted">{quantidade(item.quantidadeMinima, item.unidade)}</td>
               <td><div className="stock-level"><div className="stock-progress" role="progressbar" aria-label={`Nível de ${item.nome}`} aria-valuenow={percentual} aria-valuemin={0} aria-valuemax={100}><span style={{ width: `${percentual}%` }} /></div><span>{percentual}%</span></div></td>
               <td><span className="stock-status"><Icone size={10} />{nome}</span></td>
               <td><button className="stock-icon-button" aria-label={`Editar ${item.nome}`} onClick={() => abrir(item)}><Pencil size={12} /></button></td>

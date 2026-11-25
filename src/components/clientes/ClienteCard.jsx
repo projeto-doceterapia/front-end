@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ChevronDown, MapPin, Pencil, Phone, UserCheck, UserX } from 'lucide-react'
 import api from '../../services/api'
 import useSessao from '../sessao/useSessao'
+import { codigoPedido } from '../formatos'
 
 const classificacoes = {
   PADRAO: '',
@@ -175,7 +176,7 @@ export default function ClienteCard({ cliente, produtos, aoEditar, onInativar, o
                 {ordenados.slice(0, 3).map((pedido) => (
                   <div className="recent-order" key={pedido.idPedido}>
                     <span className="recent-order-id">
-                      #{String(pedido.idPedido).padStart(4, '0')}
+                      {codigoPedido(pedido.idPedido)}
                     </span>
                     <span className="recent-order-description">
                       {descricaoPedido(pedido.idPedido)}

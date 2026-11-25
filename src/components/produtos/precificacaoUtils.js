@@ -1,6 +1,6 @@
 import { mensagemErro, numeroDecimal, unidades } from '../estoque/estoqueUtils'
+import { dinheiro } from '../formatos'
 
-const moeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 
 const SEM_VALOR = '—'
 
@@ -22,7 +22,7 @@ const MENSAGENS_POR_STATUS = {
 const MENSAGEM_SERVIDOR = 'Não foi possível falar com o servidor. Tente novamente.'
 
 export function formatarMoeda(valor) {
-  return valor == null ? SEM_VALOR : moeda.format(Number(valor))
+  return valor == null ? SEM_VALOR : dinheiro(valor)
 }
 
 export function formatarPercentual(valor) {
