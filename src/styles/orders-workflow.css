@@ -287,11 +287,13 @@
 .history-table td strong { display: block; color: #5b3528; font-weight: 600; }
 .history-table td small { display: block; margin-top: 3px; color: #5e6773; font-size: 10px; }
 .history-product { max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.history-status { color: #58677c; background: #f1f2f4; }
 .payment-method { display: inline-block; padding: 4px 9px; border-radius: 14px; background: #e9faf5; color: #06754c; }
 .payment-progress { width: 75px; height: 4px; margin-top: 4px; border-radius: 5px; background: #f0f1f3; }
-.payment-progress i { display: block; height: 100%; border-radius: inherit; background: #b14f58; }
-.history-edit { margin-inline: auto; }
+.payment-progress i { display: block; height: 100%; border-radius: inherit; background: #9aa1ad; }
+.payment-progress.completo i { background: #0a7a4b; }
+.payment-progress.parcial i { background: #c77700; }
+.history-actions { display: flex; gap: 4px; justify-content: flex-end; }
+.history-edit { min-width: 36px; min-height: 36px; }
 .history-empty { padding: 34px !important; color: #5e6773; text-align: center; }
 .orders-empty,
 .orders-error { padding: 24px; border: 1px solid #ecd7c8; border-radius: 12px; background: #fff; color: #5e6773; text-align: center; }
@@ -391,3 +393,11 @@
 .production-order-actions .order-action,
 .production-order-actions .order-view { width: auto; height: auto; min-height: 44px; flex: 0 0 auto; padding: 0 14px; font-size: 0.875rem; white-space: nowrap; }
 .production-order-actions .order-view { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #5b3528; color: #5b3528; font-weight: 600; }
+.chip-dot { display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 50%; background: currentColor; }
+.chip-dot.status-orcamento { background: #5e6674; }
+.chip-dot.status-aguardando_sinal { background: #9b5300; }
+.chip-dot.status-esperando_fazer { background: #ac4700; }
+.chip-dot.status-em_producao { background: #1f63c6; }
+.chip-dot.status-aguardando_entrega { background: #9e18dc; }
+.chip-dot.status-entregue { background: #06754c; }
+.chip-dot.status-cancelado { background: #ba3535; }

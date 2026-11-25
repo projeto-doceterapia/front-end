@@ -5,6 +5,8 @@ export default function PaginacaoPedidos({ totalItens, porPagina, pagina, aoMuda
   const inicio = totalItens ? (pagina - 1) * porPagina + 1 : 0
   const fim = Math.min(pagina * porPagina, totalItens)
 
+  if (totalPaginas === 1) return null
+
   return (
     <nav className="orders-pagination" aria-label="Paginação dos pedidos">
       <span>{inicio}-{fim} de {totalItens} pedidos</span>

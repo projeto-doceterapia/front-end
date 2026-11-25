@@ -78,6 +78,11 @@ export function valorPago(pagamento) {
   return 0
 }
 
+export function situacaoPagamento(pago, total) {
+  if (total > 0 && pago >= total) return 'completo'
+  return pago > 0 ? 'parcial' : 'nenhum'
+}
+
 export function textoFormaPagamento(pagamento) {
   const forma = pagamento?.formaPagamentoRestante || pagamento?.formaPagamentoSinal
   return forma ? FORMA_PAGAMENTO[forma] || forma : 'Pendente'

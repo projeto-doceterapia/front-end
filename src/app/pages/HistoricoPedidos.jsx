@@ -6,22 +6,20 @@ import PainelPedido from '../../components/pedidos/PainelPedido'
 import ResumoPedidos from '../../components/pedidos/ResumoPedidos'
 import TabelaHistoricoPedidos from '../../components/pedidos/TabelaHistoricoPedidos'
 import api from '../../services/api'
-import { dataPedido, substituirPedido } from '../../components/pedidos/pedidoUtils'
+import { STATUS_PEDIDO, dataPedido, substituirPedido } from '../../components/pedidos/pedidoUtils'
+import useSessao from '../../components/sessao/useSessao'
 import { carregarPedidosComRelacionamentos, intervaloRelativo } from '../../services/pedidosConsulta'
 
 const ITENS_POR_PAGINA = 8
 const PERIODOS = [['todos', 'Todos'], ['hoje', 'Hoje'], ['semana', 'Esta semana'], ['mes', 'Este mês']]
-const ETAPAS = [
-  ['todos', 'Todos'], ['ORCAMENTO', 'Orçamento'], ['AGUARDANDO_SINAL', 'Aguard. sinal 50%'],
-  ['ESPERANDO_FAZER', 'Aguard. produção'], ['EM_PRODUCAO', 'Em produção'],
-  ['AGUARDANDO_ENTREGA', 'Aguard. entrega'], ['ENTREGUE', 'Entregue'], ['CANCELADO', 'Cancelado'],
-]
+const ETAPAS = [['todos', 'Todos'], ...Object.entries(STATUS_PEDIDO)]
 
 function dataISO(data) {
   return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}-${String(data.getDate()).padStart(2, '0')}`
 }
 
 export default function HistoricoPedidos({ onNewOrder }) {
+  const { ehDona } = useSessao()
   const [pedidos, setPedidos] = useState([])
   const [clientes, setClientes] = useState([])
   const [itens, setItens] = useState([])
@@ -103,7 +101,7 @@ export default function HistoricoPedidos({ onNewOrder }) {
       <section className="history-panel">
         <div className="history-controls">
           <div className="history-periods"><span>Período:</span>{PERIODOS.map(([valor, texto]) => <button type="button" className={periodo === valor ? 'selected' : ''} key={valor} onClick={() => alterarFiltro(setPeriodo, valor)}>{texto}</button>)}</div>
-          <div className="history-stages"><span>Filtrar por etapa</span><div>{ETAPAS.map(([valor, texto]) => <button type="button" className={etapa === valor ? 'selected' : ''} key={valor} onClick={() => alterarFiltro(setEtapa, valor)}>{texto}<b>{valor === 'todos' ? pedidos.length : pedidos.filter((pedido) => pedido.statusPedido === valor).length}</b></button>)}</div></div>
+          <div className="history-stages"><span>Filtrar por etapa</span><div>{ETAPAS.map(([valor, texto]) => <button type="button" className={etapa === valor ? 'selected' : ''} aria-pressed={etapa === valor} key={valor} onClick={() => alterarFiltro(setEtapa, valor)}>{valor !== 'todos' && <i className={`chip-dot status-${valor.toLowerCase()}`} aria-hidden="true" />}{texto}<b>{valor === 'todos' ? pedidos.length : pedidos.filter((pedido) => pedido.statusPedido === valor).length}</b></button>)}</div></div>
           <label className="history-search"><Search size={17} /><input value={busca} onChange={(evento) => alterarFiltro(setBusca, evento.target.value)} placeholder="Buscar por cliente, código ou produto..." /></label>
         </div>
         {erro && <p className="orders-error" role="alert">{erro}</p>}
@@ -115,6 +113,7 @@ export default function HistoricoPedidos({ onNewOrder }) {
             itens={itens}
             produtos={produtos}
             pagamentos={pagamentos}
+            ehDona={ehDona}
             onAbrir={(pedido) => setAberto({ id: pedido.idPedido, modo: 'detalhe' })}
             onEditar={(pedido) => setAberto({ id: pedido.idPedido, modo: 'editar' })}
           />
