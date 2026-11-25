@@ -15,9 +15,11 @@ export default function DetalhePedido({ pedido, clientes, itens, produtos, pagam
 
   const rodape = !finalizado && (
     <>
-      {ehDona && <button type="button" className="order-action order-action-danger" onClick={onCancelar}>Cancelar pedido</button>}
-      <button type="button" className="order-action" onClick={onEditar}>Editar pedido</button>
-      <AcaoAvancarFase pedido={pedido} onPedidoAtualizado={onPedidoAtualizado} />
+      {ehDona && <button type="button" className="order-action order-action-texto-perigo" onClick={onCancelar}>Cancelar pedido</button>}
+      <div className="pedido-dialogo-acoes">
+        <button type="button" className="order-action" onClick={onEditar}>Editar pedido</button>
+        <AcaoAvancarFase pedido={pedido} onPedidoAtualizado={onPedidoAtualizado} />
+      </div>
     </>
   )
 

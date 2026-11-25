@@ -15,10 +15,23 @@ export default function DialogoPedido({ titulo, subtitulo, ocupado = false, onFe
 
   useEffect(() => {
     const anterior = document.activeElement
+    const overflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
     cabecalho.current.focus()
     return () => {
+      document.body.style.overflow = overflow
       if (anterior?.isConnected) anterior.focus()
     }
+  }, [])
+
+  // A button that disables or disappears after an action drops the focus to the body without a blur event.
+  useEffect(() => {
+    const observador = new MutationObserver(() => {
+      const ativo = document.activeElement
+      if (!ativo || ativo === document.body) cabecalho.current?.focus()
+    })
+    observador.observe(dialogo.current, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled'] })
+    return () => observador.disconnect()
   }, [])
 
   function fechar() {
