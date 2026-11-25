@@ -33,16 +33,24 @@ const subitensPedidos = [
 
 const CHAVE_RECOLHIDO = 'doceterapia-menu-recolhido'
 const TELA_ESTREITA = '(max-width: 760px)'
+const TELA_MEDIA = '(max-width: 1023px)'
 
-function assinarLargura(aoMudar) {
-  const consulta = window.matchMedia?.(TELA_ESTREITA)
-  consulta?.addEventListener('change', aoMudar)
-  return () => consulta?.removeEventListener('change', aoMudar)
+function assinar(consulta) {
+  return (aoMudar) => {
+    const lista = window.matchMedia?.(consulta)
+    lista?.addEventListener('change', aoMudar)
+    return () => lista?.removeEventListener('change', aoMudar)
+  }
 }
 
-function telaEstreita() {
-  return window.matchMedia?.(TELA_ESTREITA).matches ?? false
+function corresponde(consulta) {
+  return () => window.matchMedia?.(consulta).matches ?? false
 }
+
+const assinarEstreita = assinar(TELA_ESTREITA)
+const assinarMedia = assinar(TELA_MEDIA)
+const telaEstreita = corresponde(TELA_ESTREITA)
+const telaMedia = corresponde(TELA_MEDIA)
 
 // Storage can be blocked (private mode, policies); the menu then just starts expanded.
 function lerRecolhido() {
@@ -63,11 +71,19 @@ function salvarRecolhido(valor) {
 
 export default function Sidebar({ telaAtual, aoNavegar }) {
   const pedidosAtivos = ['pedido', 'historico-pedidos'].includes(telaAtual)
-  const estreita = useSyncExternalStore(assinarLargura, telaEstreita)
+  const estreita = useSyncExternalStore(assinarEstreita, telaEstreita)
+  const media = useSyncExternalStore(assinarMedia, telaMedia)
   const [recolhido, setRecolhido] = useState(lerRecolhido)
-  const compacta = estreita || recolhido
+  // Medium screens start compact; expanding there is temporary and does not touch the saved choice.
+  const [expandidoNaTelaMedia, setExpandidoNaTelaMedia] = useState(false)
+  const recolhidoAgora = media ? !expandidoNaTelaMedia : recolhido
+  const compacta = estreita || recolhidoAgora
 
   function alternar() {
+    if (media) {
+      setExpandidoNaTelaMedia(!expandidoNaTelaMedia)
+      return
+    }
     setRecolhido(!recolhido)
     salvarRecolhido(!recolhido)
   }
@@ -86,12 +102,12 @@ export default function Sidebar({ telaAtual, aoNavegar }) {
           type="button"
           className="sidebar-toggle"
           onClick={alternar}
-          aria-expanded={!recolhido}
+          aria-expanded={!recolhidoAgora}
           aria-controls="sidebar-nav"
-          aria-label={recolhido ? 'Expandir menu' : 'Recolher menu'}
-          title={recolhido ? 'Expandir menu' : 'Recolher menu'}
+          aria-label={recolhidoAgora ? 'Expandir menu' : 'Recolher menu'}
+          title={recolhidoAgora ? 'Expandir menu' : 'Recolher menu'}
         >
-          {recolhido ? <PanelLeftOpen size={18} aria-hidden="true" /> : <PanelLeftClose size={18} aria-hidden="true" />}
+          {recolhidoAgora ? <PanelLeftOpen size={18} aria-hidden="true" /> : <PanelLeftClose size={18} aria-hidden="true" />}
         </button>
       )}
       <nav id="sidebar-nav" className="sidebar-nav" aria-label="Navegação principal">

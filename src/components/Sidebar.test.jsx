@@ -97,6 +97,18 @@ describe('Sidebar', () => {
       vi.restoreAllMocks()
     })
 
+    it('começa compacto em tela média, expande sem mudar a preferência salva', () => {
+      vi.stubGlobal('matchMedia', (consulta) => ({ matches: consulta.includes('1023'), addEventListener: vi.fn(), removeEventListener: vi.fn() }))
+      const { container } = render(<Sidebar telaAtual="agenda" aoNavegar={vi.fn()} />)
+      expect(container.querySelector('.sidebar')).toHaveClass('recolhida')
+
+      fireEvent.click(screen.getByRole('button', { name: 'Expandir menu' }))
+
+      expect(container.querySelector('.sidebar')).not.toHaveClass('recolhida')
+      expect(screen.getByRole('button', { name: 'Recolher menu' })).toHaveAttribute('aria-expanded', 'true')
+      expect(localStorage.getItem('doceterapia-menu-recolhido')).toBeNull()
+    })
+
     it('fica sempre compacto e sem botão em tela estreita', () => {
       vi.stubGlobal('matchMedia', () => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() }))
       const { container } = render(<Sidebar telaAtual="agenda" aoNavegar={vi.fn()} />)
