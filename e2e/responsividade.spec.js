@@ -10,7 +10,7 @@ for (const largura of LARGURAS) {
 
     for (const tela of TELAS) {
       test(`${tela} sem rolagem horizontal da página`, async ({ page }, info) => {
-        await simularApi(page, { logado: true })
+        await simularApi(page, { logado: true, dados: 'exemplo' })
         await page.goto('/')
 
         const menu = page.getByRole('navigation', { name: 'Navegação principal' })
@@ -31,7 +31,7 @@ test.describe('Formulário em janela no celular', () => {
   test.use({ viewport: { width: 390, height: 500 } })
 
   test('alcança o botão de salvar do cliente', async ({ page }) => {
-    await simularApi(page, { logado: true })
+    await simularApi(page, { logado: true, dados: 'exemplo' })
     await page.goto('/')
     await page.getByRole('navigation', { name: 'Navegação principal' }).getByRole('button', { name: 'Clientes', exact: true }).click()
     await page.getByRole('button', { name: 'Novo Cliente' }).click()
