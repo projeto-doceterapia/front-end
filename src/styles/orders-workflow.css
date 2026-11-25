@@ -225,8 +225,8 @@
 
 .production-order-meta { display: flex; flex-wrap: wrap; gap: 7px 14px; color: #5e6773; font-size: 11px; }
 .production-order-meta span { display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
-.production-note { max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.production-order-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; color: #5e6773; }
+.production-note { flex-basis: 100%; max-width: 100%; padding: 6px 10px; border: 1px solid #e8c36a; border-radius: 8px; background: #fff8e1; color: #6b4300; font-size: 0.875rem; }
+.production-order-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px 12px; color: #5e6773; }
 .payment-hint { max-width: 96px; font-size: 11px; text-align: right; }
 .production-order-actions button,
 .history-edit,
@@ -388,4 +388,6 @@
 .pedido-form select,
 .pedido-form textarea { padding: 8px 10px; border: 1px solid var(--field-border); border-radius: var(--radius); background: var(--input-background); color: var(--foreground); font: inherit; font-weight: 400; }
 .pedido-campo-erro { color: var(--destructive); font-weight: 400; }
-.production-order-actions .order-action { width: auto; flex: 0 0 auto; padding: 0 10px; font-size: 0.75rem; white-space: nowrap; }
+.production-order-actions .order-action,
+.production-order-actions .order-view { width: auto; height: auto; min-height: 44px; flex: 0 0 auto; padding: 0 14px; font-size: 0.875rem; white-space: nowrap; }
+.production-order-actions .order-view { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #5b3528; color: #5b3528; font-weight: 600; }

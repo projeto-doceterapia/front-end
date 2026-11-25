@@ -41,3 +41,22 @@ test.describe('Formulário em janela no celular', () => {
     await expect(salvar).toBeInViewport()
   })
 })
+
+test.describe('Produção com texto ampliado', () => {
+  test.use({ viewport: { width: 1440, height: 900 } })
+
+  test('mantém as ações dentro do cartão em 140%', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('doceterapia-font-scale', '1.4'))
+    await simularApi(page, { logado: true, dados: 'exemplo' })
+    await page.goto('/')
+    await page.getByRole('navigation', { name: 'Navegação principal' }).getByRole('button', { name: 'Produção', exact: true }).click()
+    await expect(page.getByRole('button', { name: /^Ver pedido/ }).first()).toBeVisible()
+
+    const foraDoCartao = await page.evaluate(() => [...document.querySelectorAll('.production-order')].some((cartao) => {
+      const limite = cartao.getBoundingClientRect()
+      return [...cartao.querySelectorAll('button')].some((botao) => botao.getBoundingClientRect().right > limite.right + 1)
+    }))
+    expect(foraDoCartao).toBe(false)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0)
+  })
+})
