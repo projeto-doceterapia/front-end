@@ -752,10 +752,6 @@ button {
   max-width: 1280px;
 }
 
-.order-data {
-  max-width: 960px;
-  margin-inline: auto;
-}
 
 .order-data-body {
   display: grid;
@@ -795,8 +791,39 @@ button {
   grid-column: 1 / -1;
 }
 
-.order-data + .order-actions {
-  max-width: 960px;
+.order-data-field label {
+  color: inherit;
+}
+
+.campo-obrigatorio {
+  font-weight: 400;
+}
+
+.campo-ajuda,
+.campo-erro {
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.campo-ajuda {
+  color: #5f6b7d;
+}
+
+.campo-erro {
+  color: #b42318;
+}
+
+.order-data-field [aria-invalid='true'] {
+  border-color: #b42318;
+}
+
+.order-actions .order-back {
+  min-height: 40px;
+  padding-inline: 16px;
+  border-color: #5b3528;
+  color: #5b3528;
+  font-size: 0.875rem;
+  font-weight: 700;
 }
 
 .payment-body,

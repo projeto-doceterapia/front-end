@@ -7,6 +7,9 @@ import EtapasPedido from '../../components/pedido/EtapasPedido'
 import Pagamento from '../../components/pedido/Pagamento'
 import ResumoPedido from '../../components/pedido/ResumoPedido'
 import api from '../../services/api'
+import CampoPedido from '../../components/pedido/CampoPedido'
+import { errosClienteEntrega } from '../../components/pedido/validacaoPedido'
+import { dataPorExtenso, dinheiro } from '../../components/formatos'
 
 export default function Pedido({ onBack }) {
   const [etapa, setEtapa] = useState(1)
@@ -17,6 +20,7 @@ export default function Pedido({ onBack }) {
   const [itens, setItens] = useState([])
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState('')
+  const [errosCampos, setErrosCampos] = useState({})
   const [dados, setDados] = useState({
     clienteId: '',
     formaEntrega: 'RETIRADA',
@@ -42,7 +46,6 @@ export default function Pedido({ onBack }) {
   }, [])
 
   const total = itens.reduce((soma, item) => soma + Number(item.produto.precoAtual) * item.quantidade, 0)
-  const dinheiro = (valor) => `R$ ${Number(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
   const cliente = tipoCliente === 'novo'
     ? novoCliente
     : clientes.find((item) => item.idCliente === Number(dados.clienteId))
@@ -81,12 +84,10 @@ export default function Pedido({ onBack }) {
     setErro('')
 
     if (etapa === 1) {
-      const clienteInvalido = tipoCliente === 'existente'
-        ? !dados.clienteId
-        : !novoCliente.nome.trim() || !novoCliente.telefone.trim() || !novoCliente.endereco.trim()
-
-      if (clienteInvalido || !dados.dataEntrega || (dados.formaEntrega === 'ENTREGA' && !dados.enderecoEntrega.trim())) {
-        setErro('Preencha os dados do cliente, a data e o endereço quando a entrega for no local.')
+      const erros = errosClienteEntrega({ tipoCliente, dados, novoCliente })
+      setErrosCampos(erros)
+      if (Object.keys(erros).length) {
+        setErro('Revise os campos destacados para continuar.')
         return
       }
     }
@@ -158,7 +159,7 @@ export default function Pedido({ onBack }) {
     <main className="order-page">
       <CabecalhoPedido etapa={etapa} />
       <EtapasPedido etapa={etapa} />
-      {erro && <p className="form-error order-error">{erro}</p>}
+      {erro && <p className="form-error order-error" role="alert">{erro}</p>}
 
       {etapa === 1 && (
         <section className="order-data order-panel">
@@ -168,29 +169,50 @@ export default function Pedido({ onBack }) {
               <button type="button" className={tipoCliente === 'existente' ? 'active' : ''} onClick={() => setTipoCliente('existente')}>Cliente cadastrado</button>
               <button type="button" className={tipoCliente === 'novo' ? 'active' : ''} onClick={() => setTipoCliente('novo')}>Novo cliente</button>
             </div>
-            {tipoCliente === 'existente' ? <label className="order-data-field full-width">Cliente
-              <select name="clienteId" value={dados.clienteId} onChange={alterarDados}>
-                <option value="">Selecione um cliente</option>
-                {clientes.map((item) => <option value={item.idCliente} key={item.idCliente}>{item.nome}</option>)}
-              </select>
-            </label> : <>
-              <label className="order-data-field">Nome completo<input name="nome" value={novoCliente.nome} onChange={alterarNovoCliente} placeholder="Nome do cliente" /></label>
-              <label className="order-data-field">Telefone<input name="telefone" value={novoCliente.telefone} onChange={alterarNovoCliente} placeholder="(11) 90000-0000" /></label>
-              <label className="order-data-field">Tipo de pessoa<select name="tipoPessoa" value={novoCliente.tipoPessoa} onChange={alterarNovoCliente}><option value="FISICA">Pessoa física</option><option value="JURIDICA">Pessoa jurídica</option></select></label>
-              <label className="order-data-field full-width">Endereço<input name="endereco" value={novoCliente.endereco} onChange={alterarNovoCliente} placeholder="Rua, número, bairro e cidade" /></label>
+            {tipoCliente === 'existente' ? (
+              <CampoPedido rotulo="Cliente" obrigatorio erro={errosCampos.clienteId} larguraTotal>
+                {(campo) => (
+                  <select {...campo} name="clienteId" value={dados.clienteId} onChange={alterarDados}>
+                    <option value="">Selecione um cliente</option>
+                    {clientes.map((item) => <option value={item.idCliente} key={item.idCliente}>{item.nome}</option>)}
+                  </select>
+                )}
+              </CampoPedido>
+            ) : <>
+              <CampoPedido rotulo="Nome completo" obrigatorio erro={errosCampos.nome}>
+                {(campo) => <input {...campo} name="nome" value={novoCliente.nome} onChange={alterarNovoCliente} placeholder="Nome do cliente" />}
+              </CampoPedido>
+              <CampoPedido rotulo="Telefone" obrigatorio erro={errosCampos.telefone}>
+                {(campo) => <input {...campo} name="telefone" type="tel" value={novoCliente.telefone} onChange={alterarNovoCliente} placeholder="(11) 90000-0000" />}
+              </CampoPedido>
+              <CampoPedido rotulo="Tipo de pessoa">
+                {(campo) => (
+                  <select {...campo} name="tipoPessoa" value={novoCliente.tipoPessoa} onChange={alterarNovoCliente}>
+                    <option value="FISICA">Pessoa física</option>
+                    <option value="JURIDICA">Pessoa jurídica</option>
+                  </select>
+                )}
+              </CampoPedido>
+              <CampoPedido rotulo="Endereço" obrigatorio erro={errosCampos.endereco} larguraTotal>
+                {(campo) => <input {...campo} name="endereco" value={novoCliente.endereco} onChange={alterarNovoCliente} placeholder="Rua, número, bairro e cidade" />}
+              </CampoPedido>
             </>}
-            <label className="order-data-field">Data de entrega
-              <input name="dataEntrega" type="date" value={dados.dataEntrega} onChange={alterarDados} />
-            </label>
-            <label className="order-data-field">Forma de entrega
-              <select name="formaEntrega" value={dados.formaEntrega} onChange={alterarDados}>
-                <option value="RETIRADA">Retirada</option>
-                <option value="ENTREGA">Entrega</option>
-              </select>
-            </label>
-            {dados.formaEntrega === 'ENTREGA' && <label className="order-data-field full-width">Endereço de entrega
-              <input name="enderecoEntrega" value={dados.enderecoEntrega} onChange={alterarDados} />
-            </label>}
+            <CampoPedido rotulo="Data de entrega" obrigatorio erro={errosCampos.dataEntrega} ajuda={dataPorExtenso(dados.dataEntrega)}>
+              {(campo) => <input {...campo} name="dataEntrega" type="date" value={dados.dataEntrega} onChange={alterarDados} />}
+            </CampoPedido>
+            <CampoPedido rotulo="Forma de entrega">
+              {(campo) => (
+                <select {...campo} name="formaEntrega" value={dados.formaEntrega} onChange={alterarDados}>
+                  <option value="RETIRADA">Retirada</option>
+                  <option value="ENTREGA">Entrega</option>
+                </select>
+              )}
+            </CampoPedido>
+            {dados.formaEntrega === 'ENTREGA' && (
+              <CampoPedido rotulo="Endereço de entrega" obrigatorio erro={errosCampos.enderecoEntrega} larguraTotal>
+                {(campo) => <input {...campo} name="enderecoEntrega" value={dados.enderecoEntrega} onChange={alterarDados} />}
+              </CampoPedido>
+            )}
           </div>
         </section>
       )}
