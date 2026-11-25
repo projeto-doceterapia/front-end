@@ -239,17 +239,12 @@ button {
   box-shadow: inset 4px 0 0 #d85c68;
 }
 
-.calendar-day.selected {
-  outline: 2px solid #c8c8c8;
-  outline-offset: -2px;
-  background: #f7f8fa;
-}
-
 .day-order {
   position: absolute;
   right: 8px;
   bottom: 10px;
   left: 10px;
+  display: block;
   color: #945459;
 }
 
@@ -275,15 +270,15 @@ button {
 }
 
 .free .day-order {
-  color: #00764b;
+  color: #00663f;
 }
 
 .warning .day-order {
-  color: #965600;
+  color: #7a4600;
 }
 
 .full .day-order {
-  color: #b43b4a;
+  color: #8f2a37;
 }
 
 .day-order small {
@@ -299,30 +294,26 @@ button {
   font-size: 10px;
 }
 
-.calendar-footer span {
-  display: inline-block;
-  width: 9px;
-  height: 9px;
-  margin: 0 5px 0 14px;
-  border: 1px solid;
+.legenda-farol {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 14px;
+}
+
+.legenda-farol i {
+  width: 10px;
+  height: 10px;
+  border: 1px solid currentColor;
   border-radius: 3px;
-  vertical-align: -1px;
 }
 
-.legend-free {
-  background: #e8fcf3;
-  color: #2c7257;
-}
-
-.legend-warning {
-  background: #fff6d9;
-  color: #826022;
-}
-
-.legend-full {
-  background: #fae5e6;
-  color: #835b5d;
-}
+.legenda-farol.free { color: #00663f; }
+.legenda-farol.free i { background: #edfcf5; }
+.legenda-farol.warning { color: #7a4600; }
+.legenda-farol.warning i { background: #fffbe9; }
+.legenda-farol.full { color: #9b2f3c; }
+.legenda-farol.full i { background: #f5c9ce; }
 
 .orders-card {
   display: flex;
@@ -989,42 +980,34 @@ button {
 }
 
 .calendar-day.selected {
-  outline: 0;
-  outline-offset: 0;
-  background: #fff7f5;
-  box-shadow: inset 0 0 0 2px #e9a5aa;
+  outline: 2px solid #5b3528;
+  outline-offset: -2px;
 }
 
 .calendar-day.selected .day-number {
-  display: grid;
-  width: 24px;
-  height: 24px;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--rose);
-  color: #fff;
   font-weight: 700;
 }
 
-.calendar-day.free:hover,
-.calendar-day.free.selected {
-  background: #edfcf5;
+.calendar-day.today .day-number {
+  display: inline-grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 50%;
+  background: #b14f58;
+  color: #fff;
 }
 
-.calendar-day.warning:hover,
-.calendar-day.warning.selected {
-  background: #fffbe9;
+.calendar-day.free:hover {
+  background: #e3f8ee;
 }
 
-.calendar-day.full:hover,
-.calendar-day.full.selected {
-  background: #f5c9ce;
+.calendar-day.warning:hover {
+  background: #fff4d6;
 }
 
-.calendar-day.full.selected {
-  box-shadow:
-    inset 4px 0 0 #c84252,
-    inset 0 0 0 2px #b33d4d;
+.calendar-day.full:hover {
+  background: #f1bec4;
 }
 
 .selected-orders-count {

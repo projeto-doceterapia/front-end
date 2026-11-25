@@ -15,20 +15,20 @@ describe('ResumoAgenda por perfil', () => {
     vi.clearAllMocks()
   })
 
-  it('mostra Configurar farol para a DONA', () => {
+  it('mostra Limites de lotação para a DONA', () => {
     useSessao.mockReturnValue({ perfil: 'DONA', ehDona: true })
     const aoConfigurarFarol = vi.fn()
     render(<ResumoAgenda pedidos={PEDIDOS} aoConfigurarFarol={aoConfigurarFarol} />)
 
-    fireEvent.click(screen.getByRole('button', { name: /Configurar farol/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Limites de lotação/ }))
     expect(aoConfigurarFarol).toHaveBeenCalled()
   })
 
-  it('oculta Configurar farol para a FUNCIONARIA e mantém os números', () => {
+  it('oculta Limites de lotação para a FUNCIONARIA e mantém os números', () => {
     useSessao.mockReturnValue({ perfil: 'FUNCIONARIA', ehDona: false })
     render(<ResumoAgenda pedidos={PEDIDOS} aoConfigurarFarol={vi.fn()} />)
 
-    expect(screen.queryByRole('button', { name: /Configurar farol/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Limites de lotação/ })).not.toBeInTheDocument()
     expect(screen.getByText('Pedidos cadastrados')).toBeInTheDocument()
   })
 })

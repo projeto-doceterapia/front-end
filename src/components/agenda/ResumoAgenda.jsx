@@ -18,7 +18,7 @@ export default function ResumoAgenda({ pedidos, aoConfigurarFarol }) {
       {ehDona && (
         <button className="outline-button" onClick={aoConfigurarFarol}>
           <Settings2 size={13} />
-          Configurar farol
+          Limites de lotação
         </button>
       )}
     </div>

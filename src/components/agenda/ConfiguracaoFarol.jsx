@@ -5,7 +5,7 @@ export default function ConfiguracaoFarol({ dados, aoAlterar, aoSalvar, aoFechar
     <div className="farol-overlay" role="dialog" aria-modal="true" aria-labelledby="titulo-farol">
       <form className="farol-modal" onSubmit={aoSalvar}>
         <header>
-          <div><h2 id="titulo-farol">Configurar farol da agenda</h2><p>Defina quantos pedidos deixam cada dia em alerta.</p></div>
+          <div><h2 id="titulo-farol">Limites de lotação da agenda</h2><p>Defina quantos pedidos deixam cada dia em alerta.</p></div>
           <button type="button" onClick={aoFechar} aria-label="Fechar"><X size={18} /></button>
         </header>
 
@@ -16,7 +16,7 @@ export default function ConfiguracaoFarol({ dados, aoAlterar, aoSalvar, aoFechar
           </label>
           <label><span className="farol-dot yellow" /> Limite amarelo
             <input name="limiteAmarelo" type="number" min="0" value={dados.limiteAmarelo} onChange={aoAlterar} placeholder="Ex.: 3" />
-            <small>A partir desta quantidade, o dia entra em atenção.</small>
+            <small>A partir desta quantidade, o dia fica quase cheio.</small>
           </label>
           <label><span className="farol-dot red" /> Limite vermelho
             <input name="limiteVermelho" type="number" min="0" value={dados.limiteVermelho} onChange={aoAlterar} placeholder="Ex.: 5" />
