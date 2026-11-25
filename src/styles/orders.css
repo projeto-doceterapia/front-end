@@ -60,6 +60,7 @@ button {
 }
 
 .primary-button {
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -467,6 +468,16 @@ button {
   gap: 16px;
   max-width: 1280px;
   margin: 34px auto 26px;
+  padding: 0;
+  list-style: none;
+}
+
+.steps-compact {
+  display: none;
+  margin: 20px 0 16px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .step {
@@ -1223,6 +1234,14 @@ button {
 
   .primary-button {
     padding: 0 10px;
+  }
+
+  .steps {
+    display: none;
+  }
+
+  .steps-compact {
+    display: block;
   }
 
   .agenda-stats i {

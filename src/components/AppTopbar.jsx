@@ -9,16 +9,10 @@ import ConfiguracaoNotificacao from './notificacoes/ConfiguracaoNotificacao'
 import GerenciarUsuarios from './usuarios/GerenciarUsuarios'
 import { ROTULOS_PERFIL } from './usuarios/perfis'
 import useSessao from './sessao/useSessao'
+import { dataCurta, dataLonga } from './dataTopbar'
 
 const CHAVE_FONTE = 'doceterapia-font-scale'
 
-function dataHoje() {
-  return new Intl.DateTimeFormat('pt-BR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-  }).format(new Date())
-}
 
 function formatarData(data) {
   if (!data) return ''
@@ -127,7 +121,7 @@ export default function AppTopbar() {
 
   return (
     <header className="app-topbar">
-      <span className="topbar-date">Hoje, {dataHoje()}</span>
+      <span className="topbar-date"><span className="topbar-date-longa">Hoje, {dataLonga(new Date())}</span><span className="topbar-date-curta">{dataCurta(new Date())}</span></span>
       <div className="topbar-actions">
         <div className="notification-wrap">
           <button
