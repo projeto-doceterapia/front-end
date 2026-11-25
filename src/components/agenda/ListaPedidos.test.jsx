@@ -20,4 +20,12 @@ describe('ListaPedidos', () => {
     expect(screen.getByText('Pago')).toBeInTheDocument()
     expect(screen.getByText('Pedido sem produtos')).toBeInTheDocument()
   })
+
+  it('sem valores para quem não vê dinheiro', () => {
+    render(<ListaPedidos pedidos={PEDIDOS} pagamentos={PAGAMENTOS} itens={ITENS} produtos={PRODUTOS} dataSelecionada="2026-11-24" mostrarValores={false} />)
+
+    expect(screen.queryByText(/R\$/)).not.toBeInTheDocument()
+    expect(screen.queryByText('Aguardando pagamento')).not.toBeInTheDocument()
+    expect(screen.getByText('2 pedidos')).toBeInTheDocument()
+  })
 })

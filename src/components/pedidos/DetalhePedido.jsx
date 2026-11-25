@@ -45,7 +45,7 @@ export default function DetalhePedido({ pedido, clientes, itens, produtos, pagam
             {itensPedido.map((item) => (
               <li key={item.idProdutoPedido}>
                 <span>{produtos.find((produto) => Number(produto.idProduto) === Number(item.fkProduto))?.nome || 'Produto removido'} ×{Number(item.quantidade || 1)}</span>
-                <strong>{dinheiro(item.valorTotal)}</strong>
+                {ehDona && <strong>{dinheiro(item.valorTotal)}</strong>}
               </li>
             ))}
           </ul>
@@ -53,7 +53,7 @@ export default function DetalhePedido({ pedido, clientes, itens, produtos, pagam
           <p className="pedido-vazio">Nenhum item neste pedido.</p>
         )}
       </section>
-      <PagamentoPedido pagamento={pagamento} />
+      {ehDona && <PagamentoPedido pagamento={pagamento} />}
     </DialogoPedido>
   )
 }

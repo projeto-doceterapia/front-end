@@ -116,10 +116,12 @@ export default function ClienteCard({ cliente, produtos, aoEditar, onInativar, o
           <small>Pedidos</small>
           <b>{cliente.totalPedidos ?? 0}</b>
         </div>
-        <div className="client-metric client-spent">
-          <small>Gasto total</small>
-          <b>{cliente.gastoTotal == null ? '—' : moeda.format(cliente.gastoTotal)}</b>
-        </div>
+        {ehDona && (
+          <div className="client-metric client-spent">
+            <small>Gasto total</small>
+            <b>{cliente.gastoTotal == null ? '—' : moeda.format(cliente.gastoTotal)}</b>
+          </div>
+        )}
         <div className="client-metric">
           <small>Último pedido</small>
           <span>{formatarData(cliente.ultimoPedido)}</span>
@@ -200,7 +202,7 @@ export default function ClienteCard({ cliente, produtos, aoEditar, onInativar, o
                     <span className="recent-order-description">
                       {descricaoPedido(pedido.idPedido)}
                     </span>
-                    <b>{moeda.format(totalPedido(pedido.idPedido))}</b>
+                    {ehDona && <b>{moeda.format(totalPedido(pedido.idPedido))}</b>}
                     <time dateTime={dataPedido(pedido)}>
                       {formatarData(dataPedido(pedido)).slice(0, 5)}
                     </time>

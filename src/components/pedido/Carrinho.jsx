@@ -18,9 +18,9 @@ function Item({ item, dinheiro, aoRemover, aoAlterarQuantidade }) {
     <article>
       <div><strong>{item.produto.nome}</strong><span><Edit3 size={15} /><button type="button" aria-label={`Remover ${item.produto.nome}`} title={`Remover ${item.produto.nome}`} onClick={aoRemover}><Trash2 size={14} /></button></span></div>
       <div className="quantity">
-        <button onClick={() => aoAlterarQuantidade(item.produto.idProduto, -1)}><Minus size={13} /></button>
+        <button type="button" aria-label={`Diminuir quantidade de ${item.produto.nome}`} title={`Diminuir quantidade de ${item.produto.nome}`} onClick={() => aoAlterarQuantidade(item.produto.idProduto, -1)}><Minus size={13} aria-hidden="true" /></button>
         {item.quantidade}
-        <button onClick={() => aoAlterarQuantidade(item.produto.idProduto, 1)}><Plus size={13} /></button>
+        <button type="button" aria-label={`Aumentar quantidade de ${item.produto.nome}`} title={`Aumentar quantidade de ${item.produto.nome}`} onClick={() => aoAlterarQuantidade(item.produto.idProduto, 1)}><Plus size={13} aria-hidden="true" /></button>
         <p>{dinheiro(item.produto.precoAtual)}<b>{dinheiro(totalItem)}</b></p>
       </div>
     </article>

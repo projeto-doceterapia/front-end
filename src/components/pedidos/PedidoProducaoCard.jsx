@@ -3,7 +3,7 @@ import AcaoAvancarFase from './AcaoAvancarFase'
 import { codigoPedido, dataPedido, formatarData, nomeCliente, produtosDoPedido, textoStatus, textoStatusPagamento } from './pedidoUtils'
 import { destaquePrazo } from './producaoUtils'
 
-export default function PedidoProducaoCard({ pedido, clientes, itens, produtos, pagamento, onAbrir, onPedidoAtualizado }) {
+export default function PedidoProducaoCard({ pedido, clientes, itens, produtos, pagamento, mostrarPagamento = true, onAbrir, onPedidoAtualizado }) {
   const dataEntrega = dataPedido(pedido)
   const hoje = new Date()
   hoje.setHours(0, 0, 0, 0)
@@ -25,7 +25,7 @@ export default function PedidoProducaoCard({ pedido, clientes, itens, produtos, 
           <span className="order-code">{codigoPedido(pedido.idPedido)}</span>
           <span className={`order-status status-${String(status || '').toLowerCase()}`}>{status === 'AGUARDANDO_SINAL' ? 'Aguardando sinal — não produzir' : textoStatus(status)}</span>
           {destaque && <span className="order-highlight">{destaque}</span>}
-          {pagamento?.statusPagamento === 'PAGO_INTEGRAL' && <span className="order-highlight paid-tag">Pago</span>}
+          {mostrarPagamento && pagamento?.statusPagamento === 'PAGO_INTEGRAL' && <span className="order-highlight paid-tag">Pago</span>}
         </div>
         <h2>{linhasProduto.join(', ') || pedido.tipoPedido || 'Pedido sem produtos'}</h2>
         <div className="production-order-meta">
@@ -35,7 +35,7 @@ export default function PedidoProducaoCard({ pedido, clientes, itens, produtos, 
         </div>
       </div>
       <div className="production-order-actions">
-        <span className="payment-hint">{textoStatusPagamento(pagamento?.statusPagamento)}</span>
+        {mostrarPagamento && <span className="payment-hint">{textoStatusPagamento(pagamento?.statusPagamento)}</span>}
         <AcaoAvancarFase pedido={pedido} onPedidoAtualizado={onPedidoAtualizado} />
         <button type="button" className="order-view" aria-label={`Ver pedido ${codigoPedido(pedido.idPedido)}`} onClick={onAbrir}>
           <Eye size={16} aria-hidden="true" /> Ver pedido

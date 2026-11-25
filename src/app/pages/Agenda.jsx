@@ -4,6 +4,7 @@ import Calendario from '../../components/agenda/Calendario'
 import ListaPedidos from '../../components/agenda/ListaPedidos'
 import ResumoAgenda from '../../components/agenda/ResumoAgenda'
 import ConfiguracaoFarol from '../../components/agenda/ConfiguracaoFarol'
+import useSessao from '../../components/sessao/useSessao'
 import api from '../../services/api'
 import { carregarPedidosComRelacionamentos, intervaloDoMes } from '../../services/pedidosConsulta'
 
@@ -13,6 +14,7 @@ function dataISO(data) {
 
 export default function Agenda({ onNewOrder }) {
   const hoje = new Date()
+  const { ehDona } = useSessao()
   const [pedidos, setPedidos] = useState([])
   const [pagamentos, setPagamentos] = useState([])
   const [itens, setItens] = useState([])
@@ -122,6 +124,7 @@ export default function Agenda({ onNewOrder }) {
           itens={itens}
           produtos={produtos}
           dataSelecionada={dataSelecionada}
+          mostrarValores={ehDona}
         />
       </section>
       {mostrarFarol && <ConfiguracaoFarol dados={dadosFarol} aoAlterar={alterarFarol} aoSalvar={salvarFarol} aoFechar={() => setMostrarFarol(false)} salvando={salvandoFarol} erro={erroFarol} />}

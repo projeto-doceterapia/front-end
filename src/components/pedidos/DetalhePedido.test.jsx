@@ -74,4 +74,12 @@ describe('DetalhePedido', () => {
     fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
     expect(onFechar).toHaveBeenCalled()
   })
+
+  it('a FUNCIONARIA não vê valores dos itens nem o pagamento', () => {
+    renderizar(PEDIDO, { ehDona: false })
+
+    expect(screen.getByRole('dialog')).not.toHaveTextContent('R$')
+    expect(screen.queryByRole('region', { name: 'Pagamento' })).not.toBeInTheDocument()
+    expect(screen.getByText(/Bolo de cenoura/)).toBeInTheDocument()
+  })
 })
