@@ -15,7 +15,7 @@ function Tela({ aoFechar, ocupado = false }) {
     <>
       <button type="button" onClick={() => setAberto(true)}>Novo Insumo</button>
       {aberto && (
-        <ModalEstoque titulo="Novo Insumo" aoFechar={fechar} ocupado={ocupado}>
+        <ModalEstoque titulo="Novo insumo" subtitulo="Preencha os dados do insumo" aoFechar={fechar} ocupado={ocupado}>
           <label>Nome <input name="nome" /></label>
         </ModalEstoque>
       )}
@@ -58,9 +58,10 @@ describe('ModalEstoque', () => {
   it('abre como diálogo modal com nome igual ao título', () => {
     abrir()
 
-    const dialogo = screen.getByRole('dialog', { name: 'Novo Insumo' })
+    const dialogo = screen.getByRole('dialog', { name: 'Novo insumo' })
     expect(dialogo).toHaveAttribute('aria-modal', 'true')
     expect(showModal).toHaveBeenCalledTimes(1)
+    expect(screen.getByText('Preencha os dados do insumo')).toBeInTheDocument()
   })
 
   it('fecha com Esc e devolve o foco ao gatilho', () => {
