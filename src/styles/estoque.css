@@ -112,3 +112,9 @@
 .stock-movements-toolbar h2 { margin: 0 12px 0 0; font-size: 13px; }
 .stock-movements-toolbar select { padding: 4px 6px; border: 1px solid var(--field-border); border-radius: 6px; background: var(--input-background); color: var(--foreground); }
 .stock-movements .filtros-periodo { margin: 0; }
+.stock-legend { margin: 0; padding: 10px 16px 0; color: #5f6b7d; font-size: 0.875rem; }
+.stock-falta { display: block; margin-top: 2px; color: #9b2f3c; font-size: 0.875rem; }
+.movimento-entrada td:nth-child(3),
+.movimento-entrada td:nth-child(4) { color: #0a6b42; }
+.movimento-saida td:nth-child(3),
+.movimento-saida td:nth-child(4) { color: #9b2f3c; }

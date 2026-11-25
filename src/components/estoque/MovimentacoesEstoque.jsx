@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import Filtros from '../visao-geral/Filtros'
 import { ultimosDias } from '../visao-geral/periodoUtils'
 import { buscarMovimentacoes } from '../../services/movimentacoes'
-import { unidades } from './estoqueUtils'
+import { sentidoMovimento } from './estoqueUtils'
+import { quantidade } from '../formatos'
 
 const TIPOS = {
   SALDO_INICIAL: 'Saldo inicial',
@@ -51,11 +52,12 @@ export default function MovimentacoesEstoque({ insumos }) {
           <thead><tr><th>Data</th><th>Insumo</th><th>Tipo</th><th>Quantidade</th></tr></thead>
           <tbody>{movimentos.map((movimento) => {
             const insumo = nomes.get(movimento.insumoId)
-            return <tr key={movimento.idMovimentacao}>
+            const sentido = sentidoMovimento(movimento.quantidade)
+            return <tr key={movimento.idMovimentacao} className={`movimento-${sentido.rotulo === 'Saída' ? 'saida' : 'entrada'}`}>
               <td>{new Date(movimento.ocorridoEm).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</td>
               <td>{insumo?.nome ?? `Insumo ${movimento.insumoId}`}</td>
-              <td>{TIPOS[movimento.tipo] ?? movimento.tipo}</td>
-              <td>{Number(movimento.quantidade)} {unidades[insumo?.unidade] ?? ''}</td>
+              <td><span aria-hidden="true">{sentido.seta} </span><span>{TIPOS[movimento.tipo] ?? movimento.tipo}</span></td>
+              <td>{sentido.sinal}{quantidade(Math.abs(Number(movimento.quantidade)), insumo?.unidade)}</td>
             </tr>
           })}</tbody>
         </table></div>

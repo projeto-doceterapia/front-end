@@ -719,3 +719,6 @@ polyline {
 .dashboard .resumos {
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
 }
+
+.item-estoque.nivel-critico em { color: #9b2f3c; }
+.item-estoque.nivel-critico .progresso i { background: #b42318; }
