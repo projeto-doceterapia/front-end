@@ -1,4 +1,5 @@
 import { Clock3, MapPin } from 'lucide-react'
+import { STATUS_PAGAMENTO, STATUS_PEDIDO } from '../pedidos/pedidoUtils'
 
 export default function ListaPedidos({ pedidos, pagamentos, itens, produtos, dataSelecionada }) {
   const pedidosDoDia = pedidos.filter((pedido) => pedido.dataEntrega === dataSelecionada)
@@ -25,12 +26,12 @@ function Pedido({ pedido, pagamento, itens, produtos }) {
 
   return (
     <article className="agenda-order">
-      <div className="order-tags"><span>#{pedido.idPedido}</span><b className={classe}>{textoStatus(pedido.statusPedido)}</b></div>
-      <p>{nomesProdutos.join(', ') || pedido.tipoPedido.replaceAll('_', ' ')}</p>
+      <div className="order-tags"><span>#{pedido.idPedido}</span><b className={classe}>{STATUS_PEDIDO[pedido.statusPedido] ?? pedido.statusPedido}</b></div>
+      <p>{nomesProdutos.join(', ') || 'Pedido sem produtos'}</p>
       <small>Cliente: {pedido.nomeCliente}</small>
       <small><Clock3 size={11} /> Entrega em {formatarData(pedido.dataEntrega)}</small>
       <small><MapPin size={11} /> {pedido.formaEntrega === 'ENTREGA' ? pedido.enderecoEntrega : 'Retirada'}</small>
-      <div className="order-total"><span>Total</span><strong>{dinheiro(total)}</strong><span className={classe}>{pagamento?.statusPagamento ? textoStatus(pagamento.statusPagamento) : textoStatus(pedido.statusPedido)}</span></div>
+      <div className="order-total"><span>Total</span><strong>{dinheiro(total)}</strong><span className={classe}>{pagamento?.statusPagamento ? STATUS_PAGAMENTO[pagamento.statusPagamento] ?? pagamento.statusPagamento : STATUS_PEDIDO[pedido.statusPedido] ?? pedido.statusPedido}</span></div>
     </article>
   )
 }
@@ -57,12 +58,3 @@ function totalPedido(pedido, pagamentos, itens) {
 
 function dinheiro(valor) { return `R$ ${Number(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` }
 function formatarData(data) { return data ? new Date(`${data}T12:00:00`).toLocaleDateString('pt-BR') : 'Data não informada' }
-function textoStatus(status) {
-  const valor = (status || '').replaceAll('_', ' ').trim()
-  if (!valor) return ''
-
-  return valor
-    .toLowerCase()
-    .replace(/(^|\s)\S/g, (letra) => letra.toUpperCase())
-    .replace(/Orcamento\b/gi, 'Orçamento')
-}

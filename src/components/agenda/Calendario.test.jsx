@@ -18,6 +18,12 @@ describe('Calendario - legenda do farol', () => {
     expect(container.querySelector('.calendar-footer')).toHaveTextContent('6+ pedidos')
   })
 
+  it('usa o singular quando o limite é um pedido', () => {
+    const { container } = renderizar({ limiteVerde: 1, limiteAmarelo: 2, limiteVermelho: 3 })
+
+    expect(container.querySelector('.calendar-footer')).toHaveTextContent('até 1 pedido até 2 pedidos')
+  })
+
   it('pede a configuração em vez de mostrar NaN quando faltam limites', () => {
     const { container } = renderizar([])
 

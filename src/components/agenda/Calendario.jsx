@@ -5,10 +5,14 @@ function dataISO(ano, mes, dia) {
   return `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`
 }
 
+function pedidos(quantidade) {
+  return `${quantidade} ${quantidade === 1 ? 'pedido' : 'pedidos'}`
+}
+
 function legendaFarol(farol) {
   if (!farol) return 'Clique em um dia para visualizar os pedidos. Configure o farol quando estiver pronto.'
   if (!farolConfigurado(farol)) return 'Farol: configure os limites para colorir os dias.'
-  return <>Farol: <span className="legend-free" /> até {farol.limiteAmarelo - 1} pedidos <span className="legend-warning" /> até {farol.limiteVermelho - 1} pedidos <span className="legend-full" /> {farol.limiteVermelho}+ pedidos</>
+  return <>Farol: <span className="legend-free" /> até {pedidos(farol.limiteAmarelo - 1)} <span className="legend-warning" /> até {pedidos(farol.limiteVermelho - 1)} <span className="legend-full" /> {farol.limiteVermelho}+ pedidos</>
 }
 
 export default function Calendario({ pedidos, farol, mesExibido, dataSelecionada, aoMudarMes, aoIrParaHoje, aoSelecionarData }) {
