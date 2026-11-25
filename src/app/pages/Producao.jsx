@@ -5,6 +5,7 @@ import PedidoProducaoCard from '../../components/pedidos/PedidoProducaoCard'
 import PaginacaoPedidos from '../../components/pedidos/PaginacaoPedidos'
 import PainelPedido from '../../components/pedidos/PainelPedido'
 import ResumoPedidos from '../../components/pedidos/ResumoPedidos'
+import useSessao from '../../components/sessao/useSessao'
 import api from '../../services/api'
 import { dataPedido, pagamentoDoPedido, substituirPedido } from '../../components/pedidos/pedidoUtils'
 import { carregarPedidosComRelacionamentos, intervaloRelativo } from '../../services/pedidosConsulta'
@@ -25,6 +26,7 @@ function dataISO(data) {
 }
 
 export default function Producao({ onNewOrder }) {
+  const { ehDona } = useSessao()
   const [pedidos, setPedidos] = useState([])
   const [clientes, setClientes] = useState([])
   const [itens, setItens] = useState([])
@@ -123,6 +125,7 @@ export default function Producao({ onNewOrder }) {
             itens={itens}
             produtos={produtos}
             pagamento={pagamentoDoPedido(pedido, pagamentos)}
+            mostrarPagamento={ehDona}
             onAbrir={() => setAberto({ id: pedido.idPedido, modo: 'detalhe' })}
             onPedidoAtualizado={atualizarNaLista}
           />

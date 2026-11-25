@@ -4,7 +4,7 @@
   margin: auto;
   padding: 28px;
   color: #56372b;
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 
 .dashboard h1, .dashboard h2, .dashboard p {
@@ -12,7 +12,7 @@
 }
 
 .dashboard h1 {
-  font-size: 20px;
+  font-size: 1.25rem;
 }
 
 .dashboard > header {
@@ -24,8 +24,8 @@
 
 .dashboard > header p, .titulo p {
   margin-top: 3px;
-  color: #9a92ad;
-  font-size: 11px;
+  color: #696376;
+  font-size: 0.875rem;
 }
 
 .resumos, .estoque, .pedidos {
@@ -58,29 +58,29 @@
   text-align: center;
   line-height: 24px;
   background: #fae1e0;
-  color: #dc8990;
+  color: #9e3f48;
 }
 
 .card p {
   margin-top: 7px;
-  color: #786b80;
-  font-size: 11px;
+  color: #6d6174;
+  font-size: 0.875rem;
 }
 
 .card strong {
   display: block;
   margin: 3px 0;
-  font-size: 24px;
+  font-size: 1.5rem;
 }
 
 .card small {
   display: block;
-  color: #9a92a3;
-  font-size: 10px;
+  color: #69636f;
+  font-size: 0.875rem;
 }
 
 .rosa strong {
-  color: #dc8990;
+  color: #9e3f48;
 }
 
 .verde {
@@ -89,16 +89,16 @@
 
 .verde .icone, .verde strong {
   background: #dff9ed;
-  color: #00a86b;
+  color: #00764b;
 }
 
 .vermelho strong {
-  color: #fc3442;
+  color: #c22833;
 }
 
 .vermelho .icone {
   background: #ffe6e8;
-  color: #f24a5a;
+  color: #b53743;
 }
 
 .marrom {
@@ -126,12 +126,12 @@
 }
 
 .titulo h2 {
-  font-size: 13px;
+  font-size: 0.875rem;
 }
 
 .titulo a {
-  color: #e77e87;
-  font-size: 10px;
+  color: #9e3f48;
+  font-size: 0.875rem;
 }
 
 .estoque {
@@ -143,7 +143,7 @@
   padding: 10px;
   border: 1px solid #ffdfa1;
   border-radius: 8px;
-  font-size: 8px;
+  font-size: 0.875rem;
 }
 
 .item-estoque > span {
@@ -152,20 +152,20 @@
   padding: 5px;
   border-radius: 6px;
   background: #fff2c8;
-  color: #fa9b00;
+  color: #915a00;
 }
 
 em {
   display: block;
-  color: #f48600;
-  font-size: 7px;
+  color: #9a5400;
+  font-size: 0.875rem;
   font-style: normal;
 }
 
 .item-estoque p {
   clear: both;
   padding-top: 8px;
-  font-size: 7px;
+  font-size: 0.875rem;
 }
 
 .item-estoque p small {
@@ -184,7 +184,7 @@ em {
   width: 42%;
   height: 5px;
   border-radius: 5px;
-  background: #ff9500;
+  background: #a35f00;
 }
 
 .pedidos {
@@ -199,47 +199,47 @@ em {
 }
 
 .pedido p {
-  font-size: 8px;
+  font-size: 0.875rem;
 }
 
 .pedido strong {
   display: block;
   margin-top: 2px;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .pedido small {
-  color: #8a91a1;
-  font-size: 7px;
+  color: #616571;
+  font-size: 0.875rem;
 }
 
 .azul {
   background: #eef6ff;
-  color: #1b72ff;
+  color: #1760d6;
 }
 
 .roxo {
   border-color: #ebd5fa;
   background: #faf1ff;
-  color: #a33dfa;
+  color: #8e35d9;
 }
 
 .verde {
   background: #edfcf5;
-  color: #009f64;
+  color: #00764a;
 }
 
 .amarelo {
   border-color: #f1e7c6;
   background: #fffbed;
-  color: #e57800;
+  color: #9c5200;
 }
 
 .filtros {
   display: flex;
   gap: 5px;
-  color: #8090a2;
-  font-size: 7px;
+  color: #5c6875;
+  font-size: 0.875rem;
 }
 
 .filtros button, .filtros b, .filtros span {
@@ -247,12 +247,12 @@ em {
   border: 0;
   border-radius: 10px;
   background: #f4f5f7;
-  color: #8090a2;
+  color: #5c6875;
   font-weight: 400;
 }
 
 .filtros button.active, .filtros b {
-  background: #dc8990;
+  background: #b14f58;
   color: #fff;
 }
 
@@ -277,12 +277,12 @@ em {
 .coluna i {
   width: 18px;
   border-radius: 4px 4px 0 0;
-  background: #dc8990;
+  background: #b14f58;
 }
 
 .coluna small {
-  color: #9c91a2;
-  font-size: 7px;
+  color: #6a636e;
+  font-size: 0.875rem;
   text-align: center;
 }
 
@@ -312,7 +312,7 @@ em {
 
 .legenda {
   width: 44%;
-  font-size: 8px;
+  font-size: 0.875rem;
 }
 
 .legenda p {
@@ -334,7 +334,7 @@ em {
 }
 
 .p1 {
-  background: #dc8990;
+  background: #b14f58;
 }
 
 .p2 {
@@ -342,13 +342,13 @@ em {
 }
 
 .p3 {
-  background: #f1ab76;
+  background: #916747;
 }
 
 .linhas {
   padding: 8px 15px 12px;
-  color: #df8a92;
-  font-size: 8px;
+  color: #9e3f48;
+  font-size: 0.875rem;
   text-align: center;
 }
 
@@ -379,7 +379,7 @@ polyline {
 .dashboard .outline-button {
   min-height: 38px;
   padding: 0 14px;
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 
 .dashboard .icone {
@@ -394,7 +394,7 @@ polyline {
 
 .dashboard .item-estoque {
   padding: 14px;
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 
 .dashboard .item-estoque > span {
@@ -403,16 +403,16 @@ polyline {
 }
 
 .dashboard .item-estoque em {
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .dashboard .item-estoque p {
   padding-top: 10px;
-  font-size: 11px;
+  font-size: 0.875rem;
 }
 
 .dashboard .item-estoque p small {
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .dashboard .progresso,
@@ -429,17 +429,17 @@ polyline {
 }
 
 .dashboard .pedido p {
-  font-size: 11px;
+  font-size: 0.875rem;
 }
 
 .dashboard .pedido strong {
-  font-size: 22px;
+  font-size: 1.375rem;
 }
 
 .dashboard .pedido small,
 .dashboard .filtros,
 .dashboard .coluna small {
-  font-size: 10px;
+  font-size: 0.875rem;
 }
 
 .dashboard .filtros button,
@@ -467,7 +467,7 @@ polyline {
 }
 
 .dashboard .legenda {
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 
 .dashboard .legenda i {
@@ -477,7 +477,7 @@ polyline {
 
 .dashboard .linhas {
   padding: 14px 20px 18px;
-  font-size: 11px;
+  font-size: 0.875rem;
 }
 
 .dashboard .linhas svg {
@@ -505,7 +505,7 @@ polyline {
 
 .dashboard .valor-barra {
   color: #6e4c42;
-  font-size: 11px;
+  font-size: 0.875rem;
   font-weight: 700;
 }
 
@@ -531,7 +531,7 @@ polyline {
 .dashboard .pizza span {
   z-index: 2;
   color: #5b3528;
-  font-size: 19px;
+  font-size: 1.1875rem;
   font-weight: 700;
   text-align: center;
 }
@@ -539,8 +539,8 @@ polyline {
 .dashboard .pizza span small {
   display: block;
   margin-top: 2px;
-  color: #8c9aac;
-  font-size: 9px;
+  color: #5e6773;
+  font-size: 0.875rem;
   font-weight: 400;
 }
 
@@ -594,7 +594,7 @@ polyline {
 
 .dashboard .grafico-faturamento .eixo-y text {
   fill: #8593a3;
-  font-size: 9px;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 
@@ -602,8 +602,8 @@ polyline {
   display: flex;
   justify-content: space-between;
   padding: 7px 4% 0;
-  color: #8994a5;
-  font-size: 10px;
+  color: #5f6672;
+  font-size: 0.875rem;
 }
 
 .dashboard .legenda-linhas {
@@ -611,8 +611,8 @@ polyline {
   justify-content: center;
   gap: 20px;
   margin-top: 14px;
-  color: #718096;
-  font-size: 11px;
+  color: #5a6678;
+  font-size: 0.875rem;
 }
 
 .dashboard .legenda-linhas span::before {
@@ -626,15 +626,15 @@ polyline {
 }
 
 .dashboard .legenda-linhas .faturamento {
-  color: #dc8990;
+  color: #9e3f48;
 }
 
 .dashboard .legenda-linhas .custo {
-  color: #cb752f;
+  color: #965723;
 }
 
 .dashboard .legenda-linhas .lucro {
-  color: #27845d;
+  color: #227351;
 }
 
 @media (max-width: 700px) {
@@ -665,12 +665,12 @@ polyline {
   align-items: center;
   gap: 6px;
   color: var(--accent);
-  font-size: 11px;
+  font-size: 0.875rem;
 }
 
 .datas-periodo input {
   padding: 4px 6px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--field-border);
   border-radius: 6px;
   background: var(--input-background);
   color: var(--foreground);
@@ -681,7 +681,7 @@ polyline {
   flex-basis: 100%;
   margin: 0;
   color: var(--destructive);
-  font-size: 11px;
+  font-size: 0.875rem;
 }
 
 .erro-dashboard {
@@ -693,7 +693,7 @@ polyline {
   border-radius: 10px;
   background: #fff;
   color: var(--destructive);
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 
 .erro-dashboard p {
@@ -713,9 +713,30 @@ polyline {
   margin: 0;
   padding: 0 16px 12px;
   color: var(--muted-foreground);
-  font-size: 11px;
+  font-size: 0.875rem;
 }
 
 .dashboard .resumos {
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+}
+
+.item-estoque.nivel-critico em { color: #9b2f3c; }
+.item-estoque.nivel-critico .progresso i { background: #b42318; }
+
+.dashboard .grafico-pedidos .barras {
+  overflow-x: auto;
+}
+
+.datas-periodo {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 650px) {
+  .dashboard .grafico-pedidos .barras {
+    padding-inline: 12px;
+  }
+}
+
+.dashboard .grafico-pedidos .coluna {
+  flex: 1 0 44px;
 }

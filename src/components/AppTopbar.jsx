@@ -9,16 +9,10 @@ import ConfiguracaoNotificacao from './notificacoes/ConfiguracaoNotificacao'
 import GerenciarUsuarios from './usuarios/GerenciarUsuarios'
 import { ROTULOS_PERFIL } from './usuarios/perfis'
 import useSessao from './sessao/useSessao'
+import { dataCurta, dataLonga } from './dataTopbar'
 
 const CHAVE_FONTE = 'doceterapia-font-scale'
 
-function dataHoje() {
-  return new Intl.DateTimeFormat('pt-BR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-  }).format(new Date())
-}
 
 function formatarData(data) {
   if (!data) return ''
@@ -41,22 +35,26 @@ export default function AppTopbar() {
     return Number.isFinite(salvo) && salvo >= 1 && salvo <= 1.8 ? salvo : 1
   })
 
-  const carregar = useCallback(() => {
-    setCarregando(true)
-    setErro('')
-    return listarNaoLidas()
+  const buscar = useCallback(() => (
+    listarNaoLidas()
       .then((lista) => setNotificacoes(lista))
       .catch(() => setErro('Não foi possível carregar as notificações.'))
       .finally(() => setCarregando(false))
-  }, [])
+  ), [])
+
+  const carregar = useCallback(() => {
+    setCarregando(true)
+    setErro('')
+    return buscar()
+  }, [buscar])
 
   const removerNotificacao = useCallback((id) => {
     setNotificacoes((atuais) => atuais.filter((item) => item.idNotificacao !== id))
   }, [])
 
   useEffect(() => {
-    carregar()
-  }, [carregar])
+    buscar()
+  }, [buscar])
 
   useEffect(() => {
     const encerrar = assinarStream({
@@ -123,7 +121,7 @@ export default function AppTopbar() {
 
   return (
     <header className="app-topbar">
-      <span className="topbar-date">Hoje, {dataHoje()}</span>
+      <span className="topbar-date"><span className="topbar-date-longa">Hoje, {dataLonga(new Date())}</span><span className="topbar-date-curta">{dataCurta(new Date())}</span></span>
       <div className="topbar-actions">
         <div className="notification-wrap">
           <button
@@ -191,10 +189,10 @@ export default function AppTopbar() {
             </section>
           )}
         </div>
-        <div className="font-size-controls" aria-label="Tamanho da fonte">
-          <button type="button" onClick={() => alterarEscala(-0.2)} disabled={escalaFonte <= 1} aria-label="Diminuir fonte" title="Diminuir fonte"><Minus size={13} /></button>
-          <span>Aa <small>{Math.round(escalaFonte * 100)}%</small></span>
-          <button type="button" onClick={() => alterarEscala(0.2)} disabled={escalaFonte >= 1.8} aria-label="Aumentar fonte" title="Aumentar fonte"><Plus size={13} /></button>
+        <div className="font-size-controls" role="group" aria-label="Tamanho do texto">
+          <button type="button" onClick={() => alterarEscala(-0.2)} disabled={escalaFonte <= 1} aria-label="Diminuir o texto" title="Diminuir o texto"><Minus size={16} aria-hidden="true" /></button>
+          <span><span aria-hidden="true">Aa </span><small>Texto {Math.round(escalaFonte * 100)}%</small></span>
+          <button type="button" onClick={() => alterarEscala(0.2)} disabled={escalaFonte >= 1.8} aria-label="Aumentar o texto" title="Aumentar o texto"><Plus size={16} aria-hidden="true" /></button>
         </div>
         <div className="topbar-user" aria-label={`${usuario.nome}, ${rotuloPerfil}`}>
           <b>{usuario.nome.charAt(0).toUpperCase()}</b>

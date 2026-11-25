@@ -15,9 +15,11 @@ export default function DetalhePedido({ pedido, clientes, itens, produtos, pagam
 
   const rodape = !finalizado && (
     <>
-      {ehDona && <button type="button" className="order-action order-action-danger" onClick={onCancelar}>Cancelar pedido</button>}
-      <button type="button" className="order-action" onClick={onEditar}>Editar pedido</button>
-      <AcaoAvancarFase pedido={pedido} onPedidoAtualizado={onPedidoAtualizado} />
+      {ehDona && <button type="button" className="order-action order-action-texto-perigo" onClick={onCancelar}>Cancelar pedido</button>}
+      <div className="pedido-dialogo-acoes">
+        <button type="button" className="order-action" onClick={onEditar}>Editar pedido</button>
+        <AcaoAvancarFase pedido={pedido} onPedidoAtualizado={onPedidoAtualizado} />
+      </div>
     </>
   )
 
@@ -43,7 +45,7 @@ export default function DetalhePedido({ pedido, clientes, itens, produtos, pagam
             {itensPedido.map((item) => (
               <li key={item.idProdutoPedido}>
                 <span>{produtos.find((produto) => Number(produto.idProduto) === Number(item.fkProduto))?.nome || 'Produto removido'} ×{Number(item.quantidade || 1)}</span>
-                <strong>{dinheiro(item.valorTotal)}</strong>
+                {ehDona && <strong>{dinheiro(item.valorTotal)}</strong>}
               </li>
             ))}
           </ul>
@@ -51,7 +53,7 @@ export default function DetalhePedido({ pedido, clientes, itens, produtos, pagam
           <p className="pedido-vazio">Nenhum item neste pedido.</p>
         )}
       </section>
-      <PagamentoPedido pagamento={pagamento} />
+      {ehDona && <PagamentoPedido pagamento={pagamento} />}
     </DialogoPedido>
   )
 }

@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { ChevronDown, MapPin, Pencil, Phone, UserCheck, UserX } from 'lucide-react'
+import { ChevronDown, MapPin, MessageCircle, Pencil, Phone, UserCheck, UserX } from 'lucide-react'
+import { linkTelefone, linkWhatsApp } from './contatoUtils'
 import api from '../../services/api'
 import useSessao from '../sessao/useSessao'
+import { codigoPedido } from '../formatos'
 
 const classificacoes = {
   PADRAO: '',
@@ -90,20 +92,36 @@ export default function ClienteCard({ cliente, produtos, aoEditar, onInativar, o
             )}
           </div>
           <small>
-            <Phone size={13} />
-            {cliente.telefone}
-            <MapPin size={13} />
-            {cliente.endereco}
+            {cliente.telefone && (
+              <>
+                <a className="client-contact" href={linkTelefone(cliente.telefone)} title={`Ligar para ${cliente.nome}`}>
+                  <Phone size={13} aria-hidden="true" />
+                  {cliente.telefone}
+                </a>
+                <a className="client-contact" href={linkWhatsApp(cliente.telefone)} target="_blank" rel="noopener noreferrer" title={`Abrir conversa com ${cliente.nome} no WhatsApp`}>
+                  <MessageCircle size={13} aria-hidden="true" />
+                  WhatsApp
+                </a>
+              </>
+            )}
+            {cliente.endereco && (
+              <>
+                <MapPin size={13} aria-hidden="true" />
+                {cliente.endereco}
+              </>
+            )}
           </small>
         </div>
         <div className="client-metric">
           <small>Pedidos</small>
           <b>{cliente.totalPedidos ?? 0}</b>
         </div>
-        <div className="client-metric client-spent">
-          <small>Gasto total</small>
-          <b>{cliente.gastoTotal == null ? '—' : moeda.format(cliente.gastoTotal)}</b>
-        </div>
+        {ehDona && (
+          <div className="client-metric client-spent">
+            <small>Gasto total</small>
+            <b>{cliente.gastoTotal == null ? '—' : moeda.format(cliente.gastoTotal)}</b>
+          </div>
+        )}
         <div className="client-metric">
           <small>Último pedido</small>
           <span>{formatarData(cliente.ultimoPedido)}</span>
@@ -114,6 +132,7 @@ export default function ClienteCard({ cliente, produtos, aoEditar, onInativar, o
           aria-label={`${expandido ? 'Recolher' : 'Expandir'} ${cliente.nome}`}
           aria-expanded={expandido}
           aria-controls={painelId}
+          title={`${expandido ? 'Recolher' : 'Expandir'} ${cliente.nome}`}
           onClick={alternar}
         >
           <ChevronDown size={17} className={expandido ? 'rotated' : ''} />
@@ -123,27 +142,30 @@ export default function ClienteCard({ cliente, produtos, aoEditar, onInativar, o
           className="icon-action"
           onClick={aoEditar}
           aria-label={`Editar ${cliente.nome}`}
+          title={`Editar ${cliente.nome}`}
         >
           <Pencil size={17} />
         </button>
         {ehDona && !inativo && (
           <button
             type="button"
-            className="icon-action"
+            className="client-status-action client-deactivate"
             onClick={onInativar}
             aria-label={`Inativar ${cliente.nome}`}
+            title={`Inativar ${cliente.nome}`}
           >
-            <UserX size={17} />
+            <UserX size={16} aria-hidden="true" /> Inativar
           </button>
         )}
         {ehDona && inativo && (
           <button
             type="button"
-            className="icon-action"
+            className="client-status-action"
             onClick={onReativar}
             aria-label={`Reativar ${cliente.nome}`}
+            title={`Reativar ${cliente.nome}`}
           >
-            <UserCheck size={17} />
+            <UserCheck size={16} aria-hidden="true" /> Reativar
           </button>
         )}
       </div>
@@ -175,12 +197,12 @@ export default function ClienteCard({ cliente, produtos, aoEditar, onInativar, o
                 {ordenados.slice(0, 3).map((pedido) => (
                   <div className="recent-order" key={pedido.idPedido}>
                     <span className="recent-order-id">
-                      #{String(pedido.idPedido).padStart(4, '0')}
+                      {codigoPedido(pedido.idPedido)}
                     </span>
                     <span className="recent-order-description">
                       {descricaoPedido(pedido.idPedido)}
                     </span>
-                    <b>{moeda.format(totalPedido(pedido.idPedido))}</b>
+                    {ehDona && <b>{moeda.format(totalPedido(pedido.idPedido))}</b>}
                     <time dateTime={dataPedido(pedido)}>
                       {formatarData(dataPedido(pedido)).slice(0, 5)}
                     </time>

@@ -1,11 +1,15 @@
+import { useState, useSyncExternalStore } from 'react'
 import {
   CalendarDays,
+  ChefHat,
   ChevronDown,
   ClipboardList,
   CookingPot,
   Grid2x2,
   Package,
   PackageCheck,
+  PanelLeftClose,
+  PanelLeftOpen,
   ShoppingBasket,
   UsersRound,
 } from 'lucide-react'
@@ -13,19 +17,79 @@ import logoImage from '../assets/logo.png'
 import { NOME_NEGOCIO } from './identidade'
 
 const itens = [
-  { id: 'visao-geral', label: 'Visão Geral', icone: Grid2x2 },
   { id: 'agenda', label: 'Agenda', icone: CalendarDays },
-  { id: 'estoque', label: 'Estoque', icone: Package },
-  { id: 'produtos', label: 'Produtos', icone: CookingPot },
-  { id: 'pedidos', label: 'Pedidos', icone: ShoppingBasket, expandido: true },
+  { id: 'visao-geral', label: 'Visão Geral', icone: Grid2x2 },
+  { id: 'producao', label: 'Produção', icone: ChefHat },
   { id: 'clientes', label: 'Clientes', icone: UsersRound },
+  { id: 'pedidos', label: 'Pedidos', icone: ShoppingBasket, expandido: true },
+  { id: 'produtos', label: 'Produtos', icone: CookingPot },
+  { id: 'estoque', label: 'Estoque', icone: Package },
 ]
 
+const subitensPedidos = [
+  { id: 'registrar-pedido', tela: 'pedido', label: 'Registrar Pedido', icone: ClipboardList },
+  { id: 'historico-pedidos', tela: 'historico-pedidos', label: 'Histórico', icone: PackageCheck },
+]
+
+const CHAVE_RECOLHIDO = 'doceterapia-menu-recolhido'
+const TELA_ESTREITA = '(max-width: 760px)'
+const TELA_MEDIA = '(max-width: 1023px)'
+
+function assinar(consulta) {
+  return (aoMudar) => {
+    const lista = window.matchMedia?.(consulta)
+    lista?.addEventListener('change', aoMudar)
+    return () => lista?.removeEventListener('change', aoMudar)
+  }
+}
+
+function corresponde(consulta) {
+  return () => window.matchMedia?.(consulta).matches ?? false
+}
+
+const assinarEstreita = assinar(TELA_ESTREITA)
+const assinarMedia = assinar(TELA_MEDIA)
+const telaEstreita = corresponde(TELA_ESTREITA)
+const telaMedia = corresponde(TELA_MEDIA)
+
+// Storage can be blocked (private mode, policies); the menu then just starts expanded.
+function lerRecolhido() {
+  try {
+    return localStorage.getItem(CHAVE_RECOLHIDO) === 'true'
+  } catch {
+    return false
+  }
+}
+
+function salvarRecolhido(valor) {
+  try {
+    localStorage.setItem(CHAVE_RECOLHIDO, String(valor))
+  } catch {
+    // The preference only lasts for this visit.
+  }
+}
+
 export default function Sidebar({ telaAtual, aoNavegar }) {
-  const pedidosAtivos = ['pedido', 'producao', 'historico-pedidos'].includes(telaAtual)
+  const pedidosAtivos = ['pedido', 'historico-pedidos'].includes(telaAtual)
+  const estreita = useSyncExternalStore(assinarEstreita, telaEstreita)
+  const media = useSyncExternalStore(assinarMedia, telaMedia)
+  const [recolhido, setRecolhido] = useState(lerRecolhido)
+  // Medium screens start compact; expanding there is temporary and does not touch the saved choice.
+  const [expandidoNaTelaMedia, setExpandidoNaTelaMedia] = useState(false)
+  const recolhidoAgora = media ? !expandidoNaTelaMedia : recolhido
+  const compacta = estreita || recolhidoAgora
+
+  function alternar() {
+    if (media) {
+      setExpandidoNaTelaMedia(!expandidoNaTelaMedia)
+      return
+    }
+    setRecolhido(!recolhido)
+    salvarRecolhido(!recolhido)
+  }
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${compacta ? 'recolhida' : ''}`}>
       <div className="sidebar-brand">
         <img src={logoImage} alt="Logo Doceterapia" />
         <div>
@@ -33,36 +97,57 @@ export default function Sidebar({ telaAtual, aoNavegar }) {
           <span>Confeitaria</span>
         </div>
       </div>
-      <nav className="sidebar-nav" aria-label="Navegação principal">
-        {itens.map(({ id, label, icone: Icone, expandido }) => (
-          <div className="sidebar-item-group" key={id}>
-            <button
-              className={`sidebar-item ${telaAtual === id || (id === 'pedidos' && pedidosAtivos) ? 'active' : ''}`}
-              type="button"
-              onClick={() => aoNavegar(id)}
-              aria-current={telaAtual === id || (id === 'pedidos' && pedidosAtivos) ? 'page' : undefined}
-            >
-              <Icone size={19} strokeWidth={1.8} />
-              <span>{label}</span>
+      {!estreita && (
+        <button
+          type="button"
+          className="sidebar-toggle"
+          onClick={alternar}
+          aria-expanded={!recolhidoAgora}
+          aria-controls="sidebar-nav"
+          aria-label={recolhidoAgora ? 'Expandir menu' : 'Recolher menu'}
+          title={recolhidoAgora ? 'Expandir menu' : 'Recolher menu'}
+        >
+          {recolhidoAgora ? <PanelLeftOpen size={18} aria-hidden="true" /> : <PanelLeftClose size={18} aria-hidden="true" />}
+        </button>
+      )}
+      <nav id="sidebar-nav" className="sidebar-nav" aria-label="Navegação principal">
+        {itens.map(({ id, label, icone: Icone, expandido }) => {
+          const ativo = telaAtual === id || (id === 'pedidos' && pedidosAtivos)
+          return (
+            <div className="sidebar-item-group" key={id}>
+              <button
+                className={`sidebar-item ${ativo ? 'active' : ''}`}
+                type="button"
+                onClick={() => aoNavegar(id)}
+                aria-current={ativo ? 'page' : undefined}
+                title={compacta ? label : undefined}
+              >
+                <Icone size={19} strokeWidth={1.8} aria-hidden="true" />
+                <span className="sidebar-rotulo">{label}</span>
+                {expandido && (
+                  <ChevronDown className="sidebar-chevron" size={15} strokeWidth={1.8} aria-hidden="true" />
+                )}
+              </button>
               {expandido && (
-                <ChevronDown className="sidebar-chevron" size={15} strokeWidth={1.8} />
+                <div className="sidebar-submenu">
+                  {subitensPedidos.map(({ id: subId, tela, label: subLabel, icone: SubIcone }) => (
+                    <button
+                      key={subId}
+                      type="button"
+                      className={telaAtual === tela ? 'active' : ''}
+                      onClick={() => aoNavegar(subId)}
+                      aria-current={telaAtual === tela ? 'page' : undefined}
+                      title={compacta ? subLabel : undefined}
+                    >
+                      <SubIcone size={15} aria-hidden="true" />
+                      <span className="sidebar-rotulo">{subLabel}</span>
+                    </button>
+                  ))}
+                </div>
               )}
-            </button>
-            {expandido && (
-              <div className="sidebar-submenu">
-                <button type="button" className={telaAtual === 'pedido' ? 'active' : ''} onClick={() => aoNavegar('registrar-pedido')}>
-                  <ClipboardList size={15} /> Registrar Pedido
-                </button>
-                <button type="button" className={telaAtual === 'producao' ? 'active' : ''} onClick={() => aoNavegar('producao')}>
-                  <CookingPot size={15} /> Produção
-                </button>
-                <button type="button" className={telaAtual === 'historico-pedidos' ? 'active' : ''} onClick={() => aoNavegar('historico-pedidos')}>
-                  <PackageCheck size={15} /> Histórico
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
+            </div>
+          )
+        })}
       </nav>
     </aside>
   )

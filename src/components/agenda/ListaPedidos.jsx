@@ -1,6 +1,8 @@
 import { Clock3, MapPin } from 'lucide-react'
+import { STATUS_PAGAMENTO, STATUS_PEDIDO } from '../pedidos/pedidoUtils'
+import { codigoPedido, dinheiro, plural } from '../formatos'
 
-export default function ListaPedidos({ pedidos, pagamentos, itens, produtos, dataSelecionada }) {
+export default function ListaPedidos({ pedidos, pagamentos, itens, produtos, dataSelecionada, mostrarValores = true }) {
   const pedidosDoDia = pedidos.filter((pedido) => pedido.dataEntrega === dataSelecionada)
   const total = pedidosDoDia.reduce((soma, pedido) => soma + totalPedido(pedido, pagamentos, itens), 0)
   const titulo = dataSelecionada ? new Date(`${dataSelecionada}T12:00:00`).toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' }) : 'Selecione um dia'
@@ -9,15 +11,15 @@ export default function ListaPedidos({ pedidos, pagamentos, itens, produtos, dat
     <aside className="orders-card">
       <header><div><small>Pedidos do dia</small><h2>{titulo}</h2></div><span className="selected-orders-count">{pedidosDoDia.length}</span></header>
       <div className="order-list">
-        {pedidosDoDia.map((pedido) => <Pedido pedido={pedido} pagamento={pagamentos.find((item) => item.pedidoId === pedido.idPedido)} itens={itens} produtos={produtos} key={pedido.idPedido} />)}
+        {pedidosDoDia.map((pedido) => <Pedido pedido={pedido} pagamento={pagamentos.find((item) => item.pedidoId === pedido.idPedido)} itens={itens} produtos={produtos} mostrarValores={mostrarValores} key={pedido.idPedido} />)}
         {!pedidosDoDia.length && <p className="empty-orders">Nenhum pedido para esta data.</p>}
       </div>
-      <footer><span>{pedidosDoDia.length} pedidos</span><strong>{dinheiro(total)}</strong></footer>
+      <footer><span>{plural(pedidosDoDia.length, 'pedido', 'pedidos')}</span>{mostrarValores && <strong>{dinheiro(total)}</strong>}</footer>
     </aside>
   )
 }
 
-function Pedido({ pedido, pagamento, itens, produtos }) {
+function Pedido({ pedido, pagamento, itens, produtos, mostrarValores }) {
   const itensPedido = itens.filter((item) => item.fkPedido === pedido.idPedido)
   const nomesProdutos = listarProdutos(itensPedido, produtos)
   const classe = pedido.statusPedido === 'AGUARDANDO_ENTREGA' ? 'delivery' : pedido.statusPedido === 'AGUARDANDO_SINAL' ? 'signal' : 'payment'
@@ -25,12 +27,12 @@ function Pedido({ pedido, pagamento, itens, produtos }) {
 
   return (
     <article className="agenda-order">
-      <div className="order-tags"><span>#{pedido.idPedido}</span><b className={classe}>{textoStatus(pedido.statusPedido)}</b></div>
-      <p>{nomesProdutos.join(', ') || pedido.tipoPedido.replaceAll('_', ' ')}</p>
+      <div className="order-tags"><span>{codigoPedido(pedido.idPedido)}</span><b className={classe}>{STATUS_PEDIDO[pedido.statusPedido] ?? pedido.statusPedido}</b></div>
+      <p>{nomesProdutos.join(', ') || 'Pedido sem produtos'}</p>
       <small>Cliente: {pedido.nomeCliente}</small>
       <small><Clock3 size={11} /> Entrega em {formatarData(pedido.dataEntrega)}</small>
       <small><MapPin size={11} /> {pedido.formaEntrega === 'ENTREGA' ? pedido.enderecoEntrega : 'Retirada'}</small>
-      <div className="order-total"><span>Total</span><strong>{dinheiro(total)}</strong><span className={classe}>{pagamento?.statusPagamento ? textoStatus(pagamento.statusPagamento) : textoStatus(pedido.statusPedido)}</span></div>
+      {mostrarValores && <div className="order-total"><span>Total</span><strong>{dinheiro(total)}</strong><span className={classe}>{pagamento?.statusPagamento ? STATUS_PAGAMENTO[pagamento.statusPagamento] ?? pagamento.statusPagamento : STATUS_PEDIDO[pedido.statusPedido] ?? pedido.statusPedido}</span></div>}
     </article>
   )
 }
@@ -55,14 +57,4 @@ function totalPedido(pedido, pagamentos, itens) {
   return itens.filter((item) => item.fkPedido === pedido.idPedido).reduce((soma, item) => soma + Number(item.valorTotal || 0), 0)
 }
 
-function dinheiro(valor) { return `R$ ${Number(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` }
 function formatarData(data) { return data ? new Date(`${data}T12:00:00`).toLocaleDateString('pt-BR') : 'Data não informada' }
-function textoStatus(status) {
-  const valor = (status || '').replaceAll('_', ' ').trim()
-  if (!valor) return ''
-
-  return valor
-    .toLowerCase()
-    .replace(/(^|\s)\S/g, (letra) => letra.toUpperCase())
-    .replace(/Orcamento\b/gi, 'Orçamento')
-}

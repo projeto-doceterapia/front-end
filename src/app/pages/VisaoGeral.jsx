@@ -12,6 +12,7 @@ import { RESSALVA_LUCRO } from '../../components/visao-geral/relatorioUtils'
 import { mesAtual } from '../../components/visao-geral/periodoUtils'
 import useSessao from '../../components/sessao/useSessao'
 import { buscarFinanceiros, buscarOperacionais } from '../../services/indicadores'
+import { dinheiro, numero, plural } from '../../components/formatos'
 
 export default function VisaoGeral() {
   const { ehDona } = useSessao()
@@ -81,7 +82,7 @@ export default function VisaoGeral() {
           {semPedidos && <p className="empty-dashboard" role="status">Nenhum pedido com entrega neste período.</p>}
           <section className="resumos">
             {ehDona && financeiros && <CardsFinanceiros financeiros={financeiros} />}
-            <CardResumo cor="vermelho" icone="□" titulo="Dias lotados" valor={operacionais.diasLotados.length} detalhe="dias marcados em vermelho no farol" />
+            <CardResumo cor="vermelho" icone="□" titulo="Dias lotados" valor={operacionais.diasLotados.length} detalhe="dias com a lotação máxima atingida" />
           </section>
           <EstoqueAtencao insumos={operacionais.insumosAbaixoDoMinimo} />
           <PedidosAndamento pedidosPorStatus={operacionais.pedidosPorStatus} />
@@ -102,11 +103,10 @@ function CardsFinanceiros({ financeiros }) {
       <CardResumo cor="marrom" icone="▣" titulo="Ticket médio" valor={dinheiro(financeiros.ticketMedio)} detalhe="faturamento por pedido do período" />
       <CardResumo cor="verde" icone="↗" titulo="Gastos com insumos" valor={dinheiro(financeiros.gastosInsumos)} detalhe="compras lançadas no período" />
       <CardResumo cor="rosa" icone="$" titulo="Lucro estimado" valor={dinheiro(financeiros.lucroEstimado)} detalhe={RESSALVA_LUCRO} />
-      <CardResumo cor="verde" icone="%" titulo="Margem" valor={`${Number(financeiros.margem).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`} detalhe="lucro estimado sobre o faturamento" />
-      <CardResumo cor="amarelo" icone="○" titulo="Em orçamento" valor={dinheiro(emOrcamento.valor)} detalhe={`${emOrcamento.quantidade} pedidos`} />
+      <CardResumo cor="verde" icone="%" titulo="Margem" valor={`${numero(financeiros.margem, 1)}%`} detalhe="lucro estimado sobre o faturamento" />
+      <CardResumo cor="amarelo" icone="○" titulo="Em orçamento" valor={dinheiro(emOrcamento.valor)} detalhe={plural(emOrcamento.quantidade, 'pedido', 'pedidos')} />
       <CardResumo cor="marrom" icone="×" titulo="Cancelados" valor={cancelados.quantidade} detalhe={`Pago ${dinheiro(cancelados.pago)} · Devolvido ${dinheiro(cancelados.devolvido)} · Retido ${dinheiro(cancelados.retido)}`} />
     </>
   )
 }
 
-function dinheiro(valor) { return `R$ ${Number(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` }

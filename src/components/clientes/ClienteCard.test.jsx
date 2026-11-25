@@ -154,4 +154,12 @@ describe('ClienteCard', () => {
       .map(([, config]) => config.params.pedidoId.split(',').length)
     expect(lotes).toEqual([200, 50])
   })
+
+  it('a FUNCIONARIA não vê o gasto total', () => {
+    useSessao.mockReturnValue({ perfil: 'FUNCIONARIA', ehDona: false })
+    renderizar({ ...CLIENTE, gastoTotal: 90 })
+
+    expect(screen.queryByText('Gasto total')).not.toBeInTheDocument()
+    expect(screen.queryByText(/R\$/)).not.toBeInTheDocument()
+  })
 })

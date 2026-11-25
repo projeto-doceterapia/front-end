@@ -4,11 +4,14 @@ const etapas = ['Cliente e entrega', 'Itens do pedido', 'Pagamento e resumo']
 
 export default function EtapasPedido({ etapa }) {
   return (
-    <div className="steps">
-      {etapas.map((texto, indice) => (
-        <Etapa texto={texto} numero={indice + 1} etapaAtual={etapa} key={texto} />
-      ))}
-    </div>
+    <>
+      <ol className="steps" aria-label="Etapas do pedido">
+        {etapas.map((texto, indice) => (
+          <Etapa texto={texto} numero={indice + 1} etapaAtual={etapa} key={texto} />
+        ))}
+      </ol>
+      <p className="steps-compact">Etapa {etapa} de {etapas.length} · {etapas[etapa - 1]}</p>
+    </>
   )
 }
 
@@ -24,10 +27,10 @@ function Etapa({ texto, numero, etapaAtual }) {
   }
 
   return (
-    <div className={classe}>
-      <b>{etapaAtual > numero ? <Check size={15} /> : numero}</b>
+    <li className={classe} aria-current={etapaAtual === numero ? 'step' : undefined}>
+      <b>{etapaAtual > numero ? <Check size={15} aria-hidden="true" /> : numero}</b>
       <span>Etapa {numero}: {texto}</span>
-      {numero < 3 && <i />}
-    </div>
+      {numero < etapas.length && <i />}
+    </li>
   )
 }

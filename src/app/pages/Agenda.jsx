@@ -4,8 +4,8 @@ import Calendario from '../../components/agenda/Calendario'
 import ListaPedidos from '../../components/agenda/ListaPedidos'
 import ResumoAgenda from '../../components/agenda/ResumoAgenda'
 import ConfiguracaoFarol from '../../components/agenda/ConfiguracaoFarol'
+import useSessao from '../../components/sessao/useSessao'
 import api from '../../services/api'
-import { carregarDadosTeste } from '../../services/dadosTeste'
 import { carregarPedidosComRelacionamentos, intervaloDoMes } from '../../services/pedidosConsulta'
 
 function dataISO(data) {
@@ -14,6 +14,7 @@ function dataISO(data) {
 
 export default function Agenda({ onNewOrder }) {
   const hoje = new Date()
+  const { ehDona } = useSessao()
   const [pedidos, setPedidos] = useState([])
   const [pagamentos, setPagamentos] = useState([])
   const [itens, setItens] = useState([])
@@ -25,49 +26,22 @@ export default function Agenda({ onNewOrder }) {
   const [erroFarol, setErroFarol] = useState('')
   const [mesExibido, setMesExibido] = useState(new Date(hoje.getFullYear(), hoje.getMonth(), 1))
   const [dataSelecionada, setDataSelecionada] = useState(dataISO(hoje))
-  const [carregandoDados, setCarregandoDados] = useState(false)
-  const [mensagem, setMensagem] = useState('')
-
-  async function buscarDados(dataBase = mesExibido) {
-    try {
-      const respostas = await Promise.all([
-        carregarPedidosComRelacionamentos({ ...intervaloDoMes(dataBase), status: 'ORCAMENTO,AGUARDANDO_SINAL,ESPERANDO_FAZER,EM_PRODUCAO,AGUARDANDO_ENTREGA,ENTREGUE' }), api.get('/produtos'),
-      ])
-      setPedidos(respostas[0].pedidos)
-      setPagamentos(respostas[0].pagamentos)
-      setItens(respostas[0].itens)
-      setProdutos(respostas[1].data || [])
-
-      try {
-        const respostaFarol = await api.get('/configuracao-farol')
-        setFarol(respostaFarol.data)
-      } catch {
-        setFarol(null)
-      }
-    } catch (erro) {
-      console.error('Não foi possível carregar a agenda:', erro)
-    }
-  }
 
   useEffect(() => {
-    buscarDados()
+    Promise.all([
+      carregarPedidosComRelacionamentos({ ...intervaloDoMes(mesExibido), status: 'ORCAMENTO,AGUARDANDO_SINAL,ESPERANDO_FAZER,EM_PRODUCAO,AGUARDANDO_ENTREGA,ENTREGUE' }), api.get('/produtos'),
+    ])
+      .then((respostas) => {
+        setPedidos(respostas[0].pedidos)
+        setPagamentos(respostas[0].pagamentos)
+        setItens(respostas[0].itens)
+        setProdutos(respostas[1].data || [])
+        return api.get('/configuracao-farol')
+          .then((resposta) => setFarol(resposta.data))
+          .catch(() => setFarol(null))
+      })
+      .catch((erro) => console.error('Não foi possível carregar a agenda:', erro))
   }, [mesExibido])
-
-  async function preencherDadosTeste() {
-    setCarregandoDados(true)
-    setMensagem('')
-
-    try {
-      await carregarDadosTeste()
-      await buscarDados()
-      setMensagem('Dados de teste carregados. Agora crie um pedido pela tela.')
-    } catch (erro) {
-      setMensagem('Não foi possível carregar os dados. Verifique se o backend está em execução.')
-      console.error(erro)
-    } finally {
-      setCarregandoDados(false)
-    }
-  }
 
   function mudarMes(variacao) {
     const novoMes = new Date(mesExibido.getFullYear(), mesExibido.getMonth() + variacao, 1)
@@ -131,8 +105,7 @@ export default function Agenda({ onNewOrder }) {
 
   return (
     <main className="agenda-page">
-      <CabecalhoAgenda aoCriarPedido={onNewOrder} aoCarregarDadosTeste={preencherDadosTeste} carregandoDados={carregandoDados} />
-      {mensagem && <p className="form-error order-error">{mensagem}</p>}
+      <CabecalhoAgenda aoCriarPedido={onNewOrder} />
       <ResumoAgenda pedidos={pedidosDoMes} aoConfigurarFarol={abrirConfiguracaoFarol} />
 
       <section className="agenda-layout">
@@ -151,6 +124,7 @@ export default function Agenda({ onNewOrder }) {
           itens={itens}
           produtos={produtos}
           dataSelecionada={dataSelecionada}
+          mostrarValores={ehDona}
         />
       </section>
       {mostrarFarol && <ConfiguracaoFarol dados={dadosFarol} aoAlterar={alterarFarol} aoSalvar={salvarFarol} aoFechar={() => setMostrarFarol(false)} salvando={salvandoFarol} erro={erroFarol} />}

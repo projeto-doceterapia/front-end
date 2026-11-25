@@ -1,8 +1,9 @@
-import { ArrowRight, CalendarDays, MessageSquare, UserRound } from 'lucide-react'
+import { CalendarDays, Eye, MessageSquare, UserRound } from 'lucide-react'
 import AcaoAvancarFase from './AcaoAvancarFase'
 import { codigoPedido, dataPedido, formatarData, nomeCliente, produtosDoPedido, textoStatus, textoStatusPagamento } from './pedidoUtils'
+import { destaquePrazo } from './producaoUtils'
 
-export default function PedidoProducaoCard({ pedido, clientes, itens, produtos, pagamento, onAbrir, onPedidoAtualizado }) {
+export default function PedidoProducaoCard({ pedido, clientes, itens, produtos, pagamento, mostrarPagamento = true, onAbrir, onPedidoAtualizado }) {
   const dataEntrega = dataPedido(pedido)
   const hoje = new Date()
   hoje.setHours(0, 0, 0, 0)
@@ -11,6 +12,7 @@ export default function PedidoProducaoCard({ pedido, clientes, itens, produtos, 
   const classePrazo = dias === 0 ? 'due-today' : dias != null && dias < 0 ? 'due-late' : 'due-soon'
   const linhasProduto = produtosDoPedido(pedido, itens, produtos)
   const status = pedido.statusPedido
+  const destaque = destaquePrazo(status, dias)
 
   return (
     <article className={`production-order ${status === 'AGUARDANDO_ENTREGA' ? 'ready-order' : ''}`}>
@@ -21,9 +23,9 @@ export default function PedidoProducaoCard({ pedido, clientes, itens, produtos, 
       <div className="production-order-main">
         <div className="production-tags">
           <span className="order-code">{codigoPedido(pedido.idPedido)}</span>
-          <span className={`order-status status-${String(status || '').toLowerCase()}`}>{textoStatus(status)}</span>
-          {dias === 0 && <span className="order-highlight">Começar hoje</span>}
-          {pagamento?.statusPagamento === 'PAGO_INTEGRAL' && <span className="order-highlight paid-tag">Pago</span>}
+          <span className={`order-status status-${String(status || '').toLowerCase()}`}>{status === 'AGUARDANDO_SINAL' ? 'Aguardando sinal — não produzir' : textoStatus(status)}</span>
+          {destaque && <span className="order-highlight">{destaque}</span>}
+          {mostrarPagamento && pagamento?.statusPagamento === 'PAGO_INTEGRAL' && <span className="order-highlight paid-tag">Pago</span>}
         </div>
         <h2>{linhasProduto.join(', ') || pedido.tipoPedido || 'Pedido sem produtos'}</h2>
         <div className="production-order-meta">
@@ -33,10 +35,10 @@ export default function PedidoProducaoCard({ pedido, clientes, itens, produtos, 
         </div>
       </div>
       <div className="production-order-actions">
-        <span className="payment-hint">{textoStatusPagamento(pagamento?.statusPagamento)}</span>
+        {mostrarPagamento && <span className="payment-hint">{textoStatusPagamento(pagamento?.statusPagamento)}</span>}
         <AcaoAvancarFase pedido={pedido} onPedidoAtualizado={onPedidoAtualizado} />
-        <button type="button" aria-label={`Abrir pedido ${pedido.idPedido}`} title="Abrir pedido" onClick={onAbrir}>
-          <ArrowRight size={17} />
+        <button type="button" className="order-view" aria-label={`Ver pedido ${codigoPedido(pedido.idPedido)}`} onClick={onAbrir}>
+          <Eye size={16} aria-hidden="true" /> Ver pedido
         </button>
       </div>
     </article>

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { X } from 'lucide-react'
+import { Eye, EyeOff, X } from 'lucide-react'
 import useToast from '../feedback/useToast'
 import { criarUsuario, listarUsuarios } from '../../services/usuarios'
-import { ROTULOS_PERFIL } from './perfis'
+import { DESCRICOES_PERFIL, ROTULOS_PERFIL } from './perfis'
 
 const FORMULARIO_VAZIO = { nome: '', email: '', senha: '', perfil: 'FUNCIONARIA' }
 
@@ -15,6 +15,7 @@ export default function GerenciarUsuarios({ aoFechar }) {
   const [formulario, setFormulario] = useState(FORMULARIO_VAZIO)
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState('')
+  const [senhaVisivel, setSenhaVisivel] = useState(false)
 
   useEffect(() => {
     let ativo = true
@@ -89,38 +90,54 @@ export default function GerenciarUsuarios({ aoFechar }) {
         </section>
 
         <form onSubmit={salvar}>
-          <fieldset className="farol-fields usuarios-form">
-            <legend>Novo usuário</legend>
+          <fieldset className="usuarios-form">
+            <legend>Adicionar pessoa</legend>
             <label>Nome
               <input name="nome" value={formulario.nome} onChange={alterarCampo} required minLength={3} maxLength={50} />
             </label>
             <label>E-mail
               <input name="email" type="email" value={formulario.email} onChange={alterarCampo} required />
             </label>
-            <label>Senha
-              <input
-                name="senha"
-                type="password"
-                autoComplete="new-password"
-                value={formulario.senha}
-                onChange={alterarCampo}
-                required
-                minLength={6}
-                maxLength={20}
-              />
-              <small>De 6 a 20 caracteres.</small>
-            </label>
-            <label>Perfil
-              <select name="perfil" value={formulario.perfil} onChange={alterarCampo}>
+            <div className="usuarios-campo">
+              <label htmlFor="usuarios-senha">Senha</label>
+              <span className="usuarios-senha">
+                <input
+                  id="usuarios-senha"
+                  name="senha"
+                  type={senhaVisivel ? 'text' : 'password'}
+                  autoComplete="new-password"
+                  value={formulario.senha}
+                  onChange={alterarCampo}
+                  required
+                  minLength={6}
+                  maxLength={20}
+                  aria-describedby="usuarios-senha-ajuda"
+                />
+                <button
+                  type="button"
+                  className="usuarios-ver-senha"
+                  aria-label={senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'}
+                  title={senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'}
+                  aria-pressed={senhaVisivel}
+                  onClick={() => setSenhaVisivel(!senhaVisivel)}
+                >
+                  {senhaVisivel ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
+                </button>
+              </span>
+              <small id="usuarios-senha-ajuda">De 6 a 20 caracteres.</small>
+            </div>
+            <div className="usuarios-campo">
+              <label htmlFor="usuarios-perfil">Perfil</label>
+              <select id="usuarios-perfil" name="perfil" value={formulario.perfil} onChange={alterarCampo} aria-describedby="usuarios-perfil-ajuda">
                 <option value="FUNCIONARIA">{ROTULOS_PERFIL.FUNCIONARIA}</option>
                 <option value="DONA">{ROTULOS_PERFIL.DONA}</option>
               </select>
-            </label>
+              <small id="usuarios-perfil-ajuda">{DESCRICOES_PERFIL[formulario.perfil]}</small>
+            </div>
           </fieldset>
           {erro && <p className="form-error usuarios-erro" role="alert">{erro}</p>}
           <footer>
-            <button type="button" className="outline-button" onClick={aoFechar}>Fechar</button>
-            <button className="primary-button" disabled={salvando}>{salvando ? 'Criando...' : 'Criar usuário'}</button>
+            <button className="primary-button" disabled={salvando}>{salvando ? 'Adicionando...' : 'Adicionar pessoa'}</button>
           </footer>
         </form>
       </div>

@@ -1,3 +1,4 @@
+/* Toasts sit at the top so they never cover the action buttons at the bottom of dialogs. */
 /* Inset on both sides instead of a width in vw: viewport units are multiplied by the zoom below and would overflow. */
 .toast-region {
   position: fixed;
@@ -6,7 +7,7 @@
   z-index: 70;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
   gap: 0.5rem;
   overflow-y: auto;
   pointer-events: none;
@@ -20,10 +21,6 @@
   gap: 0.5rem;
   width: 100%;
   max-width: 24rem;
-}
-
-.toast-region > div:first-child {
-  margin-top: auto;
 }
 
 .toast {

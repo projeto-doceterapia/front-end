@@ -49,7 +49,7 @@ describe('Producao', () => {
   it('seta abre o detalhe', async () => {
     responder()
     renderizar()
-    const seta = await screen.findByRole('button', { name: 'Abrir pedido 42' })
+    const seta = await screen.findByRole('button', { name: 'Ver pedido #0042' })
     seta.focus()
     fireEvent.click(seta)
 

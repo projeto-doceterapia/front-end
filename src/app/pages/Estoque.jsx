@@ -3,13 +3,15 @@ import { CircleCheck, Package, Pencil, Plus, Search, Trash2, TrendingDown, Trian
 import api from '../../services/api'
 import ModalEstoque from '../../components/estoque/ModalEstoque'
 import MovimentacoesEstoque from '../../components/estoque/MovimentacoesEstoque'
-import { mensagemErro, nivelEstoque, numeroDecimal, unidades } from '../../components/estoque/estoqueUtils'
+import { ROTULOS_NIVEL, faltaParaMinimo, mensagemErro, nivelEstoque, numeroDecimal, unidades } from '../../components/estoque/estoqueUtils'
+import { PageTop } from './Produtos'
 import '../../styles/estoque.css'
+import { quantidade } from '../../components/formatos'
 
 const niveis = {
-  normal: { nome: 'Normal', titulo: 'Em nível normal', Icone: CircleCheck },
-  baixo: { nome: 'Baixo', titulo: 'Nível baixo', Icone: TriangleAlert },
-  critico: { nome: 'Crítico', titulo: 'Crítico', Icone: TrendingDown },
+  normal: { nome: ROTULOS_NIVEL.normal, titulo: 'Em nível normal', Icone: CircleCheck },
+  baixo: { nome: ROTULOS_NIVEL.baixo, titulo: 'Nível baixo', Icone: TriangleAlert },
+  critico: { nome: ROTULOS_NIVEL.critico, titulo: 'Crítico', Icone: TrendingDown },
 }
 const normalizar = (texto) => texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
 
@@ -139,10 +141,9 @@ export default function Estoque() {
 
   return (
     <main className="stock-page">
-      <header className="stock-heading">
-        <div><h1>Estoque</h1><p>Controle seus insumos e acompanhe alertas de baixo nível</p></div>
-        <button className="stock-primary" onClick={() => abrir()} disabled={carregando || Boolean(erro)}><Plus size={14} /> Novo Insumo</button>
-      </header>
+      <PageTop titulo="Estoque" subtitulo="Controle seus insumos e acompanhe alertas de baixo nível">
+        <button type="button" className="primary-button" onClick={() => abrir()} disabled={carregando || Boolean(erro)}><Plus size={18} /> Novo Insumo</button>
+      </PageTop>
       <section className="stock-summaries" aria-label="Resumo do estoque">
         {[{ id: 'total', titulo: 'Total de insumos', Icone: Package, valor: insumos.length }, ...Object.entries(niveis).map(([id, dados]) => ({ id, ...dados, valor: contagens[id] }))].map(({ id, titulo, Icone, valor }) => (
           <article className={`stock-summary stock-${id}`} key={id}><div><span className="stock-summary-icon"><Icone size={13} /></span><span>{titulo}</span></div><strong>{carregando || erro ? '—' : valor}</strong></article>
@@ -157,6 +158,7 @@ export default function Estoque() {
           <select aria-label="Filtrar por categoria" value={categoria} onChange={(event) => setCategoria(event.target.value)}><option value="">Categoria</option>{categorias.map((item) => <option key={item.idCategoriaInsumo} value={item.idCategoriaInsumo}>{item.nome}</option>)}</select>
           <select aria-label="Ordenar insumos" value={ordem} onChange={(event) => setOrdem(event.target.value)}><option value="critico">Mais crítico</option><option value="maior">Maior nível</option><option value="nome">Nome A–Z</option></select>
         </div>
+        <p className="stock-legend">Crítico: até metade do mínimo. Baixo: abaixo do mínimo. Normal: no mínimo ou acima.</p>
         <div className="stock-categories"><span>Categorias:</span>{categorias.map((item) => <button key={item.idCategoriaInsumo} aria-pressed={categoria === String(item.idCategoriaInsumo)} className={categoria === String(item.idCategoriaInsumo) ? 'selected' : ''} onClick={() => setCategoria(categoria === String(item.idCategoriaInsumo) ? '' : String(item.idCategoriaInsumo))}>{item.nome}</button>)}<button className="stock-add-category" disabled={carregando || Boolean(erro)} onClick={() => { setForm({ nome: '' }); setErroModal(''); setModal('categoria') }}><Plus size={10} /> Nova</button></div>
         <div className="stock-table-scroll"><table className="stock-table">
           <thead><tr><th>Insumo</th><th>Categoria</th><th>Quantidade</th><th>Mínimo</th><th>Nível</th><th>Status</th><th><span className="stock-sr-only">Ações</span></th></tr></thead>
@@ -166,11 +168,11 @@ export default function Estoque() {
             return <tr key={item.idInsumo} className={`stock-${status}`}>
               <td><div className="stock-item-name"><span className="stock-item-icon"><Package size={12} /></span>{item.nome}</div></td>
               <td><span className="stock-category-badge">{item.categoriaNome}</span></td>
-              <td>{Number(item.quantidadeAtual)} {unidades[item.unidade]}</td>
-              <td className="stock-muted">{Number(item.quantidadeMinima)} {unidades[item.unidade]}</td>
+              <td>{quantidade(item.quantidadeAtual, item.unidade)}{faltaParaMinimo(item) > 0 && <small className="stock-falta">faltam {quantidade(faltaParaMinimo(item), item.unidade)}</small>}</td>
+              <td className="stock-muted">{quantidade(item.quantidadeMinima, item.unidade)}</td>
               <td><div className="stock-level"><div className="stock-progress" role="progressbar" aria-label={`Nível de ${item.nome}`} aria-valuenow={percentual} aria-valuemin={0} aria-valuemax={100}><span style={{ width: `${percentual}%` }} /></div><span>{percentual}%</span></div></td>
               <td><span className="stock-status"><Icone size={10} />{nome}</span></td>
-              <td><button className="stock-icon-button" aria-label={`Editar ${item.nome}`} onClick={() => abrir(item)}><Pencil size={12} /></button></td>
+              <td><button className="stock-icon-button" aria-label={`Editar ${item.nome}`} title={`Editar ${item.nome}`} onClick={() => abrir(item)}><Pencil size={12} aria-hidden="true" /></button></td>
             </tr>
           })}</tbody>
         </table></div>
@@ -179,10 +181,10 @@ export default function Estoque() {
         {!carregando && !erro && !visiveis.length && <p className="stock-empty">{insumos.length ? 'Nenhum insumo encontrado para os filtros selecionados.' : 'Nenhum insumo cadastrado. Adicione seu primeiro insumo.'}</p>}
       </section>
       {!carregando && !erro && <MovimentacoesEstoque insumos={insumos} />}
-      {modal && <ModalEstoque titulo={modal === 'categoria' ? 'Nova Categoria' : edicao ? 'Editar Insumo' : 'Novo Insumo'} aoFechar={fechar} ocupado={ocupado}>
+      {modal && <ModalEstoque titulo={modal === 'categoria' ? 'Nova categoria' : edicao ? 'Editar insumo' : 'Novo insumo'} subtitulo={modal === 'categoria' ? 'Informe o nome da nova categoria' : 'Preencha os dados do insumo'} aoFechar={fechar} ocupado={ocupado}>
         <form className="stock-form" onSubmit={modal === 'categoria' ? salvarCategoria : salvar}>
           <fieldset disabled={ocupado}>
-            <label className="stock-full">{modal === 'categoria' ? 'Nome da categoria' : 'Nome do insumo'}<input autoFocus required maxLength={45} name="nome" value={form.nome} onChange={alterar} placeholder={modal === 'categoria' ? 'Ex: Base' : 'Ex: Farinha de Trigo'} /></label>
+            <label className="stock-full">{modal === 'categoria' ? 'Nome da categoria' : 'Nome do insumo'}<input autoFocus required maxLength={45} name="nome" value={form.nome} onChange={alterar} placeholder={modal === 'categoria' ? 'Ex.: Base' : 'Ex.: Farinha de trigo'} /></label>
             {modal === 'insumo' && <>
               <label>Quantidade atual<input required inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" name="quantidadeAtual" value={form.quantidadeAtual} onChange={alterar} /></label>
               <label>Unidade<select name="unidade" value={form.unidade} onChange={alterar}>{Object.entries(unidades).map(([id, nome]) => <option key={id} value={id}>{nome}</option>)}</select></label>

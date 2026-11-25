@@ -11,7 +11,7 @@ export default function ProdutosMaisPedidos({ produtos }) {
 
   return (
     <section className="painel grafico-produtos">
-      <div className="titulo"><div><h2>5 produtos mais vendidos</h2><p>No período selecionado</p></div></div>
+      <div className="titulo"><div><h2>Produtos mais vendidos</h2><p>No período selecionado</p></div></div>
       <div className="pizza-conteudo"><div className="pizza" style={{ background: gradiente ? `conic-gradient(${gradiente})` : '#f6eeeb' }}><span>{total}<small>itens</small></span></div>
         <div className="legenda">
           {produtos.map((produto, indice) => <p key={produto.produtoId}><span><i style={{ background: cores[indice] }} />{produto.nome}</span><strong>{((Number(produto.quantidade) / total) * 100).toFixed(0)}%</strong></p>)}

@@ -59,7 +59,7 @@ describe('GerenciarUsuarios', () => {
 
     expect(screen.getByLabelText('Perfil')).toHaveValue('FUNCIONARIA')
     preencher()
-    fireEvent.click(screen.getByRole('button', { name: 'Criar usuário' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Adicionar pessoa' }))
 
     await waitFor(() => expect(api.post).toHaveBeenCalledWith('/usuarios', {
       nome: 'Ajudante Exemplo',
@@ -80,7 +80,7 @@ describe('GerenciarUsuarios', () => {
     await screen.findByRole('list')
 
     preencher({ email: 'dona@exemplo.com' })
-    fireEvent.click(screen.getByRole('button', { name: 'Criar usuário' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Adicionar pessoa' }))
 
     expect(await within(screen.getByRole('dialog')).findByRole('alert')).toHaveTextContent('Já existe um usuário com este e-mail.')
     expect(screen.getByLabelText('E-mail')).toHaveValue('dona@exemplo.com')
@@ -98,7 +98,21 @@ describe('GerenciarUsuarios', () => {
     fireEvent.keyDown(dialogo, { key: 'Escape' })
     expect(aoFechar).toHaveBeenCalledTimes(1)
 
-    fireEvent.click(screen.getAllByRole('button', { name: 'Fechar' })[0])
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar' }))
     expect(aoFechar).toHaveBeenCalledTimes(2)
+  })
+
+  it('mostra e oculta a senha e explica o perfil escolhido', async () => {
+    renderComToast(<GerenciarUsuarios aoFechar={vi.fn()} />)
+    const senha = screen.getByLabelText(/^Senha/)
+
+    expect(senha).toHaveAttribute('type', 'password')
+    expect(senha).toHaveAttribute('autocomplete', 'new-password')
+    fireEvent.click(screen.getByRole('button', { name: 'Mostrar senha' }))
+    expect(senha).toHaveAttribute('type', 'text')
+    expect(screen.getByLabelText('Perfil')).toHaveAccessibleDescription(/Não vê faturamento/)
+    fireEvent.change(screen.getByLabelText('Perfil'), { target: { value: 'DONA' } })
+    expect(screen.getByLabelText('Perfil')).toHaveAccessibleDescription(/gestão de acessos/)
+    expect(screen.getAllByRole('button', { name: 'Fechar' })).toHaveLength(1)
   })
 })

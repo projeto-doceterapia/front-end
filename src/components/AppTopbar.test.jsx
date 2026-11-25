@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, waitFor, fireEvent, act } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent, act, within } from '@testing-library/react'
 import AppTopbar from './AppTopbar'
 import api from '../services/api'
 import useSessao from './sessao/useSessao'
@@ -91,6 +91,19 @@ describe('AppTopbar - usuário logado', () => {
     FakeEventSource.instances = []
     vi.stubGlobal('EventSource', FakeEventSource)
     api.get.mockResolvedValue({ data: [] })
+  })
+
+  it('controle de tamanho do texto tem nome e aumenta a escala', async () => {
+    simularSessao()
+    render(<AppTopbar />)
+    await screen.findByRole('button', { name: 'Notificações' })
+
+    const grupo = screen.getByRole('group', { name: 'Tamanho do texto' })
+    expect(grupo).toHaveTextContent('Texto 100%')
+    fireEvent.click(within(grupo).getByRole('button', { name: 'Aumentar o texto' }))
+    expect(grupo).toHaveTextContent('Texto 120%')
+    expect(document.documentElement.style.getPropertyValue('--app-zoom')).toBe('1.2')
+    fireEvent.click(within(grupo).getByRole('button', { name: 'Diminuir o texto' }))
   })
 
   it('mostra o usuário logado', async () => {
