@@ -116,6 +116,19 @@ describe('App - sessão', () => {
     expect(falsa.chamadasDe(ME)).toHaveLength(2)
   })
 
+  it('abre na Agenda, primeiro item do menu', async () => {
+    const falsa = abrirSemSessaoQueAceitaLogin()
+    await screen.findByLabelText('E-mail')
+
+    entrarComCredenciais()
+
+    expect(await screen.findByRole('heading', { name: 'Tela Agenda' })).toBeInTheDocument()
+    const primeiro = screen.getByRole('navigation', { name: 'Navegação principal' }).querySelector('.sidebar-item')
+    expect(primeiro).toHaveAccessibleName('Agenda')
+    expect(primeiro).toHaveAttribute('aria-current', 'page')
+    expect(falsa.chamadasDe(LOGIN)).toHaveLength(1)
+  })
+
   it('abre o stream só com sessão', async () => {
     abrirSemSessaoQueAceitaLogin()
 
