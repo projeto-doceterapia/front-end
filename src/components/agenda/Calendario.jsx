@@ -1,7 +1,14 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { farolConfigurado } from './farolUtils'
 
 function dataISO(ano, mes, dia) {
   return `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`
+}
+
+function legendaFarol(farol) {
+  if (!farol) return 'Clique em um dia para visualizar os pedidos. Configure o farol quando estiver pronto.'
+  if (!farolConfigurado(farol)) return 'Farol: configure os limites para colorir os dias.'
+  return <>Farol: <span className="legend-free" /> até {farol.limiteAmarelo - 1} pedidos <span className="legend-warning" /> até {farol.limiteVermelho - 1} pedidos <span className="legend-full" /> {farol.limiteVermelho}+ pedidos</>
 }
 
 export default function Calendario({ pedidos, farol, mesExibido, dataSelecionada, aoMudarMes, aoIrParaHoje, aoSelecionarData }) {
@@ -18,7 +25,7 @@ export default function Calendario({ pedidos, farol, mesExibido, dataSelecionada
   }
 
   function classeFarol(quantidade) {
-    if (!farol || !farol.limiteAmarelo || !farol.limiteVermelho || !quantidade) return ' neutral'
+    if (!farolConfigurado(farol) || !quantidade) return ' neutral'
     if (quantidade >= farol.limiteVermelho) return ' full'
     if (quantidade >= farol.limiteAmarelo) return ' warning'
     return ' free'
@@ -57,9 +64,7 @@ export default function Calendario({ pedidos, farol, mesExibido, dataSelecionada
       </div>
 
       <footer className="calendar-footer">
-        {farol
-          ? <>Farol: <span className="legend-free" /> até {farol.limiteAmarelo - 1} pedidos <span className="legend-warning" /> até {farol.limiteVermelho - 1} pedidos <span className="legend-full" /> {farol.limiteVermelho}+ pedidos</>
-          : 'Clique em um dia para visualizar os pedidos. Configure o farol quando estiver pronto.'}
+        {legendaFarol(farol)}
       </footer>
     </div>
   )
