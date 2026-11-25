@@ -50,24 +50,69 @@
   font-weight: var(--font-weight-medium);
 }
 
+.usuarios-form {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 20px 22px;
+  border: 0;
+}
+
+.usuarios-form legend {
+  padding: 0;
+  margin-bottom: 4px;
+  color: var(--foreground);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.usuarios-form label,
+.usuarios-campo {
+  display: grid;
+  gap: 6px;
+  color: var(--foreground);
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.usuarios-form input,
 .usuarios-form select {
-  grid-column: 2;
   width: 100%;
-  height: 38px;
-  margin-top: 7px;
-  padding: 0 10px;
+  min-height: 44px;
+  padding: 0 12px;
   border: 1px solid var(--field-border);
   border-radius: var(--radius);
   background: #fff;
   color: var(--foreground);
   font: inherit;
+  font-weight: 400;
 }
 
-.usuarios-form label small {
-  grid-column: 2;
-  margin-top: 4px;
+.usuarios-senha {
+  position: relative;
+  display: block;
+}
+
+.usuarios-senha input {
+  padding-right: 48px;
+}
+
+.usuarios-ver-senha {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--foreground);
+}
+
+.usuarios-campo small {
   color: var(--muted-foreground);
-  font-size: 12px;
+  font-size: 0.875rem;
   font-weight: 400;
 }
 
