@@ -1,3 +1,5 @@
+import { respostaExemplo } from './dadosExemplo'
+
 const API = 'http://localhost:8080'
 
 const USUARIO_DE_TESTE = { id: 1, nome: 'Usuária de Teste', email: 'teste@example.com' }
@@ -27,11 +29,12 @@ const INDICADORES_FINANCEIROS = {
 }
 
 // Answers every API call in the browser so the e2e suite never needs the back-end or real data.
-export async function simularApi(page, { logado = false, loginValido = true } = {}) {
+export async function simularApi(page, { logado = false, loginValido = true, dados = 'vazio' } = {}) {
   let sessaoAtiva = logado
 
   await page.route(`${API}/**`, (rota) => {
-    const { pathname } = new URL(rota.request().url())
+    const url = new URL(rota.request().url())
+    const { pathname } = url
 
     if (pathname === '/usuarios/me') {
       return sessaoAtiva
@@ -45,6 +48,10 @@ export async function simularApi(page, { logado = false, loginValido = true } = 
     if (pathname === '/usuarios/logout') {
       sessaoAtiva = false
       return rota.fulfill({ status: 204 })
+    }
+    if (dados === 'exemplo' && rota.request().method() === 'GET') {
+      const resposta = respostaExemplo(url)
+      if (resposta !== undefined) return rota.fulfill({ status: 200, json: resposta })
     }
     if (pathname === '/indicadores/operacionais') {
       return rota.fulfill({ status: 200, json: INDICADORES_OPERACIONAIS })
