@@ -1474,6 +1474,9 @@ button {
   max-width: 1216px;
   margin-inline: auto;
 }
+.catalog-page > .catalog-body {
+  padding-inline: 0;
+}
 .catalog-heading {
   display: flex;
   align-items: flex-start;
